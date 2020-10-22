@@ -9,7 +9,7 @@
         "prod": "npm run production",
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
         "heroku-prebuild": "cd coreui && npm install && npm audit fix --force && cd .. && npm install && npm audit fix --force",
-        "heroku-postbuild": "npm run dev"
+        "heroku-postbuild": "npm run prod"
     },
     "devDependencies": {
         "axios": "^0.19.0",
@@ -22,7 +22,7 @@
         "popper.js": "^1.12",
         "resolve-url-loader": "^3.1.2",
         "sass": "^1.20.1",
-        "sass-loader": "7.*",
+        "sass-loader": "10.*",
         "vue": "^2.5.17",
         "vue-template-compiler": "^2.6.10"
     },
