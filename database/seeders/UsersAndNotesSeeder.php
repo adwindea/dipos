@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
+// use Faker\Factory as Faker;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
@@ -46,7 +46,7 @@ class UsersAndNotesSeeder extends Seeder
             'hierarchy' => 3,
         ]);
 
-        $faker = Faker::create();
+        // $faker = Faker::create();
         /*  insert status  */
         DB::table('status')->insert([
             'name' => 'ongoing',
