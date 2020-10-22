@@ -28,5 +28,9 @@
     "dependencies": {
         "browser-sync": "^2.26.12",
         "browser-sync-webpack-plugin": "^2.2.2"
+    },
+    "engines": {
+        "node": "12.x",
+        "npm": "6.x"
     }
 }
