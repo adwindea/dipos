@@ -83,7 +83,7 @@
                 </template>
               </CDataTable>
 
-          </CCardBody>  
+          </CCardBody>
         </CCard>
       </transition>
     </CCol>
@@ -97,11 +97,11 @@
               >
 
               </CDataTable>
-          </CCardBody>  
+          </CCardBody>
         </CCard>
         <CCard v-if="rightCard == 'renameFolder'">
           <CCardBody>
-            <CInput 
+            <CInput
                 type="text"
                 label="New name"
                 placeholder="Folder name"
@@ -112,12 +112,12 @@
             </CButton>
             <CButton color="primary" @click="rightCard = 'fileInfo'">
                 Cancel
-            </CButton> 
-          </CCardBody> 
+            </CButton>
+          </CCardBody>
         </CCard>
         <CCard v-if="rightCard == 'renameFile'">
           <CCardBody>
-            <CInput 
+            <CInput
                 :type="text"
                 label="New name"
                 placeholder="Folder name"
@@ -128,8 +128,8 @@
             </CButton>
             <CButton color="primary" @click="rightCard = 'fileInfo'">
                 Cancel
-            </CButton> 
-          </CCardBody>  
+            </CButton>
+          </CCardBody>
         </CCard>
         <CCard v-if="rightCard == 'moveFolder'">
           <CCardBody>
@@ -154,8 +154,8 @@
             </CButton>
             <CButton color="primary" @click="rightCard = 'fileInfo'" class="mt-4">
                 Cancel
-            </CButton> 
-          </CCardBody>  
+            </CButton>
+          </CCardBody>
         </CCard>
         <CCard v-if="rightCard == 'moveFile'">
           <CCardBody>
@@ -180,8 +180,8 @@
             </CButton>
             <CButton color="primary" @click="rightCard = 'fileInfo'" class="mt-4">
                 Cancel
-            </CButton> 
-          </CCardBody>  
+            </CButton>
+          </CCardBody>
         </CCard>
       </transition>
     </CCol>
@@ -255,7 +255,7 @@ export default {
         croppModal: false,
         cropper: null,
         croppUrl: '',
-        changePort: 'localhost:8000',
+        changePort: 'http://dipos.herokuapp.com',
     }
   },
   computed: {
@@ -437,7 +437,7 @@ export default {
                 self.selectFolder = null;
             })
             .catch(function(error){
-                console.log(error) 
+                console.log(error)
                 self.$router.push({ path: '/login' })
             });
         }
@@ -458,7 +458,7 @@ export default {
                 self.selectFolder = null;
             })
             .catch(function(error){
-                console.log(error) 
+                console.log(error)
                 self.$router.push({ path: '/login' })
             });
         }
