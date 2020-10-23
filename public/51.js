@@ -341,7 +341,7 @@ __webpack_require__.r(__webpack_exports__);
       croppModal: false,
       cropper: null,
       croppUrl: '',
-      changePort: 'localhost:8000'
+      changePort: 'http://dipos.herokuapp.com'
     };
   },
   computed: {

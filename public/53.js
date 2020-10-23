@@ -1,16 +1,16 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[53],{
 
-/***/ "./coreui/src/views/menuElements/DeleteMenuElement.vue":
-/*!*************************************************************!*\
-  !*** ./coreui/src/views/menuElements/DeleteMenuElement.vue ***!
-  \*************************************************************/
+/***/ "./coreui/src/views/menu/DeleteMenu.vue":
+/*!**********************************************!*\
+  !*** ./coreui/src/views/menu/DeleteMenu.vue ***!
+  \**********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _DeleteMenuElement_vue_vue_type_template_id_2c5b4703___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DeleteMenuElement.vue?vue&type=template&id=2c5b4703& */ "./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=template&id=2c5b4703&");
-/* harmony import */ var _DeleteMenuElement_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DeleteMenuElement.vue?vue&type=script&lang=js& */ "./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=script&lang=js&");
+/* harmony import */ var _DeleteMenu_vue_vue_type_template_id_4c4ba240___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DeleteMenu.vue?vue&type=template&id=4c4ba240& */ "./coreui/src/views/menu/DeleteMenu.vue?vue&type=template&id=4c4ba240&");
+/* harmony import */ var _DeleteMenu_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DeleteMenu.vue?vue&type=script&lang=js& */ "./coreui/src/views/menu/DeleteMenu.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -20,9 +20,9 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _DeleteMenuElement_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _DeleteMenuElement_vue_vue_type_template_id_2c5b4703___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _DeleteMenuElement_vue_vue_type_template_id_2c5b4703___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _DeleteMenu_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _DeleteMenu_vue_vue_type_template_id_4c4ba240___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _DeleteMenu_vue_vue_type_template_id_4c4ba240___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -32,47 +32,47 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "coreui/src/views/menuElements/DeleteMenuElement.vue"
+component.options.__file = "coreui/src/views/menu/DeleteMenu.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=script&lang=js&":
-/*!**************************************************************************************!*\
-  !*** ./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=script&lang=js& ***!
-  \**************************************************************************************/
+/***/ "./coreui/src/views/menu/DeleteMenu.vue?vue&type=script&lang=js&":
+/*!***********************************************************************!*\
+  !*** ./coreui/src/views/menu/DeleteMenu.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenuElement_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./DeleteMenuElement.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenuElement_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenu_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./DeleteMenu.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/menu/DeleteMenu.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenu_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=template&id=2c5b4703&":
-/*!********************************************************************************************!*\
-  !*** ./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=template&id=2c5b4703& ***!
-  \********************************************************************************************/
+/***/ "./coreui/src/views/menu/DeleteMenu.vue?vue&type=template&id=4c4ba240&":
+/*!*****************************************************************************!*\
+  !*** ./coreui/src/views/menu/DeleteMenu.vue?vue&type=template&id=4c4ba240& ***!
+  \*****************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenuElement_vue_vue_type_template_id_2c5b4703___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./DeleteMenuElement.vue?vue&type=template&id=2c5b4703& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=template&id=2c5b4703&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenuElement_vue_vue_type_template_id_2c5b4703___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenu_vue_vue_type_template_id_4c4ba240___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./DeleteMenu.vue?vue&type=template&id=4c4ba240& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/menu/DeleteMenu.vue?vue&type=template&id=4c4ba240&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenu_vue_vue_type_template_id_4c4ba240___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenuElement_vue_vue_type_template_id_2c5b4703___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteMenu_vue_vue_type_template_id_4c4ba240___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=script&lang=js&":
-/*!**********************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=script&lang=js& ***!
-  \**********************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/menu/DeleteMenu.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./coreui/src/views/menu/DeleteMenu.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -119,8 +119,13 @@ __webpack_require__.r(__webpack_exports__);
     },
     deleteMenu: function deleteMenu() {
       var self = this;
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.$apiAdress + '/api/menu/element/delete?token=' + localStorage.getItem("api_token") + '&id=' + self.$route.params.id, {}).then(function (response) {
-        self.$router.go(-1);
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.$apiAdress + '/api/menu/menu/delete?token=' + localStorage.getItem("api_token") + '&id=' + self.$route.params.id, {}).then(function (response) {
+        if (response.data.success == true) {
+          self.$router.go(-1);
+        } else {
+          self.message = "Can't delete. This menu have assigned menu elements";
+          self.showAlert();
+        }
       })["catch"](function (error) {
         console.log(error);
         self.$router.push({
@@ -137,10 +142,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=template&id=2c5b4703&":
-/*!**************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./coreui/src/views/menuElements/DeleteMenuElement.vue?vue&type=template&id=2c5b4703& ***!
-  \**************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/menu/DeleteMenu.vue?vue&type=template&id=4c4ba240&":
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./coreui/src/views/menu/DeleteMenu.vue?vue&type=template&id=4c4ba240& ***!
+  \***********************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -165,7 +170,7 @@ var render = function() {
               _c(
                 "CCardBody",
                 [
-                  _c("h4", [_vm._v("Delete Menu Element")]),
+                  _c("h4", [_vm._v("Delete Menu")]),
                   _vm._v(" "),
                   _c("p", [_vm._v("Are you sure?")]),
                   _vm._v(" "),

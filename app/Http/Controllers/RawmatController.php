@@ -42,9 +42,12 @@ class RawmatController extends Controller
 			$img = str_replace(' ', '+', $img);
             $resource = base64_decode($img);
             $prefix = Str::random(8);
-            $filename = 'storage/image/rawmat/'.$prefix.time().'.png';
-            $path = storage_path().'/app/public/image/rawmat/'.$prefix.time().'.png';
-            file_put_contents($path, $resource);
+            $s3name = 'image/rawmat/'.$prefix.time().'.png';
+            Storage::disk('s3')->put($s3name, $resource);
+            $filename = Storage::disk('s3')->url($s3name);
+            // $filename = 'storage/image/rawmat/'.$prefix.time().'.png';
+            // $path = storage_path().'/app/public/image/rawmat/'.$prefix.time().'.png';
+            // file_put_contents($path, $resource);
         }else{
             $filename = 'noimage.png';
         }
@@ -81,19 +84,23 @@ class RawmatController extends Controller
         $rawmat = Rawmat::where('uuid', '=', $request->input('uuid'))->first();
         $name = $request->input('name');
         $img = $request->input('img');
-        $oldimg = str_replace('storage/', '', $rawmat->img);
+        // $oldimg = str_replace('storage/', '', $rawmat->img);
         if(!empty($img)){
-            if(file_exists(storage_path().'/app/public/'.$oldimg)){
-                unlink(storage_path().'/app/public/'.$oldimg);
-            }
+            // if(file_exists(storage_path().'/app/public/'.$oldimg)){
+            //     unlink(storage_path().'/app/public/'.$oldimg);
+            // }
+            $img_path = parse_url($rawmat->img, PHP_URL_PATH);
             $img = str_replace('data:image/png;base64,', '', $img);
 			$img = str_replace('[removed]', '', $img);
 			$img = str_replace(' ', '+', $img);
             $resource = base64_decode($img);
             $prefix = Str::random(8);
-            $filename = 'storage/image/rawmat/'.$prefix.time().'.png';
-            $path = storage_path().'/app/public/image/rawmat/'.$prefix.time().'.png';
-            file_put_contents($path, $resource);
+            $s3name = 'image/rawmat/'.$prefix.time().'.png';
+            Storage::disk('s3')->put($s3name, $resource);
+            $filename = Storage::disk('s3')->url($s3name);
+            // $filename = 'storage/image/rawmat/'.$prefix.time().'.png';
+            // $path = storage_path().'/app/public/image/rawmat/'.$prefix.time().'.png';
+            // file_put_contents($path, $resource);
             $rawmat->img = $filename;
         }
         $rawmat->name = $name;
@@ -109,6 +116,8 @@ class RawmatController extends Controller
 
     public function delete(Request $request){
         $rawmat = Rawmat::where('uuid', '=', $request->input('uuid'))->first();
+        $img_path = parse_url($rawmat->img, PHP_URL_PATH);
+        Storage::disk('s3')->delete($img_path);
         $rawmat->delete();
         return response()->json( array('success'=>true) );
     }
