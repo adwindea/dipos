@@ -33,13 +33,13 @@
                                 v-model="rawmat.restock"
                                 label="Restock Notification"
                                 name="Restock Notification"
-                                @update:checked="restockEnabler($event)"
+                                @change="restockEnabler($event)"
                             />
                         </CCol>
                         <CCol col=6>
-                            <CInput 
+                            <CInput
                                 label="Image"
-                                type="file" 
+                                type="file"
                                 id="berkas"
                                 @change="generateBase64()"
                             />
@@ -86,7 +86,7 @@ export default {
             this.$router.go(-1)
         },
         restockEnabler(event) {
-            if(event){
+            if(this.rawmat.restock_notif == 0){
                 this.divRestock = true
                 this.rawmat.restock_notif = 1
             }else{
@@ -108,12 +108,12 @@ export default {
             var fileReader = new FileReader();
             var filterType = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpg|image\/JPG|image\/JPEG|image\/pipeg|image\/png|image\/PNG|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
             var uploadImage = document.getElementById("berkas");
-            if (uploadImage.files.length === 0) { 
-                return; 
+            if (uploadImage.files.length === 0) {
+                return;
             }
             var uploadFile = document.getElementById("berkas").files[0];
             if (!filterType.test(uploadFile.type)) {
-                alert("Please select a valid image."); 
+                alert("Please select a valid image.");
                 return;
             }
             fileReader.readAsDataURL(uploadFile);
@@ -194,7 +194,7 @@ export default {
                 self.showAlert();
                 }else{
                 console.log(error);
-                self.$router.push({ path: 'login' }); 
+                self.$router.push({ path: 'login' });
                 }
             });
         },
