@@ -91,6 +91,15 @@ Route::group(['middleware' => 'api'], function ($router) {
             Route::get('/delete',   'CategoryController@delete')->name('category.delete');
             Route::get('/show',     'CategoryController@show')->name('category.show');
         });
+        Route::prefix('product')->group(function () {
+            Route::get('/',         'ProductController@index')->name('product.index');
+            Route::get('/create',   'ProductController@create')->name('product.create');
+            Route::post('/store',   'ProductController@store')->name('product.store');
+            Route::get('/edit',     'ProductController@edit')->name('product.edit');
+            Route::post('/update',  'ProductController@update')->name('product.update');
+            Route::get('/delete',   'ProductController@delete')->name('product.delete');
+            Route::get('/show',     'ProductController@show')->name('product.show');
+        });
 
 
         Route::resource('roles',        'RolesController');
