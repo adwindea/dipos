@@ -16,9 +16,9 @@ class CreateRawmatsTable extends Migration
         Schema::create('rawmats', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->decimal('stock', 8, 2)->nullable();
-            $table->decimal('limit', 8, 2)->nullable();
-            $table->decimal('price', 8, 2)->nullable();
+            $table->decimal('stock', 20, 2)->nullable();
+            $table->decimal('limit', 20, 2)->nullable();
+            $table->decimal('price', 20, 2)->nullable();
             $table->string('unit')->nullable();
             $table->string('img')->nullable();
             $table->tinyInteger('restock_notif')->nullable();

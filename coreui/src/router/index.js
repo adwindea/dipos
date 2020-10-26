@@ -116,6 +116,12 @@ const CreateCategory = () => import('@/views/category/CreateCategory')
 const DeleteCategory = () => import('@/views/category/DeleteCategory')
 const EditCategory = () => import('@/views/category/EditCategory')
 
+//Product
+const Products = () => import('@/views/product/Products')
+const CreateProduct = () => import('@/views/product/CreateProduct')
+const DeleteProduct = () => import('@/views/product/DeleteProduct')
+const EditProduct = () => import('@/views/product/EditProduct')
+
 
 
 Vue.use(Router)
@@ -294,6 +300,49 @@ function configRoutes () {
               meta: { label: 'Edit Category' },
               name: 'EditCategory',
               component: EditCategory,
+              meta:{
+                requiresAdmin: true
+              }
+            }
+          ]
+        },
+        {
+          path: 'product',
+          meta: { label: 'Product'},
+          component: {
+            render (c) { return c('router-view') }
+          },
+          children: [
+            {
+              path: '',
+              component: Products,
+              meta:{
+                requiresAdmin: true
+              }
+            },
+            {
+              path: 'create',
+              meta: { label: 'Create Product' },
+              name: 'CreateProduct',
+              component: CreateProduct,
+              meta:{
+                requiresAdmin: true
+              }
+            },
+            {
+              path: ':uuid/delete',
+              meta: { label: 'Delete Product' },
+              name: 'DeleteProduct',
+              component: DeleteProduct,
+              meta:{
+                requiresAdmin: true
+              }
+            },
+            {
+              path: ':uuid/edit',
+              meta: { label: 'Edit Product' },
+              name: 'EditProduct',
+              component: EditProduct,
               meta:{
                 requiresAdmin: true
               }
