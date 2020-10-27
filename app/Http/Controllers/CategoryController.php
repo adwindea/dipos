@@ -45,7 +45,7 @@ class CategoryController extends Controller
             // $path = storage_path().'/app/public/image/category/'.$prefix.time().'.png';
             // file_put_contents($path, $resource);
         }else{
-            $filename = '/image/noimage.png';
+            $filename = Storage::disk('s3')->url('image/noimage.png');
         }
         $category = new Category();
         $category->name = $name;
@@ -76,13 +76,15 @@ class CategoryController extends Controller
             //     unlink(storage_path().'/app/public/'.$oldimg);
             // }
             $img_path = parse_url($category->img, PHP_URL_PATH);
-            Storage::disk('s3')->delete($img_path);
+            if($img_path != 'image/noimage.png'){
+                Storage::disk('s3')->delete($img_path);
+            }
             $img = str_replace('data:image/png;base64,', '', $img);
 			$img = str_replace('[removed]', '', $img);
 			$img = str_replace(' ', '+', $img);
             $resource = base64_decode($img);
             $prefix = Str::random(8);
-            $s3name = 'image/category/'.$prefix.time().'.png';
+            $s3name = '/image/category/'.$prefix.time().'.png';
             Storage::disk('s3')->put($s3name, $resource);
             $filename = Storage::disk('s3')->url($s3name);
             // $filename = '/storage/image/category/'.$prefix.time().'.png';
@@ -99,7 +101,9 @@ class CategoryController extends Controller
     public function delete(Request $request){
         $category = Category::where('uuid', '=', $request->input('uuid'))->first();
         $img_path = parse_url($category->img, PHP_URL_PATH);
-        Storage::disk('s3')->delete($img_path);
+        if($img_path != '/image/noimage.png'){
+            Storage::disk('s3')->delete($img_path);
+        }
         $category->delete();
         return response()->json( array('success'=>true) );
     }

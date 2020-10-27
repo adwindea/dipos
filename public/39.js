@@ -119,6 +119,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Categories',
@@ -228,16 +230,27 @@ var render = function() {
                               var item = ref.item
                               return [
                                 _c("td", [
-                                  _c("img", {
-                                    staticStyle: {
-                                      "max-height": "60px",
-                                      "max-width": "120px"
+                                  _c(
+                                    "a",
+                                    {
+                                      attrs: {
+                                        href: item.img,
+                                        target: "_blank"
+                                      }
                                     },
-                                    attrs: {
-                                      src: item.img,
-                                      title: "Click for more detail"
-                                    }
-                                  })
+                                    [
+                                      _c("img", {
+                                        staticStyle: {
+                                          "max-height": "60px",
+                                          "max-width": "120px"
+                                        },
+                                        attrs: {
+                                          src: item.img,
+                                          title: "Click for more detail"
+                                        }
+                                      })
+                                    ]
+                                  )
                                 ])
                               ]
                             }

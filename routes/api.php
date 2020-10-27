@@ -99,6 +99,7 @@ Route::group(['middleware' => 'api'], function ($router) {
             Route::post('/update',  'ProductController@update')->name('product.update');
             Route::get('/delete',   'ProductController@delete')->name('product.delete');
             Route::get('/show',     'ProductController@show')->name('product.show');
+            Route::get('/rawmatData', 'ProductController@rawmatData')->name('product.rawmatData');
         });
 
 

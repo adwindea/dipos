@@ -15,7 +15,9 @@
                         >
                             <template #image="{item}">
                                 <td>
-                                    <img :src="item.img" style="max-height:60px;max-width:120px;" title="Click for more detail"/>
+                                    <a :href="item.img" target="_blank">
+                                        <img :src="item.img" style="max-height:60px;max-width:120px;" title="Click for more detail"/>
+                                    </a>
                                 </td>
                             </template>
                             <template #name="{item}">
@@ -55,7 +57,7 @@
                                 </td>
                             </template>
                         </CDataTable>
-                    </CCardBody>  
+                    </CCardBody>
                 </CCard>
             </transition>
         </CCol>

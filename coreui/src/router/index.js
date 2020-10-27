@@ -121,6 +121,7 @@ const Products = () => import('@/views/product/Products')
 const CreateProduct = () => import('@/views/product/CreateProduct')
 const DeleteProduct = () => import('@/views/product/DeleteProduct')
 const EditProduct = () => import('@/views/product/EditProduct')
+const ProductIngredient = () => import('@/views/product/ProductIngredient')
 
 
 
@@ -346,6 +347,15 @@ function configRoutes () {
               meta:{
                 requiresAdmin: true
               }
+            },
+            {
+                path: ':uuid/ingredient',
+                meta: { label: 'Product Ingredient' },
+                name: 'ProductIngredient',
+                component: ProductIngredient,
+                meta:{
+                    requiresAdmin: true
+                }
             }
           ]
         },
