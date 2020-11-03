@@ -49,7 +49,10 @@
             <CCol col="6">
             <CCard>
                 <CCardBody style="max-height:80vh;overflow: auto;">
-                    <h4>Ingredient List</h4>
+                    <h4>
+                        Ingredient List
+                        <CInput type="text" class="float-right" placeholder="Search" v-model="searchKey" @keyup="changeSearch()"></CInput>
+                    </h4>
                     <table class="table">
                         <tr>
                             <th>Name</th>
@@ -63,7 +66,7 @@
                                 <CButton color="primary" @click="addIngredient( item.uuid )"><CIcon name="cilPlus"></CIcon></CButton>
                             </td>
                         </tr>
-                        <infinite-loading spinner="waveDots" @infinite="infiniteHandler">
+                        <infinite-loading spinner="waveDots" :identifier="infiniteId" @infinite="infiniteHandler">
                             <span slot="no-more"></span>
                         </infinite-loading>
                     </table>
@@ -82,11 +85,12 @@ export default {
     data () {
         return {
             fields: ['name', 'quantity', 'action'],
-            items: [],
+            ingredients: [],
             list: [],
             product: [],
-            buffor: [],
             page: 1,
+            searchKey: '',
+            infiniteId: +new Date(),
         }
     },
     methods: {
@@ -100,28 +104,66 @@ export default {
                 self.$router.push({ path: '/login' });
             });
         },
+        getIngredient(){
+            let self = this;
+            axios.get(  this.$apiAdress + '/api/product/getIngredients?token=' + localStorage.getItem("api_token") + '&uuid=' + self.$route.params.uuid )
+            .then(function (response) {
+                self.ingredients = response.data.ingredients
+            }).catch(function (error) {
+                console.log(error);
+                self.$router.push({ path: '/login' });
+            });
+
+        },
         infiniteHandler($state) {
             axios.get(this.$apiAdress + '/api/product/rawmatData?token=' + localStorage.getItem("api_token"), {
                 params: {
-                page: this.page,
+                    page: this.page,
+                    searchKey: this.searchKey,
                 },
             }).then(({ data }) => {
                 if (data.data.length) {
-                this.page += 1;
-                this.list.push(...data.data);
-                $state.loaded();
+                    this.page += 1;
+                    this.list.push(...data.data);
+                    $state.loaded();
                 } else {
-                $state.complete();
+                    $state.complete();
                 }
             });
-            console.log(this.list)
         },
+        changeSearch(){
+            this.page = 1;
+            this.list = [];
+            this.infiniteId += 1;
+        },
+        addIngredient(uuid){
+            axios.post(  this.$apiAdress + '/api/product/insertIngredient?token=' + localStorage.getItem("api_token"), {
+                product_uuid: this.$route.params.uuid,
+                rawmat_uuid: uuid
+            }).then(function (response) {
+                this.getIngredient()
+            }).catch(function (error) {
+                if(error.response.data.message == 'The given data was invalid.'){
+                    // self.message = '';
+                    // for (let key in error.response.data.errors) {
+                    //     if (error.response.data.errors.hasOwnProperty(key)) {
+                    //         self.message += error.response.data.errors[key][0] + '  ';
+                    //     }
+                    // }
+                    // self.showAlert();
+                }else{
+                    console.log(error);
+                    self.$router.push({ path: 'login' });
+                }
+            });
+        }
     },
     components:{
         InfiniteLoading,
     },
     mounted(){
         this.getProduct();
+        this.getIngredient();
     }
 }
 </script>

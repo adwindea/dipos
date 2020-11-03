@@ -29,5 +29,5 @@ mix.js('resources/js/app.js', 'public/js')
 
 mix.copy('coreui/public', 'public');
 
-mix.browserSync('http://localhost:8000');
+mix.browserSync('http://localhost:8080');
 

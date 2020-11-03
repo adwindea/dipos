@@ -1,16 +1,16 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[76],{
 
-/***/ "./coreui/src/views/rawmat/EditRawMaterial.vue":
-/*!*****************************************************!*\
-  !*** ./coreui/src/views/rawmat/EditRawMaterial.vue ***!
-  \*****************************************************/
+/***/ "./coreui/src/views/rawmat/CreateRawMaterial.vue":
+/*!*******************************************************!*\
+  !*** ./coreui/src/views/rawmat/CreateRawMaterial.vue ***!
+  \*******************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _EditRawMaterial_vue_vue_type_template_id_122b5018___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EditRawMaterial.vue?vue&type=template&id=122b5018& */ "./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=template&id=122b5018&");
-/* harmony import */ var _EditRawMaterial_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EditRawMaterial.vue?vue&type=script&lang=js& */ "./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=script&lang=js&");
+/* harmony import */ var _CreateRawMaterial_vue_vue_type_template_id_12f2c826___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CreateRawMaterial.vue?vue&type=template&id=12f2c826& */ "./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=template&id=12f2c826&");
+/* harmony import */ var _CreateRawMaterial_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CreateRawMaterial.vue?vue&type=script&lang=js& */ "./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -20,9 +20,9 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _EditRawMaterial_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _EditRawMaterial_vue_vue_type_template_id_122b5018___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _EditRawMaterial_vue_vue_type_template_id_122b5018___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _CreateRawMaterial_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _CreateRawMaterial_vue_vue_type_template_id_12f2c826___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _CreateRawMaterial_vue_vue_type_template_id_12f2c826___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -32,47 +32,47 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "coreui/src/views/rawmat/EditRawMaterial.vue"
+component.options.__file = "coreui/src/views/rawmat/CreateRawMaterial.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=script&lang=js&":
-/*!******************************************************************************!*\
-  !*** ./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=script&lang=js& ***!
-  \******************************************************************************/
+/***/ "./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=script&lang=js&":
+/*!********************************************************************************!*\
+  !*** ./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_EditRawMaterial_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./EditRawMaterial.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_EditRawMaterial_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateRawMaterial_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./CreateRawMaterial.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateRawMaterial_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=template&id=122b5018&":
-/*!************************************************************************************!*\
-  !*** ./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=template&id=122b5018& ***!
-  \************************************************************************************/
+/***/ "./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=template&id=12f2c826&":
+/*!**************************************************************************************!*\
+  !*** ./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=template&id=12f2c826& ***!
+  \**************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EditRawMaterial_vue_vue_type_template_id_122b5018___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./EditRawMaterial.vue?vue&type=template&id=122b5018& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=template&id=122b5018&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EditRawMaterial_vue_vue_type_template_id_122b5018___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateRawMaterial_vue_vue_type_template_id_12f2c826___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./CreateRawMaterial.vue?vue&type=template&id=12f2c826& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=template&id=12f2c826&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateRawMaterial_vue_vue_type_template_id_12f2c826___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EditRawMaterial_vue_vue_type_template_id_122b5018___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CreateRawMaterial_vue_vue_type_template_id_12f2c826___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=script&lang=js&":
-/*!**************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=script&lang=js& ***!
-  \**************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -142,10 +142,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'EditRawMaterial',
+  name: 'CreateRawMaterial',
   data: function data() {
     return {
-      rawmat: {
+      rawmaterial: {
         name: '',
         stock: '',
         limit: '',
@@ -167,23 +167,12 @@ __webpack_require__.r(__webpack_exports__);
       this.$router.go(-1);
     },
     restockEnabler: function restockEnabler(event) {
-      if (this.rawmat.restock_notif == 0) {
+      if (event) {
         this.divRestock = true;
-        this.rawmat.restock_notif = 1;
+        this.rawmaterial.restock_notif = 1;
       } else {
         this.divRestock = false;
-        this.rawmat.restock_notif = 0;
-      }
-    },
-    setRestock: function setRestock(notif) {
-      console.log(this.rawmat);
-
-      if (notif == 1) {
-        this.rawmat.restock = true;
-        this.divRestock = true;
-      } else {
-        this.rawmat.restock = false;
-        this.divRestock = false;
+        this.rawmaterial.restock_notif = 0;
       }
     },
     generateBase64: function generateBase64() {
@@ -258,21 +247,12 @@ __webpack_require__.r(__webpack_exports__);
     showAlert: function showAlert() {
       this.dismissCountDown = this.dismissSecs;
     },
-    save: function save() {
+    store: function store() {
       var self = this;
-      self.rawmat.img = document.getElementById('img').value;
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(this.$apiAdress + '/api/rawmat/update?token=' + localStorage.getItem("api_token"), {
-        uuid: self.$route.params.uuid,
-        name: self.rawmat.name,
-        stock: self.rawmat.stock,
-        limit: self.rawmat.limit,
-        price: self.rawmat.price,
-        unit: self.rawmat.unit,
-        img: self.rawmat.img,
-        restock_notif: self.rawmat.restock_notif
-      }).then(function (response) {
+      self.rawmaterial.img = document.getElementById('img').value;
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(this.$apiAdress + '/api/rawmat/store?token=' + localStorage.getItem("api_token"), self.rawmaterial).then(function (response) {
         self.name = '';
-        self.message = 'Successfully edited raw material.';
+        self.message = 'Successfully added raw material.';
         self.showAlert();
       })["catch"](function (error) {
         if (error.response.data.message == 'The given data was invalid.') {
@@ -292,31 +272,17 @@ __webpack_require__.r(__webpack_exports__);
           });
         }
       });
-    },
-    getData: function getData() {
-      var self = this;
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.$apiAdress + '/api/rawmat/show?token=' + localStorage.getItem("api_token") + '&uuid=' + self.$route.params.uuid).then(function (response) {
-        self.rawmat = response.data.rawmat;
-        self.setRestock(self.rawmat.restock_notif);
-      })["catch"](function (error) {
-        console.log(error);
-        self.$router.push({
-          path: '/login'
-        });
-      });
     }
   },
-  mounted: function mounted() {
-    this.getData();
-  }
+  mounted: function mounted() {}
 });
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=template&id=122b5018&":
-/*!******************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./coreui/src/views/rawmat/EditRawMaterial.vue?vue&type=template&id=122b5018& ***!
-  \******************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=template&id=12f2c826&":
+/*!********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./coreui/src/views/rawmat/CreateRawMaterial.vue?vue&type=template&id=12f2c826& ***!
+  \********************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -341,7 +307,7 @@ var render = function() {
               _c("CCardHeader", [
                 _c("h3", [
                   _vm._v(
-                    "\n                    Edit Raw Material\n                "
+                    "\n                    Add Raw Material\n                "
                   )
                 ])
               ]),
@@ -400,11 +366,11 @@ var render = function() {
                               placeholder: "Name"
                             },
                             model: {
-                              value: _vm.rawmat.name,
+                              value: _vm.rawmaterial.name,
                               callback: function($$v) {
-                                _vm.$set(_vm.rawmat, "name", $$v)
+                                _vm.$set(_vm.rawmaterial, "name", $$v)
                               },
-                              expression: "rawmat.name"
+                              expression: "rawmaterial.name"
                             }
                           }),
                           _vm._v(" "),
@@ -417,11 +383,11 @@ var render = function() {
                               placeholder: "Price"
                             },
                             model: {
-                              value: _vm.rawmat.price,
+                              value: _vm.rawmaterial.price,
                               callback: function($$v) {
-                                _vm.$set(_vm.rawmat, "price", $$v)
+                                _vm.$set(_vm.rawmaterial, "price", $$v)
                               },
-                              expression: "rawmat.price"
+                              expression: "rawmaterial.price"
                             }
                           }),
                           _vm._v(" "),
@@ -434,11 +400,11 @@ var render = function() {
                               placeholder: "Stock"
                             },
                             model: {
-                              value: _vm.rawmat.stock,
+                              value: _vm.rawmaterial.stock,
                               callback: function($$v) {
-                                _vm.$set(_vm.rawmat, "stock", $$v)
+                                _vm.$set(_vm.rawmaterial, "stock", $$v)
                               },
-                              expression: "rawmat.stock"
+                              expression: "rawmaterial.stock"
                             }
                           }),
                           _vm._v(" "),
@@ -449,11 +415,11 @@ var render = function() {
                               placeholder: "Unit"
                             },
                             model: {
-                              value: _vm.rawmat.unit,
+                              value: _vm.rawmaterial.unit,
                               callback: function($$v) {
-                                _vm.$set(_vm.rawmat, "unit", $$v)
+                                _vm.$set(_vm.rawmaterial, "unit", $$v)
                               },
-                              expression: "rawmat.unit"
+                              expression: "rawmaterial.unit"
                             }
                           }),
                           _vm._v(" "),
@@ -470,11 +436,11 @@ var render = function() {
                                       placeholder: "Stock Limit"
                                     },
                                     model: {
-                                      value: _vm.rawmat.limit,
+                                      value: _vm.rawmaterial.limit,
                                       callback: function($$v) {
-                                        _vm.$set(_vm.rawmat, "limit", $$v)
+                                        _vm.$set(_vm.rawmaterial, "limit", $$v)
                                       },
-                                      expression: "rawmat.limit"
+                                      expression: "rawmaterial.limit"
                                     }
                                   })
                                 ],
@@ -488,16 +454,16 @@ var render = function() {
                               name: "Restock Notification"
                             },
                             on: {
-                              change: function($event) {
+                              "update:checked": function($event) {
                                 return _vm.restockEnabler($event)
                               }
                             },
                             model: {
-                              value: _vm.rawmat.restock,
+                              value: _vm.rawmaterial.restock,
                               callback: function($$v) {
-                                _vm.$set(_vm.rawmat, "restock", $$v)
+                                _vm.$set(_vm.rawmaterial, "restock", $$v)
                               },
-                              expression: "rawmat.restock"
+                              expression: "rawmaterial.restock"
                             }
                           })
                         ],
@@ -557,11 +523,11 @@ var render = function() {
                       attrs: { color: "primary" },
                       on: {
                         click: function($event) {
-                          return _vm.save()
+                          return _vm.store()
                         }
                       }
                     },
-                    [_vm._v("Save")]
+                    [_vm._v("Create")]
                   )
                 ],
                 1

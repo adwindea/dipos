@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Rawmat;
+use App\Models\Ingredient;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -118,9 +119,34 @@ class ProductController extends Controller
         return response()->json( array('success'=>true) );
     }
 
-    public function rawmatData(){
-        $rawmat = Rawmat::orderBy('id')->paginate(10);
+    public function rawmatData(Request $request){
+        $searchKey = $request->input('searchKey');
+        $rawmat = Rawmat::where('name', 'like', '%'.$searchKey.'%')->orderBy('name')->paginate(10);
         return response()->json($rawmat);
     }
 
+    public function getIngredient(Request $request){
+        $uuid = $request->input('uuid');
+        $product = Product::where('uuid', '=', $uuid)->first();
+        $ingredients = Ingredient::where('ingredients.product_id', '=', $product->id)
+            ->select('ingredients.quantity, rawmats.name')
+            ->leftJoin('rawmats', 'rawmats.id = ingredients.rawmat_id')
+            ->get();
+        return response()->json($ingredients);
+    }
+
+    public function insertIngredient(Request $request){
+        $product_uuid = $request->input('product_uuid');
+        $rawmat_uuid = $request->input('rawmat_uuid');
+        $product = Product::select('*')->where('uuid', '=', $product_uuid)->first();
+        $rawmat = Rawmat::select('*')->where('uuid', '=', $rawmat_uuid)->first();
+        $ingredient = Ingredient::firstOrCreate(
+            ['product_id'=>$product->id, 'rawmat_id'=>$rawmat->id]
+        );
+        $ingredient->quantity = $ingredient->quantity + 1;
+        $ingredient->user_id = Auth::user()->id;
+        $ingredient->uuid = Str::uuid();
+        $ingredient->save();
+        return response()->json( array('success'=>true) );
+    }
 }
