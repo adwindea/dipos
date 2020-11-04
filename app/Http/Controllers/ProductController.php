@@ -129,9 +129,10 @@ class ProductController extends Controller
         $uuid = $request->input('uuid');
         $product = Product::where('uuid', '=', $uuid)->first();
         $ingredients = Ingredient::where('ingredients.product_id', '=', $product->id)
-            ->select('ingredients.quantity, rawmats.name')
-            ->leftJoin('rawmats', 'rawmats.id = ingredients.rawmat_id')
-            ->get();
+            ->select('rawmats.name as name', 'ingredients.quantity as quantity', 'ingredients.uuid as uuid')
+            ->leftJoin('rawmats', 'rawmats.id', '=', 'ingredients.rawmat_id')
+            ->orderBy('rawmats.name')
+            ->paginate(10);
         return response()->json($ingredients);
     }
 
@@ -140,13 +141,29 @@ class ProductController extends Controller
         $rawmat_uuid = $request->input('rawmat_uuid');
         $product = Product::select('*')->where('uuid', '=', $product_uuid)->first();
         $rawmat = Rawmat::select('*')->where('uuid', '=', $rawmat_uuid)->first();
-        $ingredient = Ingredient::firstOrCreate(
-            ['product_id'=>$product->id, 'rawmat_id'=>$rawmat->id]
-        );
-        $ingredient->quantity = $ingredient->quantity + 1;
-        $ingredient->user_id = Auth::user()->id;
-        $ingredient->uuid = Str::uuid();
+        $ingredient = Ingredient::where('product_id', '=', $product->id)->where('rawmat_id', '=', $rawmat->id)->first();
+        if($ingredient === null){
+            $ingredient = new Ingredient(['product_id'=>$product->id]);
+            $ingredient->rawmat_id = $rawmat->id;
+            $ingredient->quantity = 1;
+            $ingredient->user_id = Auth::user()->id;
+            $ingredient->uuid = Str::uuid();
+        }else{
+            $ingredient->quantity = $ingredient->quantity + 1;
+        }
         $ingredient->save();
+        return response()->json( array('success'=>true) );
+    }
+
+    public function updateIngredient(Request $request){
+        $uuid = $request->input('uuid');
+        $quantity = $request->input('quantity');
+        $ingredient = Ingredient::where('uuid', '=', $uuid);
+        if($quantity == 0){
+            $ingredient->delete();
+        }else{
+            $ingredient->update(['quantity'=>$quantity]);
+        }
         return response()->json( array('success'=>true) );
     }
 }

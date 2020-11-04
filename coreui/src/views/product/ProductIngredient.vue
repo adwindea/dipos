@@ -7,41 +7,27 @@
                         <h4>
                             {{ product.name }} Ingredient
                         </h4>
-                        <!-- <CDataTable
-                            hover
-                            :items="items"
-                            :fields="fields"
-                            :items-per-page="10"
-                            pagination
-                        >
-                            <template #name="{item}">
-                                <td>
-                                    {{item.name}}
-                                </td>
-                            </template>
-                            <template #category="{item}">
-                                <td>
-                                    {{item.category}}
-                                </td>
-                            </template>
-                            <template #unit="{item}">
-                                <td>
-                                    {{item.unit}}
-                                </td>
-                            </template>
-                            <template #price="{item}">
-                                <td>
-                                    {{item.price}} IDR
-                                </td>
-                            </template>
-                            <template #action="{item}">
-                                <td>
-                                    <CButton color="danger" @click="deleteProduct( item.uuid )"><CIcon name="cilTrash"></CIcon></CButton>
-                                    <CButton color="warning" @click="editProduct( item.uuid )"><CIcon name="cilPencil"></CIcon></CButton>
-                                    <CButton color="success" @click="editIngredient( item.uuid )"><CIcon :content="$options.ingredientIcon"></CIcon></CButton>
-                                </td>
-                            </template>
-                        </CDataTable> -->
+                    <table class="table">
+                        <tr>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                        </tr>
+                        <tr v-for="(item, $index) in ingredients" :key="$index">
+                            <td>{{ item.name }}</td>
+                            <td>
+                                <!-- <CInput min="0" step="1" type="number" placeholder="Quantity" v-model="item.quantity"></CInput> -->
+                                <div class="input-group">
+                                    <input :id="'q'+item.uuid" type="number" placeholder="Quantity" class="form-control input-sm" v-model="item.quantity" @click="removeReadOnly(item.uuid)" readonly>
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-primary btn-sm" @click="changeQuantity(item.uuid)"><CIcon name="cilSave"></CIcon></button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <infinite-loading spinner="waveDots" :identifier="ingredientId" @infinite="infiniteHandler2">
+                            <span slot="no-more"></span>
+                        </infinite-loading>
+                    </table>
                     </CCardBody>
                 </CCard>
             </transition>
@@ -57,12 +43,12 @@
                         <tr>
                             <th>Name</th>
                             <th>Unit</th>
-                            <th>Action</th>
+                            <th class="text-center">Action</th>
                         </tr>
                         <tr v-for="(item, $index) in list" :key="$index">
                             <td>{{ item.name }}</td>
                             <td>{{ item.unit }}</td>
-                            <td>
+                            <td class="text-center">
                                 <CButton color="primary" @click="addIngredient( item.uuid )"><CIcon name="cilPlus"></CIcon></CButton>
                             </td>
                         </tr>
@@ -89,8 +75,10 @@ export default {
             list: [],
             product: [],
             page: 1,
+            page2: 1,
             searchKey: '',
             infiniteId: +new Date(),
+            ingredientId: +new Date(),
         }
     },
     methods: {
@@ -104,17 +92,16 @@ export default {
                 self.$router.push({ path: '/login' });
             });
         },
-        getIngredient(){
-            let self = this;
-            axios.get(  this.$apiAdress + '/api/product/getIngredients?token=' + localStorage.getItem("api_token") + '&uuid=' + self.$route.params.uuid )
-            .then(function (response) {
-                self.ingredients = response.data.ingredients
-            }).catch(function (error) {
-                console.log(error);
-                self.$router.push({ path: '/login' });
-            });
-
-        },
+        // getIngredient(){
+        //     let self = this;
+        //     axios.get(  this.$apiAdress + '/api/product/getIngredient?token=' + localStorage.getItem("api_token") + '&uuid=' + self.$route.params.uuid )
+        //     .then(function (response) {
+        //         self.ingredients = response.data.ingredients
+        //     }).catch(function (error) {
+        //         console.log(error);
+        //         self.$router.push({ path: '/login' });
+        //     });
+        // },
         infiniteHandler($state) {
             axios.get(this.$apiAdress + '/api/product/rawmatData?token=' + localStorage.getItem("api_token"), {
                 params: {
@@ -131,30 +118,57 @@ export default {
                 }
             });
         },
+        infiniteHandler2($state) {
+            axios.get(this.$apiAdress + '/api/product/getIngredient?token=' + localStorage.getItem("api_token"), {
+                params: {
+                    page: this.page2,
+                    uuid: this.$route.params.uuid
+                },
+            }).then(({ data }) => {
+                if (data.data.length) {
+                    this.page2 += 1;
+                    this.ingredients.push(...data.data);
+                    $state.loaded();
+                } else {
+                    $state.complete();
+                }
+            });
+        },
         changeSearch(){
             this.page = 1;
             this.list = [];
             this.infiniteId += 1;
         },
         addIngredient(uuid){
+            self = this;
             axios.post(  this.$apiAdress + '/api/product/insertIngredient?token=' + localStorage.getItem("api_token"), {
-                product_uuid: this.$route.params.uuid,
+                product_uuid: self.$route.params.uuid,
                 rawmat_uuid: uuid
             }).then(function (response) {
-                this.getIngredient()
+                self.page2 = 1;
+                self.ingredients = [];
+                self.ingredientId += 1;
             }).catch(function (error) {
-                if(error.response.data.message == 'The given data was invalid.'){
-                    // self.message = '';
-                    // for (let key in error.response.data.errors) {
-                    //     if (error.response.data.errors.hasOwnProperty(key)) {
-                    //         self.message += error.response.data.errors[key][0] + '  ';
-                    //     }
-                    // }
-                    // self.showAlert();
-                }else{
-                    console.log(error);
-                    self.$router.push({ path: 'login' });
-                }
+                console.log(error);
+                self.$router.push({ path: '/login' });
+            });
+        },
+        removeReadOnly(el){
+            document.getElementById('q'+el).removeAttribute('readonly')
+        },
+        changeQuantity(uuid){
+            self = this
+            var quantity = document.getElementById('q'+uuid).value
+            axios.post(  this.$apiAdress + '/api/product/updateIngredient?token=' + localStorage.getItem("api_token"), {
+                uuid: uuid,
+                quantity: quantity
+            }).then(function (response) {
+                self.page2 = 1;
+                self.ingredients = [];
+                self.ingredientId += 1;
+            }).catch(function (error) {
+                console.log(error);
+                self.$router.push({ path: '/login' });
             });
         }
     },
@@ -162,8 +176,8 @@ export default {
         InfiniteLoading,
     },
     mounted(){
-        this.getProduct();
-        this.getIngredient();
+        this.getProduct()
+        // this.getIngredient()
     }
 }
 </script>

@@ -159,20 +159,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -184,8 +170,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       list: [],
       product: [],
       page: 1,
+      page2: 1,
       searchKey: '',
-      infiniteId: +new Date()
+      infiniteId: +new Date(),
+      ingredientId: +new Date()
     };
   },
   methods: {
@@ -200,17 +188,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         });
       });
     },
-    getIngredient: function getIngredient() {
-      var self = this;
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.$apiAdress + '/api/product/getIngredients?token=' + localStorage.getItem("api_token") + '&uuid=' + self.$route.params.uuid).then(function (response) {
-        self.ingredients = response.data.ingredients;
-      })["catch"](function (error) {
-        console.log(error);
-        self.$router.push({
-          path: '/login'
-        });
-      });
-    },
+    // getIngredient(){
+    //     let self = this;
+    //     axios.get(  this.$apiAdress + '/api/product/getIngredient?token=' + localStorage.getItem("api_token") + '&uuid=' + self.$route.params.uuid )
+    //     .then(function (response) {
+    //         self.ingredients = response.data.ingredients
+    //     }).catch(function (error) {
+    //         console.log(error);
+    //         self.$router.push({ path: '/login' });
+    //     });
+    // },
     infiniteHandler: function infiniteHandler($state) {
       var _this = this;
 
@@ -235,31 +222,69 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
       });
     },
+    infiniteHandler2: function infiniteHandler2($state) {
+      var _this2 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.$apiAdress + '/api/product/getIngredient?token=' + localStorage.getItem("api_token"), {
+        params: {
+          page: this.page2,
+          uuid: this.$route.params.uuid
+        }
+      }).then(function (_ref2) {
+        var data = _ref2.data;
+
+        if (data.data.length) {
+          var _this2$ingredients;
+
+          _this2.page2 += 1;
+
+          (_this2$ingredients = _this2.ingredients).push.apply(_this2$ingredients, _toConsumableArray(data.data));
+
+          $state.loaded();
+        } else {
+          $state.complete();
+        }
+      });
+    },
     changeSearch: function changeSearch() {
       this.page = 1;
       this.list = [];
       this.infiniteId += 1;
     },
     addIngredient: function addIngredient(uuid) {
+      self = this;
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(this.$apiAdress + '/api/product/insertIngredient?token=' + localStorage.getItem("api_token"), {
-        product_uuid: this.$route.params.uuid,
+        product_uuid: self.$route.params.uuid,
         rawmat_uuid: uuid
       }).then(function (response) {
-        this.getIngredient();
+        self.page2 = 1;
+        self.ingredients = [];
+        self.ingredientId += 1;
       })["catch"](function (error) {
-        if (error.response.data.message == 'The given data was invalid.') {// self.message = '';
-          // for (let key in error.response.data.errors) {
-          //     if (error.response.data.errors.hasOwnProperty(key)) {
-          //         self.message += error.response.data.errors[key][0] + '  ';
-          //     }
-          // }
-          // self.showAlert();
-        } else {
-          console.log(error);
-          self.$router.push({
-            path: 'login'
-          });
-        }
+        console.log(error);
+        self.$router.push({
+          path: '/login'
+        });
+      });
+    },
+    removeReadOnly: function removeReadOnly(el) {
+      document.getElementById('q' + el).removeAttribute('readonly');
+    },
+    changeQuantity: function changeQuantity(uuid) {
+      self = this;
+      var quantity = document.getElementById('q' + uuid).value;
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(this.$apiAdress + '/api/product/updateIngredient?token=' + localStorage.getItem("api_token"), {
+        uuid: uuid,
+        quantity: quantity
+      }).then(function (response) {
+        self.page2 = 1;
+        self.ingredients = [];
+        self.ingredientId += 1;
+      })["catch"](function (error) {
+        console.log(error);
+        self.$router.push({
+          path: '/login'
+        });
       });
     }
   },
@@ -267,8 +292,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     InfiniteLoading: vue_infinite_loading__WEBPACK_IMPORTED_MODULE_1___default.a
   },
   mounted: function mounted() {
-    this.getProduct();
-    this.getIngredient();
+    this.getProduct(); // this.getIngredient()
   }
 });
 
@@ -310,7 +334,106 @@ var render = function() {
                           _vm._s(_vm.product.name) +
                           " Ingredient\n                    "
                       )
-                    ])
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "table",
+                      { staticClass: "table" },
+                      [
+                        _c("tr", [
+                          _c("th", [_vm._v("Name")]),
+                          _vm._v(" "),
+                          _c("th", [_vm._v("Quantity")])
+                        ]),
+                        _vm._v(" "),
+                        _vm._l(_vm.ingredients, function(item, $index) {
+                          return _c("tr", { key: $index }, [
+                            _c("td", [_vm._v(_vm._s(item.name))]),
+                            _vm._v(" "),
+                            _c("td", [
+                              _c("div", { staticClass: "input-group" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: item.quantity,
+                                      expression: "item.quantity"
+                                    }
+                                  ],
+                                  staticClass: "form-control input-sm",
+                                  attrs: {
+                                    id: "q" + item.uuid,
+                                    type: "number",
+                                    placeholder: "Quantity",
+                                    readonly: ""
+                                  },
+                                  domProps: { value: item.quantity },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.removeReadOnly(item.uuid)
+                                    },
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        item,
+                                        "quantity",
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  { staticClass: "input-group-append" },
+                                  [
+                                    _c(
+                                      "button",
+                                      {
+                                        staticClass: "btn btn-primary btn-sm",
+                                        attrs: { type: "submit" },
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.changeQuantity(item.uuid)
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("CIcon", {
+                                          attrs: { name: "cilSave" }
+                                        })
+                                      ],
+                                      1
+                                    )
+                                  ]
+                                )
+                              ])
+                            ])
+                          ])
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "infinite-loading",
+                          {
+                            attrs: {
+                              spinner: "waveDots",
+                              identifier: _vm.ingredientId
+                            },
+                            on: { infinite: _vm.infiniteHandler2 }
+                          },
+                          [
+                            _c("span", {
+                              attrs: { slot: "no-more" },
+                              slot: "no-more"
+                            })
+                          ]
+                        )
+                      ],
+                      2
+                    )
                   ])
                 ],
                 1
@@ -368,7 +491,9 @@ var render = function() {
                         _vm._v(" "),
                         _c("th", [_vm._v("Unit")]),
                         _vm._v(" "),
-                        _c("th", [_vm._v("Action")])
+                        _c("th", { staticClass: "text-center" }, [
+                          _vm._v("Action")
+                        ])
                       ]),
                       _vm._v(" "),
                       _vm._l(_vm.list, function(item, $index) {
@@ -379,6 +504,7 @@ var render = function() {
                           _vm._v(" "),
                           _c(
                             "td",
+                            { staticClass: "text-center" },
                             [
                               _c(
                                 "CButton",

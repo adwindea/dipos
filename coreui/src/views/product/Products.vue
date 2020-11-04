@@ -3,20 +3,25 @@
         <CCol col="12">
             <transition name="slide">
                 <CCard>
-                    <CCardBody>
+                    <CCardHeader>
                         <h4>
                             Products
                             <CButton color="primary" @click="addProduct()" class="mb-3 float-right"><CIcon name="cilPlus"></CIcon></CButton>
                         </h4>
+                    </CCardHeader>
+                    <CCardBody>
                         <CDataTable
                             hover
+                            sorter
                             :items="items"
                             :fields="fields"
-                            :items-per-page="30"
+                            :items-per-page="10"
+                            items-per-page-select
+                            :tableFilter="{ placeholder: 'Type to search'}"
                             pagination
                         >
                             <template #image="{item}">
-                                <td>
+                                <td class="text-center">
                                     <a :href="item.img" target="__blank">
                                         <img :src="item.img" style="max-height:60px;max-width:120px;" title="Click for more detail"/>
                                     </a>
@@ -43,7 +48,7 @@
                                 </td>
                             </template>
                             <template #action="{item}">
-                                <td>
+                                <td class="text-center">
                                     <CButton color="danger" @click="deleteProduct( item.uuid )"><CIcon name="cilTrash"></CIcon></CButton>
                                     <CButton color="warning" @click="editProduct( item.uuid )"><CIcon name="cilPencil"></CIcon></CButton>
                                     <CButton color="success" @click="editIngredient( item.uuid )"><CIcon :content="$options.ingredientIcon"></CIcon></CButton>
@@ -65,7 +70,13 @@ export default {
     name: 'Products',
     data () {
         return {
-            fields: ['image', 'name', 'category', 'price', 'action'],
+            fields: [
+                {key:'image', _classes:'text-center'},
+                {key:'name'},
+                {key:'category'},
+                {key:'price'},
+                {key:'action', _classes:'text-center'}
+            ],
             items: [],
             buffor: [],
         }

@@ -140,6 +140,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -147,7 +152,19 @@ __webpack_require__.r(__webpack_exports__);
   name: 'Products',
   data: function data() {
     return {
-      fields: ['image', 'name', 'category', 'price', 'action'],
+      fields: [{
+        key: 'image',
+        _classes: 'text-center'
+      }, {
+        key: 'name'
+      }, {
+        key: 'category'
+      }, {
+        key: 'price'
+      }, {
+        key: 'action',
+        _classes: 'text-center'
+      }],
       items: [],
       buffor: []
     };
@@ -222,39 +239,44 @@ var render = function() {
               _c(
                 "CCard",
                 [
+                  _c("CCardHeader", [
+                    _c(
+                      "h4",
+                      [
+                        _vm._v(
+                          "\n                        Products\n                        "
+                        ),
+                        _c(
+                          "CButton",
+                          {
+                            staticClass: "mb-3 float-right",
+                            attrs: { color: "primary" },
+                            on: {
+                              click: function($event) {
+                                return _vm.addProduct()
+                              }
+                            }
+                          },
+                          [_c("CIcon", { attrs: { name: "cilPlus" } })],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
                   _c(
                     "CCardBody",
                     [
-                      _c(
-                        "h4",
-                        [
-                          _vm._v(
-                            "\n                        Products\n                        "
-                          ),
-                          _c(
-                            "CButton",
-                            {
-                              staticClass: "mb-3 float-right",
-                              attrs: { color: "primary" },
-                              on: {
-                                click: function($event) {
-                                  return _vm.addProduct()
-                                }
-                              }
-                            },
-                            [_c("CIcon", { attrs: { name: "cilPlus" } })],
-                            1
-                          )
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
                       _c("CDataTable", {
                         attrs: {
                           hover: "",
+                          sorter: "",
                           items: _vm.items,
                           fields: _vm.fields,
-                          "items-per-page": 30,
+                          "items-per-page": 10,
+                          "items-per-page-select": "",
+                          tableFilter: { placeholder: "Type to search" },
                           pagination: ""
                         },
                         scopedSlots: _vm._u([
@@ -263,7 +285,7 @@ var render = function() {
                             fn: function(ref) {
                               var item = ref.item
                               return [
-                                _c("td", [
+                                _c("td", { staticClass: "text-center" }, [
                                   _c(
                                     "a",
                                     {
@@ -341,6 +363,7 @@ var render = function() {
                               return [
                                 _c(
                                   "td",
+                                  { staticClass: "text-center" },
                                   [
                                     _c(
                                       "CButton",
