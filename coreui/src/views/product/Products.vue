@@ -20,13 +20,6 @@
                             :tableFilter="{ placeholder: 'Type to search'}"
                             pagination
                         >
-                            <template #image="{item}">
-                                <td class="text-center">
-                                    <a :href="item.img" target="__blank">
-                                        <img :src="item.img" style="max-height:60px;max-width:120px;" title="Click for more detail"/>
-                                    </a>
-                                </td>
-                            </template>
                             <template #name="{item}">
                                 <td>
                                     {{item.name}}
@@ -45,6 +38,13 @@
                             <template #price="{item}">
                                 <td>
                                     {{item.price}} IDR
+                                </td>
+                            </template>
+                            <template #image="{item}">
+                                <td class="text-center">
+                                    <a :href="item.img" target="__blank">
+                                        <img :src="item.img" style="max-height:60px;max-width:120px;" title="Click for more detail"/>
+                                    </a>
                                 </td>
                             </template>
                             <template #action="{item}">
@@ -71,10 +71,10 @@ export default {
     data () {
         return {
             fields: [
-                {key:'image', _classes:'text-center'},
                 {key:'name'},
                 {key:'category'},
                 {key:'price'},
+                {key:'image', _classes:'text-center'},
                 {key:'action', _classes:'text-center'}
             ],
             items: [],

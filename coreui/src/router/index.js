@@ -109,6 +109,7 @@ const RawMaterials = () => import('@/views/rawmat/RawmatIndex')
 const CreateRawMaterial = () => import('@/views/rawmat/CreateRawMaterial')
 const DeleteRawMaterial = () => import('@/views/rawmat/DeleteRawMaterial')
 const EditRawMaterial = () => import('@/views/rawmat/EditRawMaterial')
+const RestockRawMaterial = () => import('@/views/rawmat/RestockRawMaterial')
 
 //Category
 const Categories = () => import('@/views/category/Categories')
@@ -261,6 +262,15 @@ function configRoutes () {
               meta:{
                 requiresAdmin: true
               }
+            },
+            {
+                path: ':uuid/restock',
+                meta: { label: 'Restock Raw Material' },
+                name: 'RestockRawMaterial',
+                component: RestockRawMaterial,
+                meta:{
+                    requiresAdmin: true
+                }
             }
           ]
         },

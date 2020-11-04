@@ -1,7 +1,7 @@
 <template>
   <CChartBar
     :datasets="defaultDatasets"
-    labels="months"
+    :labels="['a', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']"
   />
 </template>
 

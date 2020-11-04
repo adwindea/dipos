@@ -20,13 +20,6 @@
                             :tableFilter="{ placeholder: 'Type to search'}"
                             pagination
                         >
-                            <template #image="{item}">
-                                <td>
-                                    <a :href="item.img" target="_blank">
-                                        <img :src="item.img" style="max-height:60px;max-width:120px;" title="Click for more detail"/>
-                                    </a>
-                                </td>
-                            </template>
                             <template #name="{item}">
                                 <td>
                                     {{item.name}}
@@ -52,15 +45,23 @@
                                     {{item.price}} IDR
                                 </td>
                             </template>
-                            <template #restock_notif="{item}">
-                                <td>
+                            <template #restock="{item}">
+                                <td class="text-center">
                                     <CIcon v-if="item.restock_notif == 1" :content="$options.checkIcon"/>
                                 </td>
                             </template>
+                            <template #image="{item}">
+                                <td class="text-center">
+                                    <a :href="item.img" target="_blank">
+                                        <img :src="item.img" style="max-height:60px;max-width:120px;" title="Click for more detail"/>
+                                    </a>
+                                </td>
+                            </template>
                             <template #action="{item}">
-                                <td>
+                                <td class="text-center">
                                     <CButton color="danger" @click="deleteRawmat( item.uuid )"><CIcon name="cilTrash"></CIcon></CButton>
                                     <CButton color="warning" @click="editRawmat( item.uuid )"><CIcon name="cilPencil"></CIcon></CButton>
+                                    <CButton color="success" @click="restockRawmat( item.uuid )"><CIcon name="cilLoopCircular"></CIcon></CButton>
                                 </td>
                             </template>
                         </CDataTable>
@@ -79,7 +80,16 @@ export default {
     name: 'RawmatIndex',
     data () {
         return {
-            fields: ['image', 'name', 'stock', 'limit', 'unit', 'price', 'restock_notif', 'action'],
+            fields: [
+                {key:'name'},
+                {key:'stock'},
+                {key:'limit'},
+                {key:'unit'},
+                {key:'price'},
+                {key:'restock'},
+                {key:'image', _classes:'text-center'},
+                {key:'action', _classes:'text-center'}
+            ],
             items: [],
             buffor: [],
         }
@@ -104,6 +114,9 @@ export default {
         },
         editRawmat(uuid){
             this.$router.push({path: `rawmat/${uuid.toString()}/edit`});
+        },
+        restockRawmat(uuid){
+            this.$router.push({path: `rawmat/${uuid.toString()}/restock`});
         },
     },
     mounted(){

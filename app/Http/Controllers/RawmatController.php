@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Rawmat;
+use App\Models\RawmatLog;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -127,4 +128,31 @@ class RawmatController extends Controller
         return response()->json( array('success'=>true) );
     }
 
+    public function restock(Request $request){
+        $rawmat_uuid = $request->input('uuid');
+        $restock_quantity = $request->input('quantity');
+        $price_total = $request->input('price_total');
+        $note = $request->input('note');
+
+        $rawmat = Rawmat::where('uuid', '=', $rawmat_uuid)->first();
+
+        $restock = new RawmatLog;
+        $restock->rawmat_id = $rawmat->id;
+        $restock->status = 2;
+        $restock->quantity = $restock_quantity;
+        $restock->price_total = $price_total;
+        $restock->note = $note;
+        $restock->user_id = Auth::user()->id;
+        $restock->uuid = Str::uuid();
+        $restock->save();
+
+        $current_price = $rawmat->stock*$rawmat->price;
+        $end_stock = $rawmat->stock + $restock_quantity;
+        $end_price = ($current_price+$price_total)/$end_stock;
+        $rawmat->stock = $end_stock;
+        $rawmat->price = $end_price;
+        $rawmat->save();
+
+        return response()->json( array('success'=>true) );
+    }
 }

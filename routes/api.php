@@ -81,6 +81,7 @@ Route::group(['middleware' => 'api'], function ($router) {
             Route::post('/update',  'RawmatController@update')->name('rawmat.update');
             Route::get('/delete',   'RawmatController@delete')->name('rawmat.delete');
             Route::get('/show',     'RawmatController@show')->name('rawmat.show');
+            Route::post('/restock', 'RawmatController@restock')->name('rawmat.restock');
         });
         Route::prefix('category')->group(function () {
             Route::get('/',         'CategoryController@index')->name('category.index');
