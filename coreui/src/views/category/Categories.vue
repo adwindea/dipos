@@ -3,32 +3,39 @@
         <CCol col="12">
             <transition name="slide">
                 <CCard>
+                    <CCardHeader>
+                        <h4>
+                            Category
+                            <CButton color="primary" @click="addCategory()" class="mb-3 float-right"><CIcon name="cilPlus"></CIcon></CButton>
+                        </h4>
+                    </CCardHeader>
                     <CCardBody>
-                        <h4>Raw Material</h4>
-                        <CButton color="primary" @click="addCategory()" class="mb-3 float-right">Add</CButton>
                         <CDataTable
+                            sorter
                             hover
                             :items="items"
                             :fields="fields"
-                            :items-per-page="30"
+                            :items-per-page="10"
+                            items-per-page-select
+                            :tableFilter="{ placeholder: 'Type to search'}"
                             pagination
                         >
-                            <template #image="{item}">
+                            <template #name="{item}">
                                 <td>
+                                    {{item.name}}
+                                </td>
+                            </template>
+                            <template #image="{item}">
+                                <td class="text-center">
                                     <a :href="item.img" target="_blank">
                                         <img :src="item.img" style="max-height:60px;max-width:120px;" title="Click for more detail"/>
                                     </a>
                                 </td>
                             </template>
-                            <template #category_name="{item}">
-                                <td>
-                                    {{item.name}}
-                                </td>
-                            </template>
                             <template #action="{item}">
-                                <td>
-                                    <CButton color="danger" @click="deleteCategory( item.uuid )">Delete</CButton>
-                                    <CButton color="warning" @click="editCategory( item.uuid )">Edit</CButton>
+                                <td class="text-center">
+                                    <CButton color="danger" @click="deleteCategory( item.uuid )"><CIcon name="cilTrash"></CIcon></CButton>
+                                    <CButton color="warning" @click="editCategory( item.uuid )"><CIcon name="cilPencil"></CIcon></CButton>
                                 </td>
                             </template>
                         </CDataTable>
@@ -45,7 +52,11 @@ export default {
     name: 'Categories',
     data () {
         return {
-            fields: ['image', 'category_name', 'action'],
+            fields: [
+                {key:'name'},
+                {key:'image', _classes:'text-center'},
+                {key:'action', _classes:'text-center'}
+            ],
             items: [],
             buffor: [],
         }

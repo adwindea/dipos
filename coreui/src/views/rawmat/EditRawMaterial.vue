@@ -37,9 +37,9 @@
                             />
                         </CCol>
                         <CCol col=6>
-                            <CInput
-                                label="Image"
-                                type="file"
+                            <label for="berkas">Image</label>
+                            <CInputFile
+                                custom
                                 id="berkas"
                                 @change="generateBase64()"
                             />

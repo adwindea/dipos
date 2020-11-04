@@ -3,14 +3,21 @@
         <CCol col="12">
             <transition name="slide">
                 <CCard>
+                    <CCardHeader>
+                        <h4>
+                            Raw Material
+                            <CButton color="primary" @click="addRawmat()" class="mb-3 float-right"><CIcon name="cilPlus"></CIcon></CButton>
+                        </h4>
+                    </CCardHeader>
                     <CCardBody>
-                        <h4>Raw Material</h4>
-                        <CButton color="primary" @click="addRawmat()" class="mb-3 float-right">Add</CButton>
                         <CDataTable
                             hover
+                            sorter
                             :items="items"
                             :fields="fields"
-                            :items-per-page="30"
+                            :items-per-page="10"
+                            items-per-page-select
+                            :tableFilter="{ placeholder: 'Type to search'}"
                             pagination
                         >
                             <template #image="{item}">
@@ -52,8 +59,8 @@
                             </template>
                             <template #action="{item}">
                                 <td>
-                                    <CButton color="danger" @click="deleteRawmat( item.uuid )">Delete</CButton>
-                                    <CButton color="warning" @click="editRawmat( item.uuid )">Edit</CButton>
+                                    <CButton color="danger" @click="deleteRawmat( item.uuid )"><CIcon name="cilTrash"></CIcon></CButton>
+                                    <CButton color="warning" @click="editRawmat( item.uuid )"><CIcon name="cilPencil"></CIcon></CButton>
                                 </td>
                             </template>
                         </CDataTable>
