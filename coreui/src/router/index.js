@@ -124,6 +124,8 @@ const DeleteProduct = () => import('@/views/product/DeleteProduct')
 const EditProduct = () => import('@/views/product/EditProduct')
 const ProductIngredient = () => import('@/views/product/ProductIngredient')
 
+//Order
+const Order = () => import('@/views/order/Order')
 
 
 Vue.use(Router)
@@ -368,6 +370,15 @@ function configRoutes () {
                 }
             }
           ]
+        },
+        {
+            path: 'order',
+            meta: { label: 'Order' },
+            name: 'Order',
+            component: Order,
+            meta:{
+                requiresUser: true
+            }
         },
         {
           path: 'menu',

@@ -111,5 +111,12 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::get('/roles/move/move-up',      'RolesController@moveUp')->name('roles.up');
         Route::get('/roles/move/move-down',    'RolesController@moveDown')->name('roles.down');
     });
+
+    Route::prefix('order')->group(function () {
+        Route::get('/',         'OrderController@index')->name('order.index');
+        Route::get('/orderItems', 'OrderController@orderItems')->name('order.orderItems');
+        Route::post('/saveQuantity', 'OrderController@saveQuantity')->name('order.saveQuantity');
+    });
+
 });
 
