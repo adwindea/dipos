@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderLog;
 use App\Models\RawmatLog;
+use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,19 @@ class OrderController extends Controller
         ));
     }
 
+    public function saveOrder(Request $request){
+        $uuid = $request->input('uuid');
+        $customer_name = $request->input('customer_name');
+        $customer_email = $request->input('customer_email');
+        $note = $request->input('note');
+        $order = Order::where('uuid', '=', $uuid)->first();
+        $order->customer_name = $customer_name;
+        $order->customer_email = $customer_email;
+        $order->note = $note;
+        $order->save();
+        return response()->json( array('success'=>true) );
+    }
+
     public function orderItems(Request $request){
         $uuid = $request->input('uuid');
         $order = Order::where('uuid', '=', $uuid)->first();
@@ -61,4 +75,16 @@ class OrderController extends Controller
         //update rawmatlog
         return response()->json( array('success'=>true) );
     }
+
+    public function listItems(Request $request){
+        $searchkey = $request->input('searchkey');
+        $product = Product::where('name', 'like', '%'.$searchkey.'%')->paginate(12);
+        if(!empty($product)){
+            foreach($product as $key => $value){
+                $product[$key]['price'] = number_format($value['price'], 0, '', '.');
+            }
+        }
+        return response()->json( $product );
+    }
+
 }

@@ -114,8 +114,11 @@ Route::group(['middleware' => 'api'], function ($router) {
 
     Route::prefix('order')->group(function () {
         Route::get('/',         'OrderController@index')->name('order.index');
+        Route::post('/saveOrder', 'OrderController@saveOrder')->name('order.saveOrder');
         Route::get('/orderItems', 'OrderController@orderItems')->name('order.orderItems');
         Route::post('/saveQuantity', 'OrderController@saveQuantity')->name('order.saveQuantity');
+        Route::get('/listItems', 'OrderController@listItems')->name('order.listItems');
+
     });
 
 });
