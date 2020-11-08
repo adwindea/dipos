@@ -91,7 +91,7 @@
                                 </CInput>
                             </CCol>
                             <!-- <div> -->
-                                <CCol  md="6" lg="4" xl="3" v-for="(item, $index) in items" :key="$index">
+                                <CCol  md="6" lg="4" xl="4" v-for="(item, $index) in items" :key="$index">
                                     <div class="pc-wrapper">
                                         <div class="pc-container">
                                             <div class="top" v-bind:style="{height: '80%', width:'100%',
@@ -288,19 +288,8 @@ export default {
                 }
             )
             .then(function (response) {
-
-            }).catch(function (error) {
-                if(error.response.data.message == 'The given data was invalid.'){
-                    for (let key in error.response.data.errors) {
-                        if (error.response.data.errors.hasOwnProperty(key)) {
-                        self.message += error.response.data.errors[key][0] + '  ';
-                        }
-                    }
-                }else{
-                    console.log(error);
-                    self.$router.push({ path: 'login' });
-                }
-            });
+                self.resetOrderItem()
+            })
         },
         openCart(){
             this.orderCollapse = !this.orderCollapse
@@ -317,7 +306,18 @@ export default {
             this.saveQuantity(index);
         },
         addClick(uuid){
+            let self = this
             document.getElementById('click'+uuid).classList.add('clicked');
+            axios.post(  this.$apiAdress + '/api/order/addOrderItem?token=' + localStorage.getItem("api_token"),
+                {
+                    uuid: uuid,
+                    order_uuid: self.order.uuid
+                }
+            )
+            .then(function (response) {
+                self.resetOrderItem()
+            })
+
         },
         removeClick(uuid){
             document.getElementById('click'+uuid).classList.remove('clicked');

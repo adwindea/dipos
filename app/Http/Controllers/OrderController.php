@@ -69,9 +69,13 @@ class OrderController extends Controller
         $uuid = $request->input('uuid');
         $quantity = $request->input('quantity');
         $orderlog = OrderLog::where('uuid', '=', $uuid)->first();
-        $old_qty = $orderlog->quantity;
-        $orderlog->quantity = $quantity;
-        $orderlog->save();
+        if($quantity == 0){
+            $orderlog->delete();
+        }else{
+            $old_qty = $orderlog->quantity;
+            $orderlog->quantity = $quantity;
+            $orderlog->save();
+        }
         //update rawmatlog
         return response()->json( array('success'=>true) );
     }
@@ -87,4 +91,23 @@ class OrderController extends Controller
         return response()->json( $product );
     }
 
+    public function addOrderItem(Request $request){
+        $uuid = $request->input('uuid');
+        $order_uuid = $request->input('order_uuid');
+        $product = Product::where('uuid', '=', $uuid)->first();
+        $order = Order::where('uuid', '=', $order_uuid)->first();
+        $orderlog = OrderLog::where('product_id', '=', $product->id)
+        ->where('order_id', '=', $order->id)
+        ->first();
+        if(empty($orderlog)){
+            $orderlog = new OrderLog();
+            $orderlog->product_id = $product->id;
+            $orderlog->order_id = $order->id;
+            $orderlog->quantity = 1;
+            $orderlog->user_id = Auth::user()->id;
+            $orderlog->uuid = Str::uuid();
+            $orderlog->save();
+        }
+        return response()->json( array('success'=>true) );
+    }
 }
