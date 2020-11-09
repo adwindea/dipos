@@ -7,10 +7,10 @@
             <CCardHeader>
               <CIcon name="cil-justify-center"/> Bootstrap Modals
               <div class="card-header-actions">
-                <a 
-                  href="https://coreui.io/vue/docs/components/modal" 
-                  class="card-header-action" 
-                  rel="noreferrer noopener" 
+                <a
+                  href="https://coreui.io/vue/docs/components/modal"
+                  class="card-header-action"
+                  rel="noreferrer noopener"
                   target="_blank"
                 >
                   <small class="text-muted">docs</small>
@@ -62,6 +62,9 @@
       consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
       cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
       proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      <footer slot="footer">
+          asdasdasd
+      </footer>
     </CModal>
     <CModal
       title="Modal title"

@@ -15,6 +15,7 @@ class CreateRawmatLogsTable extends Migration
     {
         Schema::create('rawmat_logs', function (Blueprint $table) {
             $table->id();
+            $table->boolean('saved')->default(false);
             $table->tinyInteger('status')->nullable()->comment('1:Sell/Out, 2:Restock/In');
             $table->decimal('quantity', 20, 4)->nullable();
             $table->decimal('price_total', 20, 4)->nullable();

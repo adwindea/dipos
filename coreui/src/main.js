@@ -6,7 +6,7 @@ import CoreuiVue from '@coreui/vue'
 import { iconsSet as icons } from './assets/icons/icons.js'
 import store from './store'
 
-Vue.prototype.$apiAdress = 'https://dipos.herokuapp.com'
+Vue.prototype.$apiAdress = 'http://127.0.0.1:8080'
 Vue.config.performance = true
 Vue.use(CoreuiVue)
 

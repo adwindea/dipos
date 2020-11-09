@@ -1,5 +1,5 @@
 .pc-wrapper{
-    width: 180px;
+    width: 13.5vw;
     height: 300px;
     background: white;
     margin: auto;
@@ -17,9 +17,9 @@
     .pc-container{
       width:100%;
       height:100%;
-      .top{
+    //   .top{
 
-      }
+    //   }
       .bottom{
         width: 200%;
         height: 20%;
@@ -175,13 +175,26 @@
       }
     }
   }
-  @media screen and (max-width: 1175px) {
+  @media screen and (max-width: 1200px) {
     .pc-wrapper {
-        width: 160px;
+        width: 180px;
     }
 }
-@media screen and (max-width: 1080px) {
-    .pc-wrapper {
-        width: 150px;
+@media print {
+    body * {
+      visibility: hidden;
     }
-}
+    #printable, #printable * {
+      visibility: visible;
+    }
+    #printable {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+// @media screen and (max-width: 1080px) {
+//     .pc-wrapper {
+//         max-width: 150px;
+//     }
+// }

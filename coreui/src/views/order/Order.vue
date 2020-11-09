@@ -5,6 +5,28 @@
 <template>
     <CRow>
         <CCol col="12">
+            <CModal
+            title="Print Receipt"
+            :show.sync="printModal"
+            >
+                <div id="printable">
+                    <table>
+                        <tr>
+                            <th>asd</th>
+                            <th>asd</th>
+                            <th>asd</th>
+                        </tr>
+                        <tr>
+                            <td>123</td>
+                            <td>123</td>
+                            <td>123</td>
+                        </tr>
+                    </table>
+                </div>
+                <footer slot="footer">
+                    <CButton color="warning" class="text-center" @click="printReceipt()">Print</CButton>
+                </footer>
+            </CModal>
             <transition name="slide">
                 <CRow>
                     <CCol col="5">
@@ -38,30 +60,35 @@
                                             <table class="table">
                                                 <tr>
                                                     <th>Item</th>
-                                                    <th class="text-center">Qty</th>
+                                                    <th class="text-center" style="width:125px">Qty</th>
                                                     <th class="text-center">Total</th>
                                                 </tr>
                                                 <tr v-for="(item, $index) in order_items" :key="$index">
                                                     <td>{{ item.name }}</td>
-                                                    <td class="text-center">
+                                                    <td>
                                                         <CInput
                                                             size="sm"
                                                             type="number"
                                                             placeholder="Qty"
-                                                            class="filter-number text-center"
+                                                            addInputClasses="text-center"
                                                             v-model.number="item.quantity"
                                                             @keyup="saveQuantity($index)"
                                                             @blur="saveQuantity($index)"
+                                                            v-bind:readonly="item.saved"
                                                             >
-                                                            <template #prepend>
+                                                            <template #prepend v-if="!item.saved">
                                                                 <CButton size="sm" color="danger" @click="minusQuantity($index)"><CIcon name="cilMinus" height="14"/></CButton>
                                                             </template>
-                                                            <template #append>
+                                                            <template #append v-if="!item.saved">
                                                                 <CButton size="sm" color="success" @click="plusQuantity($index)"><CIcon name="cilPlus" height="14"/></CButton>
                                                             </template>
                                                         </CInput>
                                                     </td>
                                                     <td class="text-center">{{ item.quantity*item.price }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan="2" >Total</th>
+                                                    <th class="text-center">{{ order.price_total }}</th>
                                                 </tr>
                                                 <infinite-loading spinner="waveDots" :identifier="orderInfId" @infinite="getOrderItems">
                                                     <span slot="no-more"></span>
@@ -71,8 +98,10 @@
                                     </CCollapse>
                                 </CCard>
                             </CCardBody>
-                            <CCardFooter>
-                                <CButton color="primary" class="float-right" @click="submitOrder( order.uuid )">Submit Order</CButton>
+                            <CCardFooter align='center'>
+                                <CButton color="danger" @click="closeOrder( order.uuid )">Close</CButton>
+                                <CButton color="warning" @click="printModal = true">Print</CButton>
+                                <CButton color="primary" @click="saveOrder( order.uuid )">Save</CButton>
                             </CCardFooter>
                         </CCard>
                     </CCol>
@@ -91,7 +120,7 @@
                                 </CInput>
                             </CCol>
                             <!-- <div> -->
-                                <CCol  md="6" lg="4" xl="4" v-for="(item, $index) in items" :key="$index">
+                                <CCol  md="6" lg="4" xl="3" v-for="(item, $index) in items" :key="$index">
                                     <div class="pc-wrapper">
                                         <div class="pc-container">
                                             <div class="top" v-bind:style="{height: '80%', width:'100%',
@@ -172,6 +201,7 @@ export default {
             itemSearch: '',
             itemPage: 1,
             itemInfId: +new Date(),
+            printModal: false,
         }
     },
     methods: {
@@ -231,7 +261,6 @@ export default {
             }
         },
         getListItems($state) {
-            console.log('a')
             let self = this
             axios.get(this.$apiAdress + '/api/order/listItems?token=' + localStorage.getItem("api_token"), {
                 params: {
@@ -288,7 +317,9 @@ export default {
                 }
             )
             .then(function (response) {
-                self.resetOrderItem()
+                if(response.data.reload){
+                    self.resetOrderItem()
+                }
             })
         },
         openCart(){
@@ -306,8 +337,8 @@ export default {
             this.saveQuantity(index);
         },
         addClick(uuid){
-            let self = this
             document.getElementById('click'+uuid).classList.add('clicked');
+            let self = this
             axios.post(  this.$apiAdress + '/api/order/addOrderItem?token=' + localStorage.getItem("api_token"),
                 {
                     uuid: uuid,
@@ -317,12 +348,23 @@ export default {
             .then(function (response) {
                 self.resetOrderItem()
             })
-
         },
         removeClick(uuid){
             document.getElementById('click'+uuid).classList.remove('clicked');
+            let self = this
+            axios.post(  this.$apiAdress + '/api/order/removeOrderItem?token=' + localStorage.getItem("api_token"),
+                {
+                    uuid: uuid,
+                    order_uuid: self.order.uuid
+                }
+            )
+            .then(function (response) {
+                self.resetOrderItem()
+            })
         },
-
+        printReceipt(){
+            window.print()
+        },
     },
     components:{
         InfiniteLoading,

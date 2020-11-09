@@ -15,6 +15,7 @@ class CreateOrderLogsTable extends Migration
     {
         Schema::create('order_logs', function (Blueprint $table) {
             $table->id();
+            $table->boolean('saved')->default(false);
             $table->decimal('quantity', 20, 4)->nullable();
             $table->bigInteger('product_id')->nullable();
             $table->bigInteger('order_id')->nullable();
