@@ -119,6 +119,7 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::post('/addOrderItem', 'OrderController@addOrderItem')->name('order.addOrderItem');
         Route::post('/removeOrderItem', 'OrderController@removeOrderItem')->name('order.removeOrderItem');
         Route::post('/saveQuantity', 'OrderController@saveQuantity')->name('order.saveQuantity');
+        Route::get('/getCategories', 'OrderController@getCategories')->name('order.getCategories');
         Route::get('/listItems', 'OrderController@listItems')->name('order.listItems');
 
     });

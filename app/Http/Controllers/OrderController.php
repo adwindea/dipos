@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderLog;
 use App\Models\RawmatLog;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\Ingredient;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -52,9 +53,26 @@ class OrderController extends Controller
         return response()->json( array('success'=>true) );
     }
 
+    public function getCategories(){
+        $categories = Category::select('categories.name as label', 'categories.uuid as value')->get();
+        $categories->push(['label'=>'All Categories', 'value'=>'']);
+        return response()->json([
+            'categories' => $categories,
+        ]);
+    }
+
     public function listItems(Request $request){
         $searchkey = $request->input('searchkey');
-        $product = Product::where('name', 'like', '%'.$searchkey.'%')->paginate(12);
+        $categorykey = $request->input('searchcategory');
+        $product = '';
+        if($categorykey != ''){
+            $category = Category::where('uuid', '=', $categorykey)->first();
+            $product = Product::where('name', 'like', '%'.$searchkey.'%')->where('category_id', '=', $category->id)->paginate(12);
+        }else{
+            $product = Product::where('name', 'like', '%'.$searchkey.'%')->paginate(12);
+        }
+        // $product;
+        // echo var_dump($product);
         if(!empty($product)){
             foreach($product as $key => $value){
                 $product[$key]['price'] = number_format($value['price'], 0, '', '.');
@@ -85,15 +103,23 @@ class OrderController extends Controller
 
     public function saveQuantity(Request $request){
         $uuid = $request->input('uuid');
+        $order_uuid = $request->input('order_uuid');
         $quantity = $request->input('quantity');
         $orderlog = OrderLog::where('uuid', '=', $uuid)->first();
+        $order = Order::where('uuid', '=', $order_uuid)->first();
+        $product = Product::where('id', '=', $orderlog->product_id)->first();
         $reload = false;
         if($quantity == 0){
+            $order->price_total = $order->price_total - ($product->price*$orderlog->quantity);
+            $order->save();
             $orderlog->delete();
             $rawmatlog = RawmatLog::where('order_log_id', '=', $orderlog->id)->delete();
             $reload = true;
         }else{
             $old_qty = $orderlog->quantity;
+            $div = $quantity - $old_qty;
+            $order->price_total = $order->price_total + ($product->price*$div);
+            $order->save();
             $orderlog->quantity = $quantity;
             $orderlog->save();
             $ingredient = Ingredient::where('product_id', '=', $orderlog->product_id)->get();
@@ -111,7 +137,8 @@ class OrderController extends Controller
                 }
             }
         }
-        return response()->json( array('success'=>true, 'reload'=>$reload) );
+        $order->price_total = number_format($order->price_total, 0, '', '.');
+        return response()->json( array('success'=>true, 'reload'=>$reload, 'order'=>$order) );
     }
 
     public function addOrderItem(Request $request){
@@ -155,7 +182,8 @@ class OrderController extends Controller
                 }
             }
         }
-        return response()->json( array('success'=>true) );
+        $order->price_total = number_format($order->price_total, 0, '', '.');
+        return response()->json( array('success'=>true, 'order'=>$order) );
     }
     public function removeOrderItem(Request $request){
         $uuid = $request->input('uuid');
@@ -167,9 +195,9 @@ class OrderController extends Controller
         ->where('saved', false)
         ->first();
         if(!empty($orderlog)){
-            $orderlog->delete();
-            $order->price_total = $order->price_total - $product->price;
+            $order->price_total = $order->price_total - ($product->price*$orderlog->quantity);
             $order->save();
+            $orderlog->delete();
         }
         $ingredient = Ingredient::where('product_id', '=', $product->id)->get();
         if(!empty($ingredient)){
@@ -184,6 +212,7 @@ class OrderController extends Controller
                 }
             }
         }
-        return response()->json( array('success'=>true) );
+        $order->price_total = number_format($order->price_total, 0, '', '.');
+        return response()->json( array('success'=>true, 'order'=>$order) );
     }
 }

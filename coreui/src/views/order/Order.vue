@@ -141,7 +141,15 @@
                             </CCol>
                         </CRow> -->
                         <CRow>
-                            <CCol col="12">
+                            <CCol col="6">
+                                <CSelect
+                                    :value.sync="categorySearch"
+                                    :plain="true"
+                                    :options="categories"
+                                    @change="resetListItem()"
+                                />
+                            </CCol>
+                            <CCol col="6">
                                 <CInput placeholder="Search" v-model="itemSearch" @keyup="resetListItem()">
                                     <template #append-content><CIcon name="cilMagnifyingGlass"/></template>
                                 </CInput>
@@ -221,11 +229,13 @@ export default {
             order_items: [],
             total_price: '',
             items: [],
+            categories: [],
             detailCollapse: false,
             orderCollapse: true,
             orderPage: 1,
             orderInfId: +new Date(),
             itemSearch: '',
+            categorySearch: '',
             itemPage: 1,
             itemInfId: +new Date(),
             printModal: false,
@@ -292,7 +302,8 @@ export default {
             axios.get(this.$apiAdress + '/api/order/listItems?token=' + localStorage.getItem("api_token"), {
                 params: {
                     page: self.itemPage,
-                    searchkey: self.itemSearch
+                    searchkey: self.itemSearch,
+                    searchcategory: self.categorySearch
                 },
             }).then(({ data }) => {
                 if (data.data.length) {
@@ -302,6 +313,16 @@ export default {
                 } else {
                     $state.complete();
                 }
+            });
+        },
+        getCategories (){
+            let self = this;
+            axios.get(  this.$apiAdress + '/api/order/getCategories?token=' + localStorage.getItem("api_token"))
+            .then(function (response) {
+                self.categories = response.data.categories;
+            }).catch(function (error) {
+                console.log(error);
+                self.$router.push({ path: '/login' });
             });
         },
         resetOrderItem(){
@@ -341,9 +362,11 @@ export default {
                 {
                     uuid: uuid,
                     quantity: quantity,
+                    order_uuid: self.order.uuid
                 }
             )
             .then(function (response) {
+                self.order = response.data.order
                 if(response.data.reload){
                     self.resetOrderItem()
                 }
@@ -373,6 +396,7 @@ export default {
                 }
             )
             .then(function (response) {
+                self.order = response.data.order
                 self.resetOrderItem()
             })
         },
@@ -386,6 +410,7 @@ export default {
                 }
             )
             .then(function (response) {
+                self.order = response.data.order
                 self.resetOrderItem()
             })
         },
@@ -398,6 +423,7 @@ export default {
     },
     mounted(){
         this.getOrderDetail();
+        this.getCategories();
     }
 }
 </script>
