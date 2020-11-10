@@ -180,19 +180,6 @@
         width: 180px;
     }
 }
-@media print {
-    body * {
-      visibility: hidden;
-    }
-    #printable, #printable * {
-      visibility: visible;
-    }
-    #printable {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
-  }
 // @media screen and (max-width: 1080px) {
 //     .pc-wrapper {
 //         max-width: 150px;
