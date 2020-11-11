@@ -146,8 +146,9 @@ class MenusTableSeeder extends Seeder
         //     $this->insertLink('admin', 'BREAD',    '/bread');
         //     $this->insertLink('admin', 'Email',    '/email');
         // $this->endDropdown();
-        $this->insertLink('user,admin', 'Order', '/order', 'cil-dinner');
-        $this->insertLink('user,admin', 'Transaction', '/transaction', 'cil-cart');
+        $this->insertLink('user,admin', 'Order', '/order/create', 'cil-dinner');
+        $this->insertLink('user,admin', 'Transaction', '/order', 'cil-cart');
+        $this->insertLink('admin', 'Promotions', '/promotions', 'cil-tag');
 
         $this->insertTitle('admin', 'Data');
             $this->insertLink('admin', 'Raw Materials', '/rawmat', 'cil-gift');

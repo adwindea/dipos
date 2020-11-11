@@ -11,11 +11,10 @@
             :show.sync="printModal"
             >
                 <div class="ticket">
-            <!-- <img src="./logo.png" alt="Logo"> -->
-            <p class="centered">ini logo</p>
-            <p class="centered">TIMUR KOPI
-                <br>Address line 1
-                <br>Address line 2</p>
+            <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" alt="Logo">
+            <p class="centered">
+                <br>Jl. Buntu
+                <br>Makassar</p>
             <table>
                 <thead>
                     <tr>
@@ -33,7 +32,7 @@
                 </tbody>
             </table>
             <p class="centered">Thanks for your purchase!
-                <br>something</p>
+                <br>Footer</p>
         </div>
                 <footer slot="footer">
                     <CButton color="warning" class="text-center" @click="printReceipt()">Print</CButton>
@@ -73,6 +72,13 @@
                                                 :value.sync="order.payment_type"
                                                 :plain="true"
                                                 :options="payment_type"
+                                                @change="saveDetail()"
+                                            />
+                                            <CSelect
+                                                label="Promo"
+                                                :value.sync="order.promotion_id"
+                                                :plain="true"
+                                                :options="promotions"
                                                 @change="saveDetail()"
                                             />
                                         </CCardBody>
@@ -235,6 +241,7 @@ export default {
             total_price: '',
             items: [],
             categories: [],
+            promotions: [],
             payment_type: [
                 {label: 'Cash', value:0},
                 {label: 'QRIS', value:1},

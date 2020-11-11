@@ -13,6 +13,7 @@
         :height="35"
         :viewBox="`0 0 ${minimize ? 110 : 556} 134`"
       />
+        <!-- <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" style="height:35px"> -->
     </CSidebarBrand>
     <CRenderFunction flat :content-to-render="nav"/>
     <CSidebarMinimizer
