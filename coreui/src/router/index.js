@@ -125,8 +125,9 @@ const EditProduct = () => import('@/views/product/EditProduct')
 const ProductIngredient = () => import('@/views/product/ProductIngredient')
 
 //Order
-const Order = () => import('@/views/order/Order')
-
+const Orders = () => import('@/views/order/Orders')
+const CreateOrder = () => import('@/views/order/CreateOrder')
+const EditOrder = () => import('@/views/order/EditOrder')
 
 Vue.use(Router)
 
@@ -374,11 +375,36 @@ function configRoutes () {
         {
             path: 'order',
             meta: { label: 'Order' },
-            name: 'Order',
-            component: Order,
-            meta:{
-                requiresUser: true
-            }
+            component: {
+                render (c) { return c('router-view')}
+            },
+            children: [
+                {
+                    path: '',
+                    component: Orders,
+                    meta: {
+                        requiresUser: true
+                    }
+                },
+                {
+                    path: 'create',
+                    meta: { label: 'Create Order' },
+                    name: 'CreateOrder',
+                    component: CreateOrder,
+                    meta:{
+                      requiresUser: true
+                    }
+                },
+                {
+                    path: ':uuid/edit',
+                    meta: { label: 'Edit Order' },
+                    name: 'EditOrder',
+                    component: EditOrder,
+                    meta:{
+                      requiresUser: true
+                    }
+                }
+            ]
         },
         {
           path: 'menu',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\Rawmat;
 use App\Models\OrderLog;
 use App\Models\RawmatLog;
 use App\Models\Product;
@@ -22,17 +23,39 @@ class OrderController extends Controller
     }
 
     public function index(){
-        $prefix = date('yWN');
+        $orders = Order::where('status', '>', 0)->get();
+        if(!empty($orders)){
+            foreach($orders as $key => $value){
+                $orders[$key]['price_total'] = number_format($value['price_total'], 0, '', '.');
+                $orders[$key]['discount'] = number_format($value['discount'], 0, '', '.');
+                $orders[$key]['final_price'] = number_format($value['final_price'], 0, '', '.');
+            }
+        }
+        return response()->json( array( 'orders'  => $orders ) );
+    }
+
+    public function create(){
+        $prefix = date('ymd');
         $order = Order::where('order_number', 'like', $prefix.'%')
-        ->where('status', '=', 0)
+        // ->where('status', '>', 0)
         ->orderByDesc('id')
         ->first();
         if(empty($order)){
+            $num = $prefix.'001';
             $order = new Order();
-            $order->order_number = $prefix.'0001';
+            $order->order_number = $num;
             $order->user_id = Auth::user()->id;
             $order->uuid = Str::uuid();
             $order->save();
+        }else{
+            if($order->status > 0){
+                $num = $order->order_number + 1;
+                $order = new Order();
+                $order->order_number = $num;
+                $order->user_id = Auth::user()->id;
+                $order->uuid = Str::uuid();
+                $order->save();
+            }
         }
         $order->price_total = number_format($order->price_total, 0, '', '.');
         return response()->json( array(
@@ -40,7 +63,16 @@ class OrderController extends Controller
         ));
     }
 
-    public function saveOrder(Request $request){
+    public function edit(Request $request){
+        $uuid = $request->input('uuid');
+        $order = Order::where('uuid', '=', $uuid)->first();
+        $order->price_total = number_format($order->price_total, 0, '', '.');
+        return response()->json( array(
+            'order'  => $order
+        ));
+    }
+
+    public function saveOrderDetail(Request $request){
         $uuid = $request->input('uuid');
         $customer_name = $request->input('customer_name');
         $customer_email = $request->input('customer_email');
@@ -51,6 +83,30 @@ class OrderController extends Controller
         $order->note = $note;
         $order->save();
         return response()->json( array('success'=>true) );
+    }
+
+    public function saveOrder(Request $request){
+        $uuid = $request->input('uuid');
+        $stat = $request->input('stat');
+        $redir = false;
+        if($stat == 2){
+            $redir = true;
+        }
+        $order = Order::where('uuid', '=', $uuid)->first();
+        $orderlog = OrderLog::where('order_id', '=', $order->id)->update(['saved'=>true]);
+        $rawmatlog = RawmatLog::where('order_id', '=', $order->id)->where('saved', false)->get();
+        if(!empty($rawmatlog)){
+            foreach($rawmatlog as $rawlog){
+                $rawmat = Rawmat::where('id', '=', $rawlog->rawmat_id)->first();
+                $rawmat->stock = $rawmat->stock - $rawlog->quantity;
+                $rawmat->save();
+                $rawlog->saved = true;
+                $rawlog->save();
+            }
+        }
+        $order->status = $stat;
+        $order->save();
+        return response()->json( array('success'=>true, 'redir'=>$redir) );
     }
 
     public function getCategories(){

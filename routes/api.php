@@ -114,7 +114,10 @@ Route::group(['middleware' => 'api'], function ($router) {
 
     Route::prefix('order')->group(function () {
         Route::get('/',         'OrderController@index')->name('order.index');
+        Route::get('/create',         'OrderController@create')->name('order.create');
+        Route::get('/edit',         'OrderController@edit')->name('order.edit');
         Route::post('/saveOrder', 'OrderController@saveOrder')->name('order.saveOrder');
+        Route::post('/saveOrderDetail', 'OrderController@saveOrderDetail')->name('order.saveOrderDetail');
         Route::get('/orderItems', 'OrderController@orderItems')->name('order.orderItems');
         Route::post('/addOrderItem', 'OrderController@addOrderItem')->name('order.addOrderItem');
         Route::post('/removeOrderItem', 'OrderController@removeOrderItem')->name('order.removeOrderItem');
