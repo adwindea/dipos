@@ -17,6 +17,7 @@ class CreateOrderLogsTable extends Migration
             $table->id();
             $table->boolean('saved')->default(false);
             $table->decimal('quantity', 20, 4)->nullable();
+            $table->decimal('discount', 20, 4)->nullable();
             $table->bigInteger('product_id')->nullable();
             $table->bigInteger('order_id')->nullable();
             $table->bigInteger('user_id')->nullable();

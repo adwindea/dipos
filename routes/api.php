@@ -105,6 +105,15 @@ Route::group(['middleware' => 'api'], function ($router) {
             Route::post('/updateIngredient', 'ProductController@updateIngredient')->name('product.updateIngredient');
             Route::get('/getIngredient', 'ProductController@getIngredient')->name('product.getIngredient');
         });
+        Route::prefix('promotion')->group(function () {
+            Route::get('/',         'PromotionController@index')->name('promotion.index');
+            Route::get('/create',   'PromotionController@create')->name('promotion.create');
+            Route::post('/store',   'PromotionController@store')->name('promotion.store');
+            Route::get('/edit',     'PromotionController@edit')->name('promotion.edit');
+            Route::post('/update',  'PromotionController@update')->name('promotion.update');
+            Route::get('/delete',   'PromotionController@delete')->name('promotion.delete');
+            Route::get('/show',     'PromotionController@show')->name('promotion.show');
+        });
 
 
         Route::resource('roles',        'RolesController');
@@ -116,6 +125,7 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::get('/',         'OrderController@index')->name('order.index');
         Route::get('/create',         'OrderController@create')->name('order.create');
         Route::get('/edit',         'OrderController@edit')->name('order.edit');
+        Route::post('/checkPromotion',         'OrderController@checkPromotion')->name('order.checkPromotion');
         Route::post('/saveOrder', 'OrderController@saveOrder')->name('order.saveOrder');
         Route::post('/saveOrderDetail', 'OrderController@saveOrderDetail')->name('order.saveOrderDetail');
         Route::get('/orderItems', 'OrderController@orderItems')->name('order.orderItems');

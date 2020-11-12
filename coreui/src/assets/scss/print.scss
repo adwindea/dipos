@@ -9,7 +9,7 @@
     th,
     tr,
     table {
-        border-top: 1px solid black;
+        // border-top: 1px solid black;
         border-collapse: collapse;
     }
 
@@ -31,6 +31,24 @@
         width: 50px;
         max-width: 50px;
         word-break: break-all;
+    }
+
+    td.title,
+    th.title {
+        width: 50px;
+        max-width: 50px;
+        word-break: break-all;
+        padding: 0;
+        margin: 0;
+    }
+
+    td.detail,
+    th.detail {
+        width: 95px;
+        max-width: 95px;
+        word-break: break-all;
+        padding: 0;
+        margin: 0;
     }
 
     .centered {

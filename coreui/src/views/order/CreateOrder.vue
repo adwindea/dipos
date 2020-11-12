@@ -12,15 +12,31 @@
             >
                 <div class="ticket">
             <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" alt="Logo">
-            <p class="centered">
-                <br>Jl. Buntu
-                <br>Makassar</p>
+            <table>
+                <tr>
+                    <td class="title">Order ID</td>
+                    <td class="detail">: {{ order.order_number }}</td>
+                </tr>
+                <tr>
+                    <td class="title">Date</td>
+                    <td class="detail">: {{ nowTime }}</td>
+                </tr>
+                <tr>
+                    <td class="title">Cashier</td>
+                    <td class="detail">: {{ currentUser }}</td>
+
+                </tr>
+                <tr>
+                    <td class="title">Customer</td>
+                    <td class="detail">: {{ order.customer_name }}</td>
+                </tr>
+            </table><br>
             <table>
                 <thead>
                     <tr>
-                        <th class="quantity">Q.</th>
-                        <th class="description">Item</th>
-                        <th class="price">Total</th>
+                        <th class="quantity" style="border-bottom:1px solid black;">Q.</th>
+                        <th class="description" style="border-bottom:1px solid black;">Item</th>
+                        <th class="price" style="border-bottom:1px solid black;">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,8 +47,7 @@
                     </tr>
                 </tbody>
             </table>
-            <p class="centered">Thanks for your purchase!
-                <br>Footer</p>
+            <p class="centered">Thanks for your purchase!</p>
         </div>
                 <footer slot="footer">
                     <CButton color="warning" class="text-center" @click="printReceipt()">Print</CButton>
@@ -64,9 +79,9 @@
                                     </CCardHeader>
                                     <CCollapse :show="detailCollapse">
                                         <CCardBody class="m-0">
-                                            <CInput label="Customer Name" type="text" placeholder="Customer Name" v-model="order.customer_name" @keyup="saveDetail()"></CInput>
-                                            <CInput label="Customer Email" type="email" placeholder="Customer Email" v-model="order.customer_email" @keyup="saveDetail()"></CInput>
-                                            <CTextarea label="Note" placeholder="Type something here" v-model="order.note" @keyup="saveDetail()"></CTextarea>
+                                            <CInput label="Customer Name" type="text" placeholder="Customer Name" v-model="order.customer_name" @blur="saveDetail()"></CInput>
+                                            <CInput label="Customer Email" type="email" placeholder="Customer Email" v-model="order.customer_email" @blur="saveDetail()"></CInput>
+                                            <CTextarea label="Note" placeholder="Type something here" v-model="order.note" @blur="saveDetail()"></CTextarea>
                                             <CSelect
                                                 label="Payment"
                                                 :value.sync="order.payment_type"
@@ -74,13 +89,17 @@
                                                 :options="payment_type"
                                                 @change="saveDetail()"
                                             />
-                                            <CSelect
+                                            <CInput
                                                 label="Promo"
-                                                :value.sync="order.promotion_id"
-                                                :plain="true"
-                                                :options="promotions"
-                                                @change="saveDetail()"
-                                            />
+                                                type="text"
+                                                placeholder="Code"
+                                                :description="promotion_warning"
+                                                v-model="promotion.code"
+                                                >
+                                                <template #append>
+                                                    <CButton color="success" @click="checkPromotion()">Check</CButton>
+                                                </template>
+                                            </CInput>
                                         </CCardBody>
                                     </CCollapse>
                                 </CCard>
@@ -122,8 +141,12 @@
                                                     <td class="text-center">{{ item.quantity*item.price }}</td>
                                                 </tr>
                                                 <tr>
+                                                    <th colspan="2" >Discount</th>
+                                                    <th class="text-center">{{ order.discount }}</th>
+                                                </tr>
+                                                <tr>
                                                     <th colspan="2" >Total</th>
-                                                    <th class="text-center">{{ order.price_total }}</th>
+                                                    <th class="text-center">{{ order.final_price }}</th>
                                                 </tr>
                                                 <infinite-loading spinner="waveDots" :identifier="orderInfId" @infinite="getOrderItems">
                                                     <span slot="no-more"></span>
@@ -135,7 +158,7 @@
                             </CCardBody>
                             <CCardFooter align='center'>
                                 <CButton color="danger" @click="closeModal = true">Close</CButton>
-                                <CButton color="warning" @click="printModal = true">Print</CButton>
+                                <CButton color="warning" @click="openPrintModal()">Print</CButton>
                                 <CButton color="primary" @click="saveOrder(order.uuid,1)">Save</CButton>
                             </CCardFooter>
                         </CCard>
@@ -232,16 +255,20 @@ export default {
                 order_number: '',
                 note: '',
                 price_total: '',
-                disc: '',
+                discount: '',
+                discount_type: '',
+                promotion_id: '',
                 final_price: '',
                 payment_type: ''
             },
             order_uuid: '',
             order_items: [],
-            total_price: '',
             items: [],
             categories: [],
-            promotions: [],
+            promotion: {
+                code: ''
+            },
+            promotion_warning: '',
             payment_type: [
                 {label: 'Cash', value:0},
                 {label: 'QRIS', value:1},
@@ -257,6 +284,8 @@ export default {
             itemInfId: +new Date(),
             printModal: false,
             closeModal: false,
+            currentUser: '',
+            nowTime: '',
         }
     },
     methods: {
@@ -265,6 +294,8 @@ export default {
             axios.get(  this.$apiAdress + '/api/order/create?token=' + localStorage.getItem("api_token"))
             .then(function (response) {
                 self.order= response.data.order;
+                self.promotion= response.data.promo;
+                self.currentUser= response.data.user;
                 self.resetOrderItem();
             }).catch(function (error) {
                 console.log(error);
@@ -273,16 +304,19 @@ export default {
         },
         saveDetail(){
             let self = this;
-            axios.post(  this.$apiAdress + '/api/order/saveOrder?token=' + localStorage.getItem("api_token"),
+            axios.post(  this.$apiAdress + '/api/order/saveOrderDetail?token=' + localStorage.getItem("api_token"),
                 {
                     uuid: self.order.uuid,
                     customer_name: self.order.customer_name,
                     customer_email: self.order.customer_email,
                     note: self.order.note,
+                    payment_type: self.order.payment_type,
+                    promotion_id: self.order.promotion_id,
+                    discount_type: self.order.discount_type,
                 }
             )
             .then(function (response) {
-
+                self.order = response.data.order
             }).catch(function (error) {
                 if(error.response.data.message == 'The given data was invalid.'){
                     for (let key in error.response.data.errors) {
@@ -295,6 +329,28 @@ export default {
                     self.$router.push({ path: 'login' });
                 }
             });
+        },
+        checkPromotion(){
+            let self = this
+            axios.post(  this.$apiAdress + '/api/order/checkPromotion?token=' + localStorage.getItem("api_token"),
+                {
+                    code: self.promotion.code,
+                    price_total: self.order.price_total.replace('.', '')
+                }
+            )
+            .then(function (response) {
+                if(response.data.status){
+                    self.promotion = response.data.promo
+                    self.order.promotion_id = response.data.promo.id
+                    self.order.discount_type = response.data.promo.discount_type
+                }else{
+                    self.promotion = {}
+                    self.order.promotion_id = ''
+                    self.order.discount_type = ''
+                }
+                self.saveDetail()
+                self.promotion_warning = response.data.mess
+            })
         },
         getOrderItems($state) {
             let self = this
@@ -431,6 +487,25 @@ export default {
                 self.order = response.data.order
                 self.resetOrderItem()
             })
+        },
+        openPrintModal(){
+            let self = this
+            let anyDate = new Date()
+            Date.prototype.toShortFormat = function() {
+                let monthNames =["Jan","Feb","Mar","Apr",
+                                "May","Jun","Jul","Aug",
+                                "Sep", "Oct","Nov","Dec"];
+                let day = this.getDate();
+                let monthIndex = this.getMonth();
+                let monthName = monthNames[monthIndex];
+                let year = this.getFullYear();
+                let hour = this.getHours();
+                let minute = this.getMinutes();
+
+                return `${day}-${monthName}-${year} ${hour}:${minute}`;
+            }
+            self.nowTime = anyDate.toShortFormat()
+            self.printModal = true
         },
         printReceipt(){
             window.print()

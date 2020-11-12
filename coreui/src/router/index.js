@@ -124,6 +124,12 @@ const DeleteProduct = () => import('@/views/product/DeleteProduct')
 const EditProduct = () => import('@/views/product/EditProduct')
 const ProductIngredient = () => import('@/views/product/ProductIngredient')
 
+//Promotion
+const Promotions = () => import('@/views/promotion/Promotions')
+const CreatePromotion = () => import('@/views/promotion/CreatePromotion')
+const DeletePromotion = () => import('@/views/promotion/DeletePromotion')
+const EditPromotion = () => import('@/views/promotion/EditPromotion')
+
 //Order
 const Orders = () => import('@/views/order/Orders')
 const CreateOrder = () => import('@/views/order/CreateOrder')
@@ -369,6 +375,49 @@ function configRoutes () {
                 meta:{
                     requiresAdmin: true
                 }
+            }
+          ]
+        },
+        {
+          path: 'promotion',
+          meta: { label: 'Promotion'},
+          component: {
+            render (c) { return c('router-view') }
+          },
+          children: [
+            {
+              path: '',
+              component: Promotions,
+              meta:{
+                requiresAdmin: true
+              }
+            },
+            {
+              path: 'create',
+              meta: { label: 'Create Promotion' },
+              name: 'CreatePromotion',
+              component: CreatePromotion,
+              meta:{
+                requiresAdmin: true
+              }
+            },
+            {
+              path: ':uuid/delete',
+              meta: { label: 'Delete Promotion' },
+              name: 'DeletePromotion',
+              component: DeletePromotion,
+              meta:{
+                requiresAdmin: true
+              }
+            },
+            {
+              path: ':uuid/edit',
+              meta: { label: 'Edit Promotion' },
+              name: 'EditPromotion',
+              component: EditPromotion,
+              meta:{
+                requiresAdmin: true
+              }
             }
           ]
         },

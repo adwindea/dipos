@@ -28,7 +28,7 @@
                             <template #status="{item}">
                                 <td class="text-center">
                                     <CBadge v-if="item.status == 1" color="success">Open</CBadge>
-                                    <CBadge v-if="item.status == 2" color="success">Closed</CBadge>
+                                    <CBadge v-if="item.status == 2" color="danger">Closed</CBadge>
                                 </td>
                             </template>
                             <template #customer_name="{item}">
@@ -60,7 +60,7 @@
                             </template>
                             <template #action="{item}">
                                 <td class="text-center">
-                                    <CButton color="danger" @click="closeOrder( item.uuid )"><CIcon name="cilCheck"></CIcon></CButton>
+                                    <CButton v-if="item.status < 2" color="danger" @click="closeOrder( item.uuid )"><CIcon name="cilCheck"></CIcon></CButton>
                                     <CButton color="warning" @click="showOrder(item.uuid)"><CIcon name="cilMagnifyingGlass"></CIcon></CButton>
                                 </td>
                             </template>

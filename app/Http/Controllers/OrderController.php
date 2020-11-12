@@ -10,6 +10,7 @@ use App\Models\RawmatLog;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Ingredient;
+use App\Models\Promotion;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class OrderController extends Controller
 {
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->middleware('auth');
         // $this->middleware('admin');
     }
 
@@ -58,8 +59,17 @@ class OrderController extends Controller
             }
         }
         $order->price_total = number_format($order->price_total, 0, '', '.');
+        $order->discount = number_format($order->discount, 0, '', '.');
+        $order->final_price = number_format($order->final_price, 0, '', '.');
+        $promo = Promotion::find($order->promotion_id);
+        if(empty($promo)){
+            $promo = new Promotion();
+            $promo->code = '';
+        }
         return response()->json( array(
-            'order'  => $order
+            'order'  => $order,
+            'promo' => $promo,
+            'user' => Auth::user()->id
         ));
     }
 
@@ -72,26 +82,61 @@ class OrderController extends Controller
         ));
     }
 
+    public function checkPromotion(Request $request){
+        $code = $request->input('code');
+        $price_total = $request->input('price_total');
+        $now = date('Y-m-d');
+        $promo = Promotion::where('code', '=', $code)->first();
+        $message = '';
+        $status = false;
+        if(!empty($promo)){
+            if($promo->status == 0){
+                $message = 'Promo is not available';
+            }else if($now > $promo->end_date){
+                $message = 'Promo is expired';
+            }else if($now < $promo->start_date){
+                $message = 'Promo is available from '.date('d M Y', strtotime($promo->start_date));
+            }else if($price_total < $promo->min_buy){
+                $message = 'Minimum order is IDR '.number_format($promo->min_buy, 0, '', '.');
+            }else if($promo->quantity == 0){
+                $message = 'Promo is not available';
+            }else{
+                $message = 'Promo successfully used';
+                $status = true;
+            }
+        }else{
+            $message = 'Promo not found';
+        }
+        return response()->json( array(
+            'promo'  => $promo,
+            'mess'  => $message,
+            'status' => $status
+        ));
+    }
+
     public function saveOrderDetail(Request $request){
         $uuid = $request->input('uuid');
         $customer_name = $request->input('customer_name');
         $customer_email = $request->input('customer_email');
         $note = $request->input('note');
+        $payment_type = $request->input('payment_type');
+        $promotion_id = $request->input('promotion_id');
+        $discount_type = $request->input('discount_type');
         $order = Order::where('uuid', '=', $uuid)->first();
         $order->customer_name = $customer_name;
         $order->customer_email = $customer_email;
         $order->note = $note;
+        $order->payment_type = $payment_type;
+        $order->promotion_id = $promotion_id;
+        $order->discount_type = $discount_type;
         $order->save();
-        return response()->json( array('success'=>true) );
+        $order = $this->countOrderPriceProcessor($uuid);
+        return response()->json( array('order'=>$order) );
     }
 
     public function saveOrder(Request $request){
         $uuid = $request->input('uuid');
         $stat = $request->input('stat');
-        $redir = false;
-        if($stat == 2){
-            $redir = true;
-        }
         $order = Order::where('uuid', '=', $uuid)->first();
         $orderlog = OrderLog::where('order_id', '=', $order->id)->update(['saved'=>true]);
         $rawmatlog = RawmatLog::where('order_id', '=', $order->id)->where('saved', false)->get();
@@ -106,6 +151,20 @@ class OrderController extends Controller
         }
         $order->status = $stat;
         $order->save();
+
+        $redir = false;
+        if($stat == 2){
+            $redir = true;
+            if(!empty($order->promotion_id)){
+                $promo = Promotion::where('id', '=', $order->promotion_id)->first();
+                $promo->quantity = $promo->quantity - 1;
+                if($promo->quantity == 0){
+                    $promo->status = false;
+                }
+                $promo->save();
+            }
+        }
+
         return response()->json( array('success'=>true, 'redir'=>$redir) );
     }
 
@@ -193,6 +252,7 @@ class OrderController extends Controller
                 }
             }
         }
+        $order = $this->countOrderPriceProcessor($order_uuid);
         $order->price_total = number_format($order->price_total, 0, '', '.');
         return response()->json( array('success'=>true, 'reload'=>$reload, 'order'=>$order) );
     }
@@ -238,6 +298,7 @@ class OrderController extends Controller
                 }
             }
         }
+        $order = $this->countOrderPriceProcessor($order_uuid);
         $order->price_total = number_format($order->price_total, 0, '', '.');
         return response()->json( array('success'=>true, 'order'=>$order) );
     }
@@ -268,7 +329,47 @@ class OrderController extends Controller
                 }
             }
         }
+        $order = $this->countOrderPriceProcessor($order_uuid);
         $order->price_total = number_format($order->price_total, 0, '', '.');
         return response()->json( array('success'=>true, 'order'=>$order) );
+    }
+
+    public function countOrderPriceProcessor($uuid){
+        $order = Order::where('uuid', '=', $uuid)->first();
+        $discount = '';
+        $final_price = '';
+        if(!empty($order->promotion_id)){
+            $promo = Promotion::find($order->promotion_id);
+            if($promo->discount_type == 1){
+                $discount = $promo->amount*$order->price_total/100;
+                if($discount > $promo->max_discount){
+                    $discount = $promo->max_discount;
+                }
+            }else{
+                $discount = $promo->max_discount;
+            }
+            $final_price = $order->price_total - $discount;
+            $order->discount = $discount;
+            $order->final_price = $final_price;
+            $order->save();
+        }
+        else{
+            $order->discount = 0;
+            $order->final_price = $order->price_total;
+            $order->save();
+        }
+
+        $cogs = $order->final_price;
+        if($order->payment_type == 1){
+            $cogs = $order->final_price*(100-0.7)/100;
+        }else if($order->payment_type == 2){
+            $cogs = $order->final_price*(100-1.5)/100;
+        }
+        $order->cogs = $cogs;
+        $order->save();
+        $order->price_total = number_format($order->price_total, 0, '', '.');
+        $order->discount = number_format($order->discount, 0, '', '.');
+        $order->final_price = number_format($order->final_price, 0, '', '.');
+        return $order;
     }
 }
