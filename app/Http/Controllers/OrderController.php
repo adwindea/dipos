@@ -69,7 +69,7 @@ class OrderController extends Controller
         return response()->json( array(
             'order'  => $order,
             'promo' => $promo,
-            'user' => Auth::user()->id
+            'user' => Auth::user()->name
         ));
     }
 

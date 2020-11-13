@@ -1,4 +1,4 @@
-<style lang="scss">
+<style lang="scss" scoped>
     @import "../../assets/scss/product-card.scss";
     @import "../../assets/scss/print.scss";
 </style>
@@ -12,6 +12,8 @@
             >
                 <div class="ticket">
             <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" alt="Logo">
+            <br>
+            <br>
             <table>
                 <tr>
                     <td class="title">Order ID</td>
@@ -45,8 +47,24 @@
                         <td class="description">{{item.name}}</td>
                         <td class="price">{{item.price}}</td>
                     </tr>
+                    <tr>
+                        <th class="quantity" style="border-top:1px solid black;"></th>
+                        <th class="righted" style="border-top:1px solid black;">Sub</th>
+                        <th class="price-right" style="border-top:1px solid black;">{{order.price_total}}</th>
+                    </tr>
+                    <tr>
+                        <th class="quantity"></th>
+                        <th class="righted">Discount</th>
+                        <th class="price-right">{{order.discount}}</th>
+                    </tr>
+                    <tr>
+                        <th class="quantity"></th>
+                        <th class="righted">Total</th>
+                        <th class="price-right">{{order.final_price}}</th>
+                    </tr>
                 </tbody>
             </table>
+            <br>
             <p class="centered">Thanks for your purchase!</p>
         </div>
                 <footer slot="footer">

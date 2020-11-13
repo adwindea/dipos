@@ -24,12 +24,33 @@
         width: 25px;
         max-width: 25px;
         word-break: break-all;
+
+    }
+
+    td.righted,
+    th.righted{
+        width: 80px;
+        max-width: 80px;
+        text-align: right;
+        align-content: right;
+        word-break: break-all;
     }
 
     td.price,
     th.price {
         width: 50px;
         max-width: 50px;
+        text-align: right;
+        align-content: right;
+        word-break: break-all;
+    }
+
+    td.price-right,
+    th.price-right {
+        width: 50px;
+        max-width: 50px;
+        text-align: right;
+        align-content: right;
         word-break: break-all;
     }
 
@@ -44,8 +65,8 @@
 
     td.detail,
     th.detail {
-        width: 95px;
-        max-width: 95px;
+        width: 105px;
+        max-width: 105px;
         word-break: break-all;
         padding: 0;
         margin: 0;
@@ -62,6 +83,10 @@
 
 }
 @media print {
+    @page {
+        size: 58mm 100mm;
+        margin: 2mm
+    }
     body * {
       visibility: hidden;
     }

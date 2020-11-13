@@ -32,5 +32,4 @@ const app = new Vue({
     el: '#app',
 });
 */
-
 require('../../coreui/src/main.js');
