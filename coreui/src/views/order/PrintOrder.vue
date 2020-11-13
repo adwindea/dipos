@@ -3,9 +3,9 @@
 </style>
 
 <template>
-<!-- <div> -->
-                    <div class="ticket">
-                        <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" alt="Logo">
+<div>
+                    <div id="printMe" class="ticket">
+                        <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" style="max-width:180px;" alt="Logo">
                         <br>
                         <br>
                         <table>
@@ -59,19 +59,23 @@
                             </tbody>
                         </table>
                         <br>
-                        <p class="centered">Thanks for your purchase!</p>
+                        <p class="centered" style="width:180px">Thanks for your purchase!</p>
                         <br>
-                        <button class="btn btn-secondary novis" @click="goBack()">Back</button>
-                        <button class="btn btn-warning novis" @click="printReceipt()">Print</button>
+                        <!-- <button class="btn btn-secondary novis" @click="goBack()">Back</button>
+                        <button class="btn btn-warning novis" @click="printReceipt()">Print</button> -->
                     </div>
-                    <!-- <button class="btn btn-secondary novis" @click="goBack()">Back</button>
+                    <button class="btn btn-secondary novis" @click="goBack()">Back</button>
                     <button class="btn btn-warning novis" @click="printReceipt()">Print</button>
-                    </div> -->
+                    </div>
 </template>
 
 <script>
 import axios from 'axios'
-
+const options = {
+  styles: [
+    'https://dipos.s3.ap-southeast-1.amazonaws.com/css/print-vue.css'
+  ]
+}
 export default {
     name: 'PrintOrder',
     data () {
@@ -137,7 +141,8 @@ export default {
             self.nowTime = anyDate.toShortFormat()
         },
         printReceipt(){
-            window.print()
+            // window.print()
+            this.$htmlToPaper('printMe', options)
         },
     },
     mounted(){
