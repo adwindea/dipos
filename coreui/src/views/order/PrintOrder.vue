@@ -4,7 +4,7 @@
 
 <template>
 <div>
-                    <div id="printMe" class="ticket">
+                    <span id="printMe" class="ticket">
                         <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" style="max-width:180px;" alt="Logo">
                         <br>
                         <br>
@@ -39,7 +39,7 @@
                                 <tr v-for="(item, $index) in order_items" :key="$index">
                                     <td class="quantity">{{item.quantity}}</td>
                                     <td class="description">{{item.name}}</td>
-                                    <td class="price">{{item.price}}</td>
+                                    <td class="price">{{numberWithCommas(item.quantity*item.price_unformat)}}</td>
                                 </tr>
                                 <tr v-if="order.discount > 0">
                                     <th class="quantity" style="border-top:1px solid black;"></th>
@@ -63,7 +63,7 @@
                         <br>
                         <!-- <button class="btn btn-secondary novis" @click="goBack()">Back</button>
                         <button class="btn btn-warning novis" @click="printReceipt()">Print</button> -->
-                    </div>
+                    </span>
                     <button class="btn btn-secondary novis" @click="goBack()">Back</button>
                     <button class="btn btn-warning novis" @click="printReceipt()">Print</button>
                     </div>
@@ -71,11 +71,11 @@
 
 <script>
 import axios from 'axios'
-const options = {
-  styles: [
-    'https://dipos.s3.ap-southeast-1.amazonaws.com/css/print-vue.css'
-  ]
-}
+// const options = {
+//   styles: [
+//     'https://dipos.s3.ap-southeast-1.amazonaws.com/css/print-vue.css'
+//   ]
+// }
 export default {
     name: 'PrintOrder',
     data () {
@@ -104,6 +104,9 @@ export default {
         }
     },
     methods: {
+        numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        },
         goBack() {
             this.$router.push({name: 'EditOrder', params: this.order.uuid.toString()})
         },
@@ -141,8 +144,8 @@ export default {
             self.nowTime = anyDate.toShortFormat()
         },
         printReceipt(){
-            // window.print()
-            this.$htmlToPaper('printMe', options)
+            window.print()
+            // this.$htmlToPaper('printMe', options)
         },
     },
     mounted(){

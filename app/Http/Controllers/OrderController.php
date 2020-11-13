@@ -178,6 +178,16 @@ class OrderController extends Controller
         if($stat == 2){
             if(!empty($order->promotion_id)){
                 $promo = Promotion::where('id', '=', $order->promotion_id)->first();
+                if($promo->discount_type == 1){
+                    $orderlog = OrderLog::where('order_id', '=', $order->id)->get();
+                    if(!empty($orderlog)){
+                        foreach($orderlog as $ol){
+                            $product = Product::where('id', '=', $ol->product_id)->first();
+                            $ol->discount = ($product->price*$promo->amount/100)*$ol->quantity;
+                            $ol->save();
+                        }
+                    }
+                }
                 $promo->quantity = $promo->quantity - 1;
                 if($promo->quantity == 0){
                     $promo->status = false;
@@ -407,6 +417,7 @@ class OrderController extends Controller
         if(!empty($order_items)){
             foreach($order_items as $key => $value){
                 $order_items[$key]['quantity'] = number_format($value['quantity'], 0, '', '');
+                $order_items[$key]['price_unformat'] = number_format($value['price'], 0, '', '');
                 $order_items[$key]['price'] = number_format($value['price'], 0, '', '.');
             }
         }

@@ -5,12 +5,12 @@ import router from './router'
 import CoreuiVue from '@coreui/vue'
 import { iconsSet as icons } from './assets/icons/icons.js'
 import store from './store'
-import VueHtmlToPaper from 'vue-html-to-paper';
+// import VueHtmlToPaper from 'vue-html-to-paper';
 
-Vue.prototype.$apiAdress = 'https://dipos.herokuapp.com'
+Vue.prototype.$apiAdress = 'http://127.0.0.1:8080'
 Vue.config.performance = true
 Vue.use(CoreuiVue)
-Vue.use(VueHtmlToPaper);
+// Vue.use(VueHtmlToPaper);
 
 
 new Vue({
