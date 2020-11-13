@@ -32,4 +32,5 @@ const app = new Vue({
     el: '#app',
 });
 */
+import PrintOrder from '../../coreui/src/views/order/PrintOrder';
 require('../../coreui/src/main.js');
