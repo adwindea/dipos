@@ -83,9 +83,9 @@
 
 }
 @media print {
-    @page {
-        size: 58mm 120mm;
-    }
+    // @page {
+    //     size: 58mm 120mm;
+    // }
     .novis {
         visibility: hidden;
     }
@@ -95,11 +95,11 @@
     // .ticket, .ticket * {
     //   visibility: visible;
     // }
-    .ticket {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
+    // .ticket {
+    //   position: absolute;
+    //   left: 0;
+    //   top: 0;
+    // }
   }
 
 
