@@ -1,6 +1,6 @@
 .ticket {
-    width: 155px;
-    max-width: 155px;
+    width: 180px;
+    max-width: 180px;
 
     font-size: 12px;
     font-family: 'Times New Roman';
@@ -15,8 +15,8 @@
 
     td.description,
     th.description {
-        width: 80px;
-        max-width: 80px;
+        width: 95px;
+        max-width: 95px;
     }
 
     td.quantity,
@@ -29,8 +29,8 @@
 
     td.righted,
     th.righted{
-        width: 80px;
-        max-width: 80px;
+        width: 95px;
+        max-width: 95px;
         text-align: right;
         align-content: right;
         word-break: break-all;
@@ -38,8 +38,8 @@
 
     td.price,
     th.price {
-        width: 50px;
-        max-width: 50px;
+        width: 60px;
+        max-width: 60px;
         text-align: right;
         align-content: right;
         word-break: break-all;
@@ -47,8 +47,8 @@
 
     td.price-right,
     th.price-right {
-        width: 50px;
-        max-width: 50px;
+        width: 60px;
+        max-width: 60px;
         text-align: right;
         align-content: right;
         word-break: break-all;
@@ -56,8 +56,8 @@
 
     td.title,
     th.title {
-        width: 50px;
-        max-width: 50px;
+        width: 60px;
+        max-width: 60px;
         word-break: break-all;
         padding: 0;
         margin: 0;
@@ -65,8 +65,8 @@
 
     td.detail,
     th.detail {
-        width: 105px;
-        max-width: 105px;
+        width: 120px;
+        max-width: 120px;
         word-break: break-all;
         padding: 0;
         margin: 0;
@@ -84,15 +84,17 @@
 }
 @media print {
     @page {
-        size: 58mm 100mm;
-        margin: 2mm
+        size: 58mm 120mm;
     }
-    body * {
-      visibility: hidden;
+    .novis {
+        visibility: hidden;
     }
-    .ticket, .ticket * {
-      visibility: visible;
-    }
+    // body * {
+    //   visibility: hidden;
+    // }
+    // .ticket, .ticket * {
+    //   visibility: visible;
+    // }
     .ticket {
       position: absolute;
       left: 0;

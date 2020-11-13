@@ -1,44 +1,10 @@
 <style lang="scss">
     @import "../../assets/scss/product-card.scss";
-    @import "../../assets/scss/print.scss";
 </style>
 
 <template>
     <CRow>
         <CCol col="12">
-            <CModal
-            title="Print Receipt"
-            :show.sync="printModal"
-            >
-                <div class="ticket">
-            <!-- <img src="./logo.png" alt="Logo"> -->
-            <p class="centered">ini logo</p>
-            <p class="centered">TIMUR KOPI
-                <br>Address line 1
-                <br>Address line 2</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th class="quantity">Q.</th>
-                        <th class="description">Item</th>
-                        <th class="price">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, $index) in order_items" :key="$index">
-                        <td class="quantity">{{item.quantity}}</td>
-                        <td class="description">{{item.name}}</td>
-                        <td class="price">{{item.price}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p class="centered">Thanks for your purchase!
-                <br>something</p>
-        </div>
-                <footer slot="footer">
-                    <CButton color="warning" class="text-center" @click="printReceipt()">Print</CButton>
-                </footer>
-            </CModal>
             <CModal
             title="Close Order"
             :show.sync="closeModal"
@@ -65,16 +31,29 @@
                                     </CCardHeader>
                                     <CCollapse :show="detailCollapse">
                                         <CCardBody class="m-0">
-                                            <CInput label="Customer Name" type="text" placeholder="Customer Name" v-model="order.customer_name" @keyup="saveDetail()"></CInput>
-                                            <CInput label="Customer Email" type="email" placeholder="Customer Email" v-model="order.customer_email" @keyup="saveDetail()"></CInput>
-                                            <CTextarea label="Note" placeholder="Type something here" v-model="order.note" @keyup="saveDetail()"></CTextarea>
+                                            <CInput label="Customer Name" type="text" placeholder="Customer Name" v-model="order.customer_name" @blur="saveDetail()" v-bind:disabled="disabledDetail"></CInput>
+                                            <CInput label="Customer Email" type="email" placeholder="Customer Email" v-model="order.customer_email" @blur="saveDetail()" v-bind:disabled="disabledDetail"></CInput>
+                                            <CTextarea label="Note" placeholder="Type something here" v-model="order.note" @blur="saveDetail()" v-bind:disabled="disabledDetail"></CTextarea>
                                             <CSelect
                                                 label="Payment"
                                                 :value.sync="order.payment_type"
                                                 :plain="true"
                                                 :options="payment_type"
                                                 @change="saveDetail()"
+                                                v-bind:disabled="disabledDetail"
                                             />
+                                            <CInput
+                                                label="Promo"
+                                                type="text"
+                                                placeholder="Code"
+                                                :description="promotion_warning"
+                                                v-model="promotion.code"
+                                                v-bind:disabled="disabledDetail"
+                                                >
+                                                <template #append>
+                                                    <CButton color="success" @click="checkPromotion()" v-bind:disabled="disabledDetail">Check</CButton>
+                                                </template>
+                                            </CInput>
                                         </CCardBody>
                                     </CCollapse>
                                 </CCard>
@@ -116,8 +95,12 @@
                                                     <td class="text-center">{{ item.quantity*item.price }}</td>
                                                 </tr>
                                                 <tr>
+                                                    <th colspan="2" >Discount</th>
+                                                    <th class="text-center">{{ order.discount }}</th>
+                                                </tr>
+                                                <tr>
                                                     <th colspan="2" >Total</th>
-                                                    <th class="text-center">{{ order.price_total }}</th>
+                                                    <th class="text-center">{{ order.final_price }}</th>
                                                 </tr>
                                                 <infinite-loading spinner="waveDots" :identifier="orderInfId" @infinite="getOrderItems">
                                                     <span slot="no-more"></span>
@@ -128,9 +111,9 @@
                                 </CCard>
                             </CCardBody>
                             <CCardFooter align='center'>
-                                <CButton color="danger" @click="closeModal = true">Close</CButton>
-                                <CButton color="warning" @click="printModal = true">Print</CButton>
-                                <CButton color="primary" @click="saveOrder(order.uuid,1)">Save</CButton>
+                                <CButton color="danger" @click="closeModal = true" v-if="order.status < 2">Close</CButton>
+                                <CButton color="warning" @click="printReceipt()">Print</CButton>
+                                <CButton color="primary" @click="saveOrder(order.uuid,1)" v-if="order.status < 2">Save</CButton>
                             </CCardFooter>
                         </CCard>
                     </CCol>
@@ -142,7 +125,7 @@
                                 </CInput>
                             </CCol>
                         </CRow> -->
-                        <CRow>
+                        <CRow v-if="order.status < 2">
                             <CCol col="6">
                                 <CSelect
                                     :value.sync="categorySearch"
@@ -211,7 +194,7 @@
 import axios from 'axios'
 import InfiniteLoading from 'vue-infinite-loading'
 export default {
-    name: 'CreateOrder',
+    name: 'EditOrder',
     data () {
         return {
             // fields:[
@@ -226,15 +209,20 @@ export default {
                 order_number: '',
                 note: '',
                 price_total: '',
-                disc: '',
+                discount: '',
+                discount_type: '',
+                promotion_id: '',
                 final_price: '',
                 payment_type: ''
             },
             order_uuid: '',
             order_items: [],
-            total_price: '',
             items: [],
             categories: [],
+            promotion: {
+                code: ''
+            },
+            promotion_warning: '',
             payment_type: [
                 {label: 'Cash', value:0},
                 {label: 'QRIS', value:1},
@@ -250,18 +238,23 @@ export default {
             itemInfId: +new Date(),
             printModal: false,
             closeModal: false,
+            currentUser: '',
+            nowTime: '',
+            disabledDetail: false,
         }
     },
     methods: {
         getOrderDetail (){
             let self = this;
-            axios.get(  this.$apiAdress + '/api/order/edit?token=' + localStorage.getItem("api_token"),
-            {
-                uuid: self.$router.params.uuid
-            })
+            axios.get(  this.$apiAdress + '/api/order/show?token=' + localStorage.getItem("api_token") + '&uuid=' + self.$route.params.uuid)
             .then(function (response) {
                 self.order= response.data.order;
+                self.promotion= response.data.promo;
+                self.currentUser= response.data.user;
                 self.resetOrderItem();
+                if(self.order.status > 1){
+                    self.disabledDetail = true
+                }
             }).catch(function (error) {
                 console.log(error);
                 self.$router.push({ path: '/login' });
@@ -269,16 +262,19 @@ export default {
         },
         saveDetail(){
             let self = this;
-            axios.post(  this.$apiAdress + '/api/order/saveOrder?token=' + localStorage.getItem("api_token"),
+            axios.post(  this.$apiAdress + '/api/order/saveOrderDetail?token=' + localStorage.getItem("api_token"),
                 {
                     uuid: self.order.uuid,
                     customer_name: self.order.customer_name,
                     customer_email: self.order.customer_email,
                     note: self.order.note,
+                    payment_type: self.order.payment_type,
+                    promotion_id: self.order.promotion_id,
+                    discount_type: self.order.discount_type,
                 }
             )
             .then(function (response) {
-
+                self.order = response.data.order
             }).catch(function (error) {
                 if(error.response.data.message == 'The given data was invalid.'){
                     for (let key in error.response.data.errors) {
@@ -291,6 +287,28 @@ export default {
                     self.$router.push({ path: 'login' });
                 }
             });
+        },
+        checkPromotion(){
+            let self = this
+            axios.post(  this.$apiAdress + '/api/order/checkPromotion?token=' + localStorage.getItem("api_token"),
+                {
+                    code: self.promotion.code,
+                    price_total: self.order.price_total.replace('.', '')
+                }
+            )
+            .then(function (response) {
+                if(response.data.status){
+                    self.promotion = response.data.promo
+                    self.order.promotion_id = response.data.promo.id
+                    self.order.discount_type = response.data.promo.discount_type
+                }else{
+                    self.promotion = {}
+                    self.order.promotion_id = ''
+                    self.order.discount_type = ''
+                }
+                self.saveDetail()
+                self.promotion_warning = response.data.mess
+            })
         },
         getOrderItems($state) {
             let self = this
@@ -428,8 +446,27 @@ export default {
                 self.resetOrderItem()
             })
         },
+        // openPrintModal(){
+        //     let self = this
+        //     let anyDate = new Date()
+        //     Date.prototype.toShortFormat = function() {
+        //         let monthNames =["Jan","Feb","Mar","Apr",
+        //                         "May","Jun","Jul","Aug",
+        //                         "Sep", "Oct","Nov","Dec"];
+        //         let day = this.getDate();
+        //         let monthIndex = this.getMonth();
+        //         let monthName = monthNames[monthIndex];
+        //         let year = this.getFullYear();
+        //         let hour = this.getHours();
+        //         let minute = this.getMinutes();
+
+        //         return `${day}-${monthName}-${year} ${hour}:${minute}`;
+        //     }
+        //     self.nowTime = anyDate.toShortFormat()
+        //     self.printModal = true
+        // },
         printReceipt(){
-            window.print()
+            this.$router.push({path: `/print/${this.order.uuid.toString()}/receipt`})
         },
         saveOrder(uuid,stat){
             let self = this
@@ -440,14 +477,10 @@ export default {
                 }
             )
             .then(function (response) {
-                if(response.redir){
-                    self.$router.go(-1)
-                }else{
-                    self.order = response.data.order
-                    self.resetOrderItem()
-                }
+                self.closeModal = false
+                self.order = response.data.order
+                self.resetOrderItem()
             })
-
         }
     },
     components:{

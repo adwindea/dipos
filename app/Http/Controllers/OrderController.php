@@ -24,12 +24,17 @@ class OrderController extends Controller
     }
 
     public function index(){
-        $orders = Order::where('status', '>', 0)->get();
+        $orders = Order::select('orders.*', 'promotions.amount as amount', 'promotions.max_discount as max_discount')
+        ->leftJoin('promotions', 'promotions.id', '=', 'orders.promotion_id')
+        ->where('orders.status', '>', 0)
+        ->get();
         if(!empty($orders)){
             foreach($orders as $key => $value){
                 $orders[$key]['price_total'] = number_format($value['price_total'], 0, '', '.');
                 $orders[$key]['discount'] = number_format($value['discount'], 0, '', '.');
                 $orders[$key]['final_price'] = number_format($value['final_price'], 0, '', '.');
+                $orders[$key]['max_discount'] = number_format($value['max_discount'], 0, '', '.');
+                $orders[$key]['amount'] = number_format($value['amount'], 2, ',', '.');
             }
         }
         return response()->json( array( 'orders'  => $orders ) );
@@ -58,6 +63,24 @@ class OrderController extends Controller
                 $order->save();
             }
         }
+        $order->price_total = number_format($order->price_total, 0, '', '.');
+        $order->discount = number_format($order->discount, 0, '', '.');
+        $order->final_price = number_format($order->final_price, 0, '', '.');
+        $promo = Promotion::find($order->promotion_id);
+        if(empty($promo)){
+            $promo = new Promotion();
+            $promo->code = '';
+        }
+        return response()->json( array(
+            'order'  => $order,
+            'promo' => $promo,
+            'user' => Auth::user()->name
+        ));
+    }
+
+    public function show(Request $request){
+        $uuid = $request->input('uuid');
+        $order = Order::where('uuid', '=', $uuid)->first();
         $order->price_total = number_format($order->price_total, 0, '', '.');
         $order->discount = number_format($order->discount, 0, '', '.');
         $order->final_price = number_format($order->final_price, 0, '', '.');
@@ -152,9 +175,7 @@ class OrderController extends Controller
         $order->status = $stat;
         $order->save();
 
-        $redir = false;
         if($stat == 2){
-            $redir = true;
             if(!empty($order->promotion_id)){
                 $promo = Promotion::where('id', '=', $order->promotion_id)->first();
                 $promo->quantity = $promo->quantity - 1;
@@ -165,7 +186,7 @@ class OrderController extends Controller
             }
         }
 
-        return response()->json( array('success'=>true, 'redir'=>$redir) );
+        return response()->json( array('success'=>true, 'order'=>$order) );
     }
 
     public function getCategories(){
@@ -371,5 +392,28 @@ class OrderController extends Controller
         $order->discount = number_format($order->discount, 0, '', '.');
         $order->final_price = number_format($order->final_price, 0, '', '.');
         return $order;
+    }
+
+    public function printOrder(Request $request){
+        $uuid = $request->input('uuid');
+        $order = Order::where('uuid', '=', $uuid)->first();
+        $order->price_total = number_format($order->price_total, 0, '', '.');
+        $order->discount = number_format($order->discount, 0, '', '.');
+        $order->final_price = number_format($order->final_price, 0, '', '.');
+        $order_items = OrderLog::join('products', 'products.id', '=', 'order_logs.product_id')
+        ->select('order_logs.*', 'products.name as name', 'products.price as price')
+        ->where('order_id', '=', $order->id)
+        ->get();
+        if(!empty($order_items)){
+            foreach($order_items as $key => $value){
+                $order_items[$key]['quantity'] = number_format($value['quantity'], 0, '', '');
+                $order_items[$key]['price'] = number_format($value['price'], 0, '', '.');
+            }
+        }
+        return response()->json( array(
+            'order_items'=>$order_items,
+            'order'=>$order,
+            'user'=>Auth::user()->name
+        ));
     }
 }

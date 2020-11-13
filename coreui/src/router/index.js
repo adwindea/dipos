@@ -134,6 +134,7 @@ const EditPromotion = () => import('@/views/promotion/EditPromotion')
 const Orders = () => import('@/views/order/Orders')
 const CreateOrder = () => import('@/views/order/CreateOrder')
 const EditOrder = () => import('@/views/order/EditOrder')
+const PrintOrder = () => import('@/views/order/PrintOrder')
 
 Vue.use(Router)
 
@@ -1100,6 +1101,25 @@ function configRoutes () {
           component: Register
         },
       ]
+    },
+    {
+        path: '/print',
+        redirect: '/order',
+        name: 'Print',
+        component: {
+            render (c) { return c('router-view') }
+        },
+        children : [
+            {
+                path: ':uuid/receipt',
+                meta: { label: 'Print Order' },
+                name: 'PrintOrder',
+                component: PrintOrder,
+                meta:{
+                    requiresUser: true
+                }
+            }
+        ]
     },
     {
       path: '*',

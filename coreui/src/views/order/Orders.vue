@@ -1,6 +1,15 @@
 <template>
     <CRow>
         <CCol col="12">
+            <CModal
+            title="Close Order"
+            :show.sync="closeModal"
+            >
+                <p>Are you sure to close order {{order_number}}?</p>
+                <footer slot="footer">
+                    <CButton color="danger" class="text-center" @click="saveOrder(uuid,2)">Close Order</CButton>
+                </footer>
+            </CModal>
             <transition name="slide">
                 <CCard>
                     <CCardHeader>
@@ -43,9 +52,8 @@
                             </template>
                             <template #discount="{item}">
                                 <td>
-                                    {{item.discount}}
-                                    <span v-if="item.discount_type == 1"> %</span>
-                                    <span v-if="item.discount_type == 2"> IDR</span>
+                                    <span v-if="item.discount_type == 1">{{item.amount}} %</span>
+                                    <span v-if="item.discount_type == 2">{{item.max_discount}} IDR</span>
                                 </td>
                             </template>
                             <template #final_price="{item}">
@@ -60,7 +68,8 @@
                             </template>
                             <template #action="{item}">
                                 <td class="text-center">
-                                    <CButton v-if="item.status < 2" color="danger" @click="closeOrder( item.uuid )"><CIcon name="cilCheck"></CIcon></CButton>
+                                    <CButton v-if="item.status < 2" color="danger" @click="closeOrder(item.uuid,item.order_number)"><CIcon name="cilCheck"></CIcon></CButton>
+                                    <CButton color="info" @click="printReceipt(item.uuid)"><CIcon name="cilPrint"></CIcon></CButton>
                                     <CButton color="warning" @click="showOrder(item.uuid)"><CIcon name="cilMagnifyingGlass"></CIcon></CButton>
                                 </td>
                             </template>
@@ -74,9 +83,7 @@
 
 <script>
 import axios from 'axios'
-import { cilSpreadsheet } from '@coreui/icons'
 export default {
-    ingredientIcon: cilSpreadsheet,
     name: 'Orders',
     data () {
         return {
@@ -91,7 +98,9 @@ export default {
                 {key:'action', _classes:'text-center'}
             ],
             items: [],
-            buffor: [],
+            uuid: '',
+            order_number: '',
+            closeModal: false,
         }
     },
     methods: {
@@ -112,6 +121,27 @@ export default {
         showOrder(uuid){
             this.$router.push({path: `order/${uuid.toString()}/edit`});
         },
+        printReceipt(uuid){
+            this.$router.push({path: `/print/${uuid.toString()}/receipt`})
+        },
+        closeOrder(uuid,order_number){
+            this.order_number = order_number
+            this.uuid = uuid
+            this.closeModal = true
+        },
+        saveOrder(uuid,stat){
+            let self = this
+            axios.post(  this.$apiAdress + '/api/order/saveOrder?token=' + localStorage.getItem("api_token"),
+                {
+                    uuid: uuid,
+                    stat: stat
+                }
+            )
+            .then(function (response) {
+                self.closeModal = false
+                self.getOrder()
+            })
+        }
     },
     mounted(){
         this.getOrder();

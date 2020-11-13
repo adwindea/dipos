@@ -125,8 +125,10 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::get('/',         'OrderController@index')->name('order.index');
         Route::get('/create',         'OrderController@create')->name('order.create');
         Route::get('/edit',         'OrderController@edit')->name('order.edit');
+        Route::get('/show',         'OrderController@show')->name('order.show');
         Route::post('/checkPromotion',         'OrderController@checkPromotion')->name('order.checkPromotion');
         Route::post('/saveOrder', 'OrderController@saveOrder')->name('order.saveOrder');
+        Route::post('/printOrder', 'OrderController@printOrder')->name('order.printOrder');
         Route::post('/saveOrderDetail', 'OrderController@saveOrderDetail')->name('order.saveOrderDetail');
         Route::get('/orderItems', 'OrderController@orderItems')->name('order.orderItems');
         Route::post('/addOrderItem', 'OrderController@addOrderItem')->name('order.addOrderItem');
@@ -134,7 +136,6 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::post('/saveQuantity', 'OrderController@saveQuantity')->name('order.saveQuantity');
         Route::get('/getCategories', 'OrderController@getCategories')->name('order.getCategories');
         Route::get('/listItems', 'OrderController@listItems')->name('order.listItems');
-
     });
 
 });

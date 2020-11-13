@@ -1,76 +1,10 @@
-<style lang="scss" scoped>
+<style lang="scss">
     @import "../../assets/scss/product-card.scss";
-    @import "../../assets/scss/print.scss";
 </style>
 
 <template>
     <CRow>
         <CCol col="12">
-            <CModal
-            title="Print Receipt"
-            :show.sync="printModal"
-            >
-                <div class="ticket">
-            <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" alt="Logo">
-            <br>
-            <br>
-            <table>
-                <tr>
-                    <td class="title">Order ID</td>
-                    <td class="detail">: {{ order.order_number }}</td>
-                </tr>
-                <tr>
-                    <td class="title">Date</td>
-                    <td class="detail">: {{ nowTime }}</td>
-                </tr>
-                <tr>
-                    <td class="title">Cashier</td>
-                    <td class="detail">: {{ currentUser }}</td>
-
-                </tr>
-                <tr>
-                    <td class="title">Customer</td>
-                    <td class="detail">: {{ order.customer_name }}</td>
-                </tr>
-            </table><br>
-            <table>
-                <thead>
-                    <tr>
-                        <th class="quantity" style="border-bottom:1px solid black;">Q.</th>
-                        <th class="description" style="border-bottom:1px solid black;">Item</th>
-                        <th class="price" style="border-bottom:1px solid black;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, $index) in order_items" :key="$index">
-                        <td class="quantity">{{item.quantity}}</td>
-                        <td class="description">{{item.name}}</td>
-                        <td class="price">{{item.price}}</td>
-                    </tr>
-                    <tr>
-                        <th class="quantity" style="border-top:1px solid black;"></th>
-                        <th class="righted" style="border-top:1px solid black;">Sub</th>
-                        <th class="price-right" style="border-top:1px solid black;">{{order.price_total}}</th>
-                    </tr>
-                    <tr>
-                        <th class="quantity"></th>
-                        <th class="righted">Discount</th>
-                        <th class="price-right">{{order.discount}}</th>
-                    </tr>
-                    <tr>
-                        <th class="quantity"></th>
-                        <th class="righted">Total</th>
-                        <th class="price-right">{{order.final_price}}</th>
-                    </tr>
-                </tbody>
-            </table>
-            <br>
-            <p class="centered">Thanks for your purchase!</p>
-        </div>
-                <footer slot="footer">
-                    <CButton color="warning" class="text-center" @click="printReceipt()">Print</CButton>
-                </footer>
-            </CModal>
             <CModal
             title="Close Order"
             :show.sync="closeModal"
@@ -176,7 +110,7 @@
                             </CCardBody>
                             <CCardFooter align='center'>
                                 <CButton color="danger" @click="closeModal = true">Close</CButton>
-                                <CButton color="warning" @click="openPrintModal()">Print</CButton>
+                                <CButton color="warning" @click="printReceipt()">Print</CButton>
                                 <CButton color="primary" @click="saveOrder(order.uuid,1)">Save</CButton>
                             </CCardFooter>
                         </CCard>
@@ -506,27 +440,27 @@ export default {
                 self.resetOrderItem()
             })
         },
-        openPrintModal(){
-            let self = this
-            let anyDate = new Date()
-            Date.prototype.toShortFormat = function() {
-                let monthNames =["Jan","Feb","Mar","Apr",
-                                "May","Jun","Jul","Aug",
-                                "Sep", "Oct","Nov","Dec"];
-                let day = this.getDate();
-                let monthIndex = this.getMonth();
-                let monthName = monthNames[monthIndex];
-                let year = this.getFullYear();
-                let hour = this.getHours();
-                let minute = this.getMinutes();
+        // openPrintModal(){
+        //     let self = this
+        //     let anyDate = new Date()
+        //     Date.prototype.toShortFormat = function() {
+        //         let monthNames =["Jan","Feb","Mar","Apr",
+        //                         "May","Jun","Jul","Aug",
+        //                         "Sep", "Oct","Nov","Dec"];
+        //         let day = this.getDate();
+        //         let monthIndex = this.getMonth();
+        //         let monthName = monthNames[monthIndex];
+        //         let year = this.getFullYear();
+        //         let hour = this.getHours();
+        //         let minute = this.getMinutes();
 
-                return `${day}-${monthName}-${year} ${hour}:${minute}`;
-            }
-            self.nowTime = anyDate.toShortFormat()
-            self.printModal = true
-        },
+        //         return `${day}-${monthName}-${year} ${hour}:${minute}`;
+        //     }
+        //     self.nowTime = anyDate.toShortFormat()
+        //     self.printModal = true
+        // },
         printReceipt(){
-            window.print()
+            this.$router.push({path: `/print/${this.order.uuid.toString()}/receipt`})
         },
         saveOrder(uuid,stat){
             let self = this
@@ -537,12 +471,7 @@ export default {
                 }
             )
             .then(function (response) {
-                if(response.redir){
-                    self.$router.go(-1)
-                }else{
-                    self.order = response.data.order
-                    self.resetOrderItem()
-                }
+                self.$router.push({path: `${self.order.uuid.toString()}/edit`})
             })
 
         }
