@@ -56,6 +56,7 @@ const Register = () => import('@/views/pages/Register')
 // Users
 const Users = () => import('@/views/users/Users')
 const User = () => import('@/views/users/User')
+const CreateUser = () => import('@/views/users/CreateUser')
 const EditUser = () => import('@/views/users/EditUser')
 
 //Notes
@@ -565,25 +566,34 @@ function configRoutes () {
                 requiresAdmin: true
               }
             },
+            // {
+            //   path: ':id',
+            //   meta: { label: 'User Details'},
+            //   name: 'User',
+            //   component: User,
+            //   meta:{
+            //     requiresAdmin: true
+            //   }
+            // },
             {
-              path: ':id',
-              meta: { label: 'User Details'},
-              name: 'User',
-              component: User,
-              meta:{
-                requiresAdmin: true
-              }
-            },
-            {
-              path: ':id/edit',
-              meta: { label: 'Edit User' },
-              name: 'Edit User',
-              component: EditUser,
-              meta:{
-                requiresAdmin: true
-              }
-            },
-          ]
+                path: 'create',
+                meta: { label: 'Create User' },
+                name: 'Create User',
+                component: CreateUser,
+                meta:{
+                  requiresAdmin: true
+                }
+              },
+              {
+                path: ':id/edit',
+                meta: { label: 'Edit User' },
+                name: 'Edit User',
+                component: EditUser,
+                meta:{
+                  requiresAdmin: true
+                }
+              },
+            ]
         },
         {
           path: 'notes',

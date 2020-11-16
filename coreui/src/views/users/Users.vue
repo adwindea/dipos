@@ -1,10 +1,13 @@
 <template>
   <CRow>
-    <CCol col="12" xl="8">
+    <CCol col="12">
       <transition name="slide">
       <CCard>
         <CCardHeader>
-            Users
+            <h4>
+                Users
+                <CButton color="primary" @click="addUser()" class="mb-3 float-right"><CIcon name="cilPlus"></CIcon></CButton>
+            </h4>
         </CCardHeader>
         <CCardBody>
           <CAlert
@@ -19,7 +22,7 @@
             striped
             :items="items"
             :fields="fields"
-            :items-per-page="5"
+            :items-per-page="10"
             pagination
           >
           <template #status="{item}">
@@ -27,19 +30,15 @@
               <CBadge :color="getBadge(item.status)">{{ item.status }}</CBadge>
             </td>
           </template>
-          <template #show="{item}">
+          <!-- <template #show="{item}">
             <td>
               <CButton color="primary" @click="showUser( item.id )">Show</CButton>
             </td>
-          </template>
-          <template #edit="{item}">
+          </template> -->
+          <template #action="{item}">
             <td>
-              <CButton color="primary" @click="editUser( item.id )">Edit</CButton>
-            </td>
-          </template>
-          <template #delete="{item}">
-            <td>
-              <CButton v-if="you!=item.id" color="danger" @click="deleteUser( item.id )">Delete</CButton>
+              <CButton color="warning" @click="editUser( item.id )"><CIcon name="cilPencil"></CIcon></CButton>
+              <CButton v-if="you!=item.id" color="danger" @click="deleteUser( item.id )"><CIcon name="cilTrash"></CIcon></CButton>
             </td>
           </template>
         </CDataTable>
@@ -58,7 +57,7 @@ export default {
   data: () => {
     return {
       items: [],
-      fields: ['id', 'name', 'registered', 'roles', 'status', 'show', 'edit', 'delete'],
+      fields: ['id', 'name', 'registered', 'roles', 'status', 'action'],
       currentPage: 1,
       perPage: 5,
       totalRows: 0,
@@ -89,9 +88,8 @@ export default {
     editLink (id) {
       return `users/${id.toString()}/edit`
     },
-    showUser ( id ) {
-      const userLink = this.userLink( id );
-      this.$router.push({path: userLink});
+    addUser () {
+      this.$router.push({path: `users/create`});
     },
     editUser ( id ) {
       const editLink = this.editLink( id );
