@@ -66,6 +66,11 @@
                                     {{item.note}}
                                 </td>
                             </template>
+                            <template #cashier="{item}">
+                                <td>
+                                    {{item.cashier}}
+                                </td>
+                            </template>
                             <template #action="{item}">
                                 <td class="text-center">
                                     <CButton v-if="item.status < 2" color="danger" @click="closeOrder(item.uuid,item.order_number)"><CIcon name="cilCheck"></CIcon></CButton>
@@ -95,6 +100,7 @@ export default {
                 {key:'discount'},
                 {key:'final_price'},
                 {key:'note'},
+                {key:'cashier'},
                 {key:'action', _classes:'text-center'}
             ],
             items: [],

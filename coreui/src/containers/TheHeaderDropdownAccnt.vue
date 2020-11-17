@@ -54,6 +54,9 @@
     <CDropdownItem>
       <CIcon name="cil-shield-alt" /> Lock Account
     </CDropdownItem> -->
+    <CDropdownItem @click="changePass()">
+      <CIcon name="cil-braille" /> Change Password
+    </CDropdownItem>
     <CDropdownItem @click="logout()">
       <CIcon name="cil-lock-locked" /> Logout
     </CDropdownItem>
@@ -65,7 +68,7 @@ import axios from 'axios'
 export default {
   name: 'TheHeaderDropdownAccnt',
   data () {
-    return { 
+    return {
       itemsCount: 42,
     }
   },
@@ -77,8 +80,11 @@ export default {
         localStorage.setItem('roles', '');
         self.$router.push({ path: '/login' });
       }).catch(function (error) {
-        console.log(error); 
+        console.log(error);
       });
+    },
+    changePass(){
+        this.$router.push({path: `/users/changepass`});
     }
   }
 }

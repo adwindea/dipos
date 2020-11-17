@@ -58,6 +58,7 @@ const Users = () => import('@/views/users/Users')
 const User = () => import('@/views/users/User')
 const CreateUser = () => import('@/views/users/CreateUser')
 const EditUser = () => import('@/views/users/EditUser')
+const ChangePass = () => import('@/views/users/ChangePass')
 
 //Notes
 const Notes = () => import('@/views/notes/Notes')
@@ -250,7 +251,7 @@ function configRoutes () {
             {
               path: 'create',
               meta: { label: 'Create Raw Material' },
-              name: 'CreateRawMaterial',
+              name: 'Create Raw Material',
               component: CreateRawMaterial,
               meta:{
                 requiresAdmin: true
@@ -259,7 +260,7 @@ function configRoutes () {
             {
               path: ':uuid/delete',
               meta: { label: 'Delete Raw Material' },
-              name: 'DeleteRawMaterial',
+              name: 'Delete Raw Material',
               component: DeleteRawMaterial,
               meta:{
                 requiresAdmin: true
@@ -268,7 +269,7 @@ function configRoutes () {
             {
               path: ':uuid/edit',
               meta: { label: 'Edit Raw Material' },
-              name: 'EditRawMaterial',
+              name: 'Edit Raw Material',
               component: EditRawMaterial,
               meta:{
                 requiresAdmin: true
@@ -277,7 +278,7 @@ function configRoutes () {
             {
                 path: ':uuid/restock',
                 meta: { label: 'Restock Raw Material' },
-                name: 'RestockRawMaterial',
+                name: 'Restock Raw Material',
                 component: RestockRawMaterial,
                 meta:{
                     requiresAdmin: true
@@ -302,7 +303,7 @@ function configRoutes () {
             {
               path: 'create',
               meta: { label: 'Create Category' },
-              name: 'CreateCategory',
+              name: 'Create Category',
               component: CreateCategory,
               meta:{
                 requiresAdmin: true
@@ -311,7 +312,7 @@ function configRoutes () {
             {
               path: ':uuid/delete',
               meta: { label: 'Delete Category' },
-              name: 'DeleteCategory',
+              name: 'Delete Category',
               component: DeleteCategory,
               meta:{
                 requiresAdmin: true
@@ -320,7 +321,7 @@ function configRoutes () {
             {
               path: ':uuid/edit',
               meta: { label: 'Edit Category' },
-              name: 'EditCategory',
+              name: 'Edit Category',
               component: EditCategory,
               meta:{
                 requiresAdmin: true
@@ -345,7 +346,7 @@ function configRoutes () {
             {
               path: 'create',
               meta: { label: 'Create Product' },
-              name: 'CreateProduct',
+              name: 'Create Product',
               component: CreateProduct,
               meta:{
                 requiresAdmin: true
@@ -354,7 +355,7 @@ function configRoutes () {
             {
               path: ':uuid/delete',
               meta: { label: 'Delete Product' },
-              name: 'DeleteProduct',
+              name: 'Delete Product',
               component: DeleteProduct,
               meta:{
                 requiresAdmin: true
@@ -363,7 +364,7 @@ function configRoutes () {
             {
               path: ':uuid/edit',
               meta: { label: 'Edit Product' },
-              name: 'EditProduct',
+              name: 'Edit Product',
               component: EditProduct,
               meta:{
                 requiresAdmin: true
@@ -372,7 +373,7 @@ function configRoutes () {
             {
                 path: ':uuid/ingredient',
                 meta: { label: 'Product Ingredient' },
-                name: 'ProductIngredient',
+                name: 'Product Ingredient',
                 component: ProductIngredient,
                 meta:{
                     requiresAdmin: true
@@ -397,7 +398,7 @@ function configRoutes () {
             {
               path: 'create',
               meta: { label: 'Create Promotion' },
-              name: 'CreatePromotion',
+              name: 'Create Promotion',
               component: CreatePromotion,
               meta:{
                 requiresAdmin: true
@@ -406,7 +407,7 @@ function configRoutes () {
             {
               path: ':uuid/delete',
               meta: { label: 'Delete Promotion' },
-              name: 'DeletePromotion',
+              name: 'Delete Promotion',
               component: DeletePromotion,
               meta:{
                 requiresAdmin: true
@@ -415,7 +416,7 @@ function configRoutes () {
             {
               path: ':uuid/edit',
               meta: { label: 'Edit Promotion' },
-              name: 'EditPromotion',
+              name: 'Edit Promotion',
               component: EditPromotion,
               meta:{
                 requiresAdmin: true
@@ -440,7 +441,7 @@ function configRoutes () {
                 {
                     path: 'create',
                     meta: { label: 'Create Order' },
-                    name: 'CreateOrder',
+                    name: 'Create Order',
                     component: CreateOrder,
                     meta:{
                       requiresUser: true
@@ -449,7 +450,7 @@ function configRoutes () {
                 {
                     path: ':uuid/edit',
                     meta: { label: 'Edit Order' },
-                    name: 'EditOrder',
+                    name: 'Edit Order',
                     component: EditOrder,
                     meta:{
                       requiresUser: true
@@ -591,6 +592,15 @@ function configRoutes () {
                 component: EditUser,
                 meta:{
                   requiresAdmin: true
+                }
+              },
+              {
+                path: 'changepass',
+                meta: { label: 'Change Password' },
+                name: 'Change Password',
+                component: ChangePass,
+                meta:{
+                  requiresUser: true
                 }
               },
             ]

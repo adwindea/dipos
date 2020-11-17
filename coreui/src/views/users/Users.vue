@@ -57,7 +57,7 @@ export default {
   data: () => {
     return {
       items: [],
-      fields: ['id', 'name', 'registered', 'roles', 'status', 'action'],
+      fields: ['name', 'email', 'roles', 'status', 'action'],
       currentPage: 1,
       perPage: 5,
       totalRows: 0,

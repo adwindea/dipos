@@ -24,9 +24,11 @@ class OrderController extends Controller
     }
 
     public function index(){
-        $orders = Order::select('orders.*', 'promotions.amount as amount', 'promotions.max_discount as max_discount')
+        $orders = Order::select('orders.*', 'promotions.amount as amount', 'promotions.max_discount as max_discount', 'users.name as cashier')
         ->leftJoin('promotions', 'promotions.id', '=', 'orders.promotion_id')
+        ->join('users', 'orders.user_id', '=', 'users.id')
         ->where('orders.status', '>', 0)
+        ->orderByDesc('order_number')
         ->get();
         if(!empty($orders)){
             foreach($orders as $key => $value){

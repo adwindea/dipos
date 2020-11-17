@@ -24,6 +24,10 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::resource('notes', 'NotesController');
 
     Route::resource('resource/{table}/resource', 'ResourceController');
+    Route::prefix('users')->group(function(){
+        Route::post('/changePass',   'UsersController@changePass')->name('users.changePass');
+    });
+
 
     Route::group(['middleware' => 'admin'], function ($router) {
 
@@ -120,6 +124,7 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::get('/roles/move/move-up',      'RolesController@moveUp')->name('roles.up');
         Route::get('/roles/move/move-down',    'RolesController@moveDown')->name('roles.down');
     });
+
 
     Route::prefix('order')->group(function () {
         Route::get('/',         'OrderController@index')->name('order.index');

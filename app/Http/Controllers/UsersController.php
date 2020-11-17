@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -98,5 +100,27 @@ class UsersController extends Controller
             $user->delete();
         }
         return response()->json( ['status' => 'success'] );
+    }
+
+    public function changePass(Request $request){
+        $validate = Validator::make($request->all(), [
+            'old_password'  => 'required',
+            'password'  => 'required|min:4|confirmed',
+        ]);
+        if ($validate->fails()){
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validate->errors()
+            ], 422);
+        }
+        $user = Auth::user()->email;
+        $credentials = ['email'=>$user, 'password'=>$request->input('old_password')];
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $user->password = bcrypt($request->input('password'));
+            $user->save();
+        }
+        return response()->json( array('success'=>true) );
+
     }
 }

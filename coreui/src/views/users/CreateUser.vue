@@ -26,12 +26,10 @@ export default {
     name: 'CreateUser',
     data () {
         return {
-            user:{
-                name: '',
-                email: '',
-                password: '',
-                password_confirmation: '',
-            },
+            name: '',
+            email: '',
+            password: '',
+            password_confirmation: '',
         }
     },
     methods: {
