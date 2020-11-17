@@ -118,6 +118,9 @@ Route::group(['middleware' => 'api'], function ($router) {
             Route::get('/delete',   'PromotionController@delete')->name('promotion.delete');
             Route::get('/show',     'PromotionController@show')->name('promotion.show');
         });
+        Route::prefix('report')->group(function () {
+            Route::post('/dashboardWidget', 'ReportController@dashboardWidget')->name('report.dashboardWidget');
+        });
 
 
         Route::resource('roles',        'RolesController');
