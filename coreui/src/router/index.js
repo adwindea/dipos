@@ -182,7 +182,7 @@ function configRoutes () {
   return [
     {
       path: '/',
-      redirect: '/dashboard',
+      redirect: '/order/create',
       name: 'Home',
       component: TheContainer,
       meta:{

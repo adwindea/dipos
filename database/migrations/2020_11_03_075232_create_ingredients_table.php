@@ -17,7 +17,7 @@ class CreateIngredientsTable extends Migration
             $table->id();
             $table->bigInteger('product_id')->nullable();
             $table->bigInteger('rawmat_id')->nullable();
-            $table->decimal('quantity', 20, 2)->nullable();
+            $table->decimal('quantity', 20, 4)->nullable();
             $table->bigInteger('user_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
