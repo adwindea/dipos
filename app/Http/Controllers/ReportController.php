@@ -111,26 +111,28 @@ class ReportController extends Controller
             ->selectRaw('products.name as product_name, sum(order_logs.quantity) as quantity')
             ->get();
 
-        $label = [];
         $pie = [];
         $bar = [];
-        $col = [];
+        $productlabel = [];
         $rand = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
         if(!empty($product)){
             foreach($product as $p){
-                $color = '#'.$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)];
-                array_push($col, $color);
+
                 $percent = $p->quantity/$product_sum*100;
-                array_push($label, $p->product_name);
-                array_push($pie, number_format($percent, 2, '.', ''));
-                array_push($bar, number_format($p->quantity, 0, '.', ''));
+                $pieobj = new \stdClass();
+                $pieobj->name = $p->product_name;
+                $pieobj->y = $percent;
+                array_push($pie, $pieobj);
+
+                array_push($productlabel, $p->product_name);
+                array_push($bar, $p->quantity);
             }
         }
         return response()->json( array(
-            'label'  => $label,
+            // 'label'  => $label,
             'pie'  => $pie,
             'bar'  => $bar,
-            'col' => $col
+            'productlabel' => $productlabel
         ));
     }
 

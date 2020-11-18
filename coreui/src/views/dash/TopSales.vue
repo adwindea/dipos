@@ -14,7 +14,8 @@
                         <CTab title="By Product">
                             <CRow>
                                 <CCol lg="6" sm="12">
-                                    <CChartPie
+                                    <highcharts :options="productPie"></highcharts>
+                                    <!-- <CChartPie
                                         :datasets="[
                                         {
                                             data: product.pie,
@@ -23,10 +24,11 @@
                                         }
                                         ]"
                                         :labels="product.label"
-                                    />
+                                    /> -->
                                 </CCol>
                                 <CCol lg="6" sm="12">
-                                    <CChartBar
+                                    <highcharts :options="productBar"></highcharts>
+                                    <!-- <CChartBar
                                         :datasets="[
                                         {
                                             data: product.bar,
@@ -35,7 +37,7 @@
                                         }
                                         ]"
                                         :labels="product.label"
-                                    />
+                                    /> -->
                                 </CCol>
                             </CRow>
                         </CTab>
@@ -49,8 +51,7 @@
 
 <script>
 import axios from 'axios'
-import { CChartPie } from '@coreui/vue-chartjs'
-import { CChartBar } from '@coreui/vue-chartjs'
+import { Chart } from 'highcharts-vue'
 
 export default {
     name: 'TopSales',
@@ -60,23 +61,77 @@ export default {
         }
     },
     components:{
-        CChartPie,
-        CChartBar
+        highcharts: Chart
     },
     data () {
         return {
             topSalesCollapse: true,
-            product: {
-                label: [],
-                pie: [],
-                bar: [],
-                col: [],
+            productPie:{
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Product Sales Percentage'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: false
+                        },
+                        showInLegend: true
+                    }
+                },
+                series: {
+                    name: 'Remark',
+                    // colorByPoint: true,
+                    data: []
+                },
             },
-            category: {
-                label: '',
-                pie: '',
-                bar: ''
-            },
+            productBar:{
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Product Sales'
+                },
+
+                xAxis: {
+                    categories: [],
+                    crosshair: true
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Cup'
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [{
+                    name: 'Product Sales',
+                    data: []
+                }]
+            }
         }
     },
     methods: {
@@ -87,10 +142,13 @@ export default {
                 date: self.date,
             })
             .then(function (response) {
-                self.product.pie= response.data.pie;
-                self.product.bar= response.data.bar;
-                self.product.label= response.data.label;
-                self.product.col= response.data.col;
+                self.productPie.series.data = response.data.pie;
+                self.productBar.series[0].data = response.data.bar;
+                self.productBar.xAxis.categories = response.data.productlabel;
+                // self.product.pie= response.data.pie;
+                // self.product.bar= response.data.bar;
+                // self.product.label= response.data.label;
+                // self.product.col= response.data.col;
             }).catch(function (error) {
                 console.log(error);
                 self.$router.push({ path: '/login' });
