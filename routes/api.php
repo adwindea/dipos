@@ -120,6 +120,9 @@ Route::group(['middleware' => 'api'], function ($router) {
         });
         Route::prefix('report')->group(function () {
             Route::post('/dashboardWidget', 'ReportController@dashboardWidget')->name('report.dashboardWidget');
+            Route::post('/dashboardTransactionTable', 'ReportController@dashboardTransactionTable')->name('report.dashboardTransactionTable');
+            Route::post('/dashboardProductTable', 'ReportController@dashboardProductTable')->name('report.dashboardProductTable');
+            Route::post('/dashboardSalesChart', 'ReportController@dashboardSalesChart')->name('report.dashboardSalesChart');
         });
 
 

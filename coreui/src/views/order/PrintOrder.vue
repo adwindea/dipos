@@ -108,7 +108,8 @@ export default {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         },
         goBack() {
-            this.$router.push({name: 'EditOrder', params: this.order.uuid.toString()})
+            this.$router.go(-1)
+            // this.$router.push({name: 'Edit Order', params: this.order.uuid.toString()})
         },
         getOrderDetail (){
             let self = this;
