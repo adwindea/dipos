@@ -109,7 +109,7 @@ export default {
                 tooltip: {
                     headerFormat: '<table>',
                     pointFormat: '<tr><td style="color:{series.color};padding:0">{point.key}: </td>' +
-                        '<td style="padding:0"><b>{point.y:.1f} Pcs</b></td></tr>',
+                        '<td style="padding:0"><b>{point.y} Pcs</b></td></tr>',
                     footerFormat: '</table>',
                     shared: true,
                     useHTML: true
@@ -180,7 +180,7 @@ export default {
                 tooltip: {
                     headerFormat: '<table>',
                     pointFormat: '<tr><td style="color:{series.color};padding:0">{point.key}: </td>' +
-                        '<td style="padding:0"><b>{point.y:.1f} Pcs</b></td></tr>',
+                        '<td style="padding:0"><b>{point.y} Pcs</b></td></tr>',
                     footerFormat: '</table>',
                     shared: true,
                     useHTML: true

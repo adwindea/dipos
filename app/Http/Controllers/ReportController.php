@@ -179,7 +179,8 @@ class ReportController extends Controller
             $cogsdata = floatval($data->cogs);
             $cogsorderdata = null;
             if($data->order_count > 0){
-                $cogsorderdata = $cogsdata/$data->order_count*1;
+                $cogsorderdata = number_format($cogsdata/$data->order_count, 2, '.', '');
+                $cogsorderdata = floatval($cogsorderdata);
             }
             array_push($order, $data->order_count);
             array_push($cogs, $cogsdata);
