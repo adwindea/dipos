@@ -9,10 +9,10 @@
                                 <h4>Sales Report</h4>
                             </CCol>
                             <CCol lg="3" xs="12">
-                                <CInput type="date" v-model="date.start_date"/>
+                                <CInput type="date" v-model="date.start_date" @change="resetData()"/>
                             </CCol>
                             <CCol lg="3" xs="12">
-                                <CInput type="date" v-model="date.end_date"/>
+                                <CInput type="date" v-model="date.end_date" @change="resetData()"/>
                             </CCol>
                         </CRow>
                     </CCardHeader>
@@ -74,18 +74,13 @@ export default {
                     title: {
                         text: 'Order'
                     },
-                    minTickInterval: 1
+                    minTickInterval: 1,
+                    opposite: true
                 },{
                     min: 0,
                     title: {
                         text: 'CoGS'
-                    }
-                },{
-                    min: 0,
-                    title:{
-                        text: 'CoGS per Order'
                     },
-                    opposite: true
                 }
                 ],
                 tooltip: {
@@ -102,7 +97,7 @@ export default {
                     data: [],
                     tooltip: {
                         valueSuffix: ' Order'
-                    }
+                    },
                 },{
                     name: 'CoGS',
                     data: [],
@@ -116,7 +111,7 @@ export default {
                     tooltip: {
                         valueSuffix: ' IDR'
                     },
-                    yAxis: 2,
+                    yAxis: 1,
                     type: 'spline',
                     color: 'purple'
                 }]
@@ -150,6 +145,7 @@ export default {
                 self.salesChart.series[0].data = response.data.order;
                 self.salesChart.series[1].data = response.data.cogs;
                 self.salesChart.series[2].data = response.data.cogsorder;
+                self.salesChart.xAxis.categories = response.data.cat;
             }).catch(function (error) {
                 console.log(error);
                 self.$router.push({ path: '/login' });
@@ -167,6 +163,16 @@ export default {
                 console.log(error);
                 self.$router.push({ path: '/login' });
             });
+        },
+        resetData(){
+            var start_date = Date.parse(this.date.start_date)
+            var end_date = Date.parse(this.date.end_date)
+            if(end_date < start_date){
+                alert('End date must be greater than start date!');
+            }else{
+                this.getData()
+                this.getChart()
+            }
         }
     },
     mounted(){

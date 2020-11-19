@@ -23,10 +23,10 @@ class ReportController extends Controller
     public function dashboardWidget(Request $request){
         $date = $request->input('date');
         $order = Order::where('status', '=', 2)
-        ->whereBetween('created_at', [$date['start_date'], $date['end_date']])
+        ->whereBetween('created_at', [$date['start_date'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['end_date'].'+1 day'))))])
         ->orderBy('id')
         ->selectRaw('count(id) order_count, sum(cogs) as cogs, min(id) as minid, max(id) as maxid')
-        ->groupByRaw('substring(order_number, 1, 6)')
+        // ->groupByRaw('substring(order_number, 1, 6)')
         ->first();
         $order->cogs = number_format($order->cogs, 0, '', '.');
 
@@ -53,7 +53,7 @@ class ReportController extends Controller
     public function dashboardTransactionTable(Request $request){
         $date = $request->input('date');
         $order = Order::where('status', '=', 2)
-        ->whereBetween('created_at', [$date['start_date'], $date['end_date']])
+        ->whereBetween('created_at', [$date['start_date'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['end_date'].'+1 day'))))])
         ->orderByDesc('id')
         ->get();
         if(!empty($order)){
@@ -76,7 +76,7 @@ class ReportController extends Controller
         ->join('products', 'products.id', '=', 'order_logs.product_id')
         ->join('categories', 'categories.id', '=', 'products.category_id')
         ->where('order_logs.saved', true)
-        ->whereBetween('orders.created_at', [$date['start_date'], $date['end_date']])
+        ->whereBetween('orders.created_at', [$date['start_date'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['end_date'].'+1 day'))))])
         ->orderBy('products.name')
         ->selectRaw('products.name as product_name, categories.name as category, sum(order_logs.quantity) as quantity, products.price as price, sum(order_logs.discount) as discount')
         ->groupBy('products.id')
@@ -102,7 +102,7 @@ class ReportController extends Controller
             ->join('products', 'products.id', '=', 'order_logs.product_id')
             // ->join('categories', 'categories.id', '=', 'products.category_id')
             ->where('order_logs.saved', true)
-            ->whereBetween('orders.created_at', [$date['start_date'], $date['end_date']]);
+            ->whereBetween('orders.created_at', [$date['start_date'], date('Y-m-d', strtotime($date['end_date'].'+1 day'))]);
 
         $product_sum = $product->sum('quantity');
 
@@ -131,7 +131,7 @@ class ReportController extends Controller
             ->join('products', 'products.id', '=', 'order_logs.product_id')
             ->join('categories', 'categories.id', '=', 'products.category_id')
             ->where('order_logs.saved', true)
-            ->whereBetween('orders.created_at', [$date['start_date'], $date['end_date']])
+            ->whereBetween('orders.created_at', [$date['start_date'], date('Y-m-d', strtotime($date['end_date'].'+1 day'))])
             ->orderBy('categories.name')
             ->groupBy('categories.id')
             ->selectRaw('categories.name as category_name, sum(order_logs.quantity) as quantity')
@@ -169,7 +169,7 @@ class ReportController extends Controller
         $order = [];
         $cogs = [];
         $cogsorder = [];
-        for($i = $date['start_date']; $i <= $date['end_date']; $i = date('Y-m-d', strtotime($i.'+1 day'))){
+        for($i = $date['start_date']; $i < date('Y-m-d', strtotime($date['end_date'].'+1 day')); $i = date('Y-m-d', strtotime($i.'+1 day'))){
             array_push($cat, $i);
             $ornum = date('ymd', strtotime($i));
             $data = Order::where('status', '=', 2)
@@ -195,7 +195,7 @@ class ReportController extends Controller
     public function salesReportData(Request $request){
         $date = $request->input('date');
         $order = Order::where('status', '=', 2)
-        ->whereBetween('created_at', [$date['start_date'], $date['end_date']])
+        ->whereBetween('created_at', [$date['start_date'], date('Y-m-d', strtotime($date['end_date'].'+1 day'))])
         ->selectRaw('count(id) as total_order, sum(cogs) as COGS, date(created_at) sales_date')
         ->orderBy('created_at')
         ->groupByRaw('DATE(created_at)')

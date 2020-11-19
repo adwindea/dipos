@@ -51,19 +51,23 @@ export default {
             if(this.date.start_date == '' || this.date.end_date == ''){
                 var today = new Date();
                 var dd = String(today.getDate()).padStart(2, '0');
-                var dd2 = String(today.getDate() + 1).padStart(2, '0');
                 var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
                 var yyyy = today.getFullYear();
                 today = yyyy + '-' + mm + '-' + dd;
-                var tomorrow = yyyy + '-' + mm + '-' + dd2;
                 this.date.start_date = today
-                this.date.end_date = tomorrow
+                this.date.end_date = today
             }
         },
         reloadComponent(){
-            this.widget_key += 1
-            this.salesTable_key += 1
-            this.topSales_key += 1
+            var start_date = Date.parse(this.date.start_date)
+            var end_date = Date.parse(this.date.end_date)
+            if(end_date < start_date){
+                alert('End date must be greater than start date!');
+            }else{
+                this.widget_key += 1
+                this.salesTable_key += 1
+                this.topSales_key += 1
+            }
         }
     },
     mounted(){
