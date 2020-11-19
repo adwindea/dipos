@@ -123,6 +123,8 @@ Route::group(['middleware' => 'api'], function ($router) {
             Route::post('/dashboardTransactionTable', 'ReportController@dashboardTransactionTable')->name('report.dashboardTransactionTable');
             Route::post('/dashboardProductTable', 'ReportController@dashboardProductTable')->name('report.dashboardProductTable');
             Route::post('/dashboardSalesChart', 'ReportController@dashboardSalesChart')->name('report.dashboardSalesChart');
+            Route::post('/salesReportChart', 'ReportController@salesReportChart')->name('report.salesReportChart');
+            Route::post('/salesReportData', 'ReportController@salesReportData')->name('report.salesReportData');
         });
 
 

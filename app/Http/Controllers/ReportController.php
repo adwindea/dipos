@@ -114,26 +114,105 @@ class ReportController extends Controller
         $pie = [];
         $bar = [];
         $productlabel = [];
-        $rand = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
         if(!empty($product)){
             foreach($product as $p){
-
                 $percent = $p->quantity/$product_sum*100;
                 $pieobj = new \stdClass();
                 $pieobj->name = $p->product_name;
                 $pieobj->y = $percent;
+                $quantity = floatval($p->quantity);
                 array_push($pie, $pieobj);
-
                 array_push($productlabel, $p->product_name);
-                array_push($bar, $p->quantity);
+                array_push($bar, $quantity);
             }
         }
+
+        $category = OrderLog::join('orders', 'orders.id', '=', 'order_logs.order_id')
+            ->join('products', 'products.id', '=', 'order_logs.product_id')
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->where('order_logs.saved', true)
+            ->whereBetween('orders.created_at', [$date['start_date'], $date['end_date']])
+            ->orderBy('categories.name')
+            ->groupBy('categories.id')
+            ->selectRaw('categories.name as category_name, sum(order_logs.quantity) as quantity')
+            ->get();
+        $catpie = [];
+        $catbar = [];
+        $catlabel = [];
+        if(!empty($category)){
+            foreach($category as $c){
+                $percent = $c->quantity/$product_sum*100;
+                $catpieobj = new \stdClass();
+                $catpieobj->name = $c->category_name;
+                $catpieobj->y = $percent;
+                $quantity = floatval($c->quantity);
+                array_push($catpie, $catpieobj);
+                array_push($catlabel, $c->category_name);
+                array_push($catbar, $quantity);
+            }
+        }
+
         return response()->json( array(
             // 'label'  => $label,
             'pie'  => $pie,
             'bar'  => $bar,
-            'productlabel' => $productlabel
+            'productlabel' => $productlabel,
+            'catpie'  => $catpie,
+            'catbar'  => $catbar,
+            'catlabel' => $catlabel
         ));
     }
 
+    public function salesReportChart(Request $request){
+        $date = $request->input('date');
+        $cat = [];
+        $order = [];
+        $cogs = [];
+        $cogsorder = [];
+        for($i = $date['start_date']; $i <= $date['end_date']; $i = date('Y-m-d', strtotime($i.'+1 day'))){
+            array_push($cat, $i);
+            $ornum = date('ymd', strtotime($i));
+            $data = Order::where('status', '=', 2)
+            ->where('order_number', 'like', $ornum.'%')
+            ->selectRaw('count(id) as order_count, sum(cogs) as cogs')
+            ->first();
+            $cogsdata = floatval($data->cogs);
+            $cogsorderdata = null;
+            if($data->order_count > 0){
+                $cogsorderdata = $cogsdata/$data->order_count*1;
+            }
+            array_push($order, $data->order_count);
+            array_push($cogs, $cogsdata);
+            array_push($cogsorder, $cogsorderdata);
+        }
+        return response()->json( array(
+            'cat'  => $cat,
+            'order' => $order,
+            'cogs' => $cogs,
+            'cogsorder' => $cogsorder,
+        ));
+    }
+    public function salesReportData(Request $request){
+        $date = $request->input('date');
+        $order = Order::where('status', '=', 2)
+        ->whereBetween('created_at', [$date['start_date'], $date['end_date']])
+        ->selectRaw('count(id) as total_order, sum(cogs) as COGS, date(created_at) sales_date')
+        ->orderBy('created_at')
+        ->groupByRaw('DATE(created_at)')
+        ->get();
+        if(!empty($order)){
+            foreach ($order as $o){
+                $avg = 0;
+                if($o->total_order > 0){
+                    $avg = $o->COGS/$o->total_order;
+                }
+                $o->average = number_format($avg, 0, '', '.');
+                $o->COGS = number_format($o->COGS, 0, '', '.');
+                $o->total_order = number_format($o->total_order, 0, '', '.');
+            }
+        }
+        return response()->json( array(
+            'order' => $order,
+        ));
+    }
 }

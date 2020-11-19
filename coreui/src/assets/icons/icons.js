@@ -50,6 +50,7 @@ import {
   cilCoffee,
   cilCommentSquare,
   cilCursor,
+  cilDescription,
   cilDinner,
   cilDrop,
   cilDollar,
@@ -93,8 +94,9 @@ import {
   cilUser,
   cilUserFemale,
   cilUserFollow,
+  cilWarning,
   cilX,
-  cilXCircle
+  cilXCircle,
 
 } from '@coreui/icons'
 import { logo } from './logo'
@@ -121,6 +123,7 @@ export const iconsSet = Object.assign(
     cilCoffee,
     cilCommentSquare,
     cilCursor,
+    cilDescription,
     cilDinner,
     cilDrop,
     cilDollar,
@@ -164,6 +167,7 @@ export const iconsSet = Object.assign(
     cilUser,
     cilUserFemale,
     cilUserFollow,
+    cilWarning,
     cilX,
     cilXCircle
   },

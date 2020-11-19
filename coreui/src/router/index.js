@@ -138,6 +138,9 @@ const CreateOrder = () => import('@/views/order/CreateOrder')
 const EditOrder = () => import('@/views/order/EditOrder')
 const PrintOrder = () => import('@/views/order/PrintOrder')
 
+//Report
+const SalesReport = () => import('@/views/report/SalesReport')
+
 Vue.use(Router)
 
 let router = new Router({
@@ -454,6 +457,28 @@ function configRoutes () {
                     component: EditOrder,
                     meta:{
                       requiresUser: true
+                    }
+                }
+            ]
+        },
+        {
+            path: 'report',
+            meta: { label: 'Report' },
+            component: {
+                render (c) { return c('router-view')}
+            },
+            children: [
+                {
+                    path: '',
+                    redirect: '/report/sales',
+                },
+                {
+                    path: 'sales',
+                    meta: { label: 'Sales Report' },
+                    name: 'Sales Report',
+                    component: SalesReport,
+                    meta:{
+                      requiresAdmin: true
                     }
                 }
             ]

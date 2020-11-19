@@ -22,6 +22,7 @@
                         >
                             <template #name="{item}">
                                 <td>
+                                    <span v-if="item.restock_notif == 1 && item.stock >= item.limit" style="color:red"><CIcon name="cilWarning"></CIcon></span>
                                     {{item.name}}
                                 </td>
                             </template>

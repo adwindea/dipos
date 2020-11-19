@@ -18,11 +18,6 @@
                                 :items-per-page="10"
                                 pagination
                             >
-                                <!-- <template #status="{item}">
-                                <td>
-                                    <CBadge :color="getBadge(item.status)">{{item.status}}</CBadge>
-                                </td>
-                                </template> -->
                             </CDataTable>
                         </CTab>
                         <CTab title="By Product">
@@ -34,11 +29,6 @@
                                 :items-per-page="10"
                                 pagination
                             >
-                                <!-- <template #status="{item}">
-                                <td>
-                                    <CBadge :color="getBadge(item.status)">{{item.status}}</CBadge>
-                                </td>
-                                </template> -->
                             </CDataTable>
                         </CTab>
                     </CTabs>

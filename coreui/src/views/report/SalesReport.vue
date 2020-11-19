@@ -1,0 +1,178 @@
+<template>
+    <div>
+        <CRow>
+            <CCol col="12">
+                <CCard>
+                    <CCardHeader>
+                        <CRow>
+                            <CCol lg="6" xs="12">
+                                <h4>Sales Report</h4>
+                            </CCol>
+                            <CCol lg="3" xs="12">
+                                <CInput type="date" v-model="date.start_date"/>
+                            </CCol>
+                            <CCol lg="3" xs="12">
+                                <CInput type="date" v-model="date.end_date"/>
+                            </CCol>
+                        </CRow>
+                    </CCardHeader>
+                    <CCardBody>
+                        <highcharts :options="salesChart"></highcharts>
+                    </CCardBody>
+                    <CCardBody>
+                        <CDataTable
+                        hover
+                        sorter
+                        :items="items"
+                        :fields="fields"
+                        :items-per-page="10"
+                        items-per-page-select
+                        pagination
+                        >
+
+                        </CDataTable>
+                    </CCardBody>
+                </CCard>
+            </CCol>
+        </CRow>
+    </div>
+</template>
+
+<script>
+import axios from 'axios'
+import { Chart } from 'highcharts-vue'
+
+export default {
+    name: 'SalesReport',
+    data () {
+        return {
+            date: {
+                start_date: '',
+                end_date: '',
+            },
+            fields : [
+                {key:'sales_date', _classes:'text-center'},
+                {key:'total_order', _classes:'text-center'},
+                {key:'COGS', _classes:'text-center'},
+                {key:'average', _classes:'text-center'},
+            ],
+            items: [],
+            salesChart:{
+                chart: {
+                    type: 'column'
+                },
+                credits: { enabled: false},
+                title: {
+                    text: 'Sales Chart'
+                },
+                xAxis: {
+                    categories: [],
+                    crosshair: true
+                },
+                yAxis: [{
+                    min: 0,
+                    title: {
+                        text: 'Order'
+                    },
+                    minTickInterval: 1
+                },{
+                    min: 0,
+                    title: {
+                        text: 'CoGS'
+                    }
+                },{
+                    min: 0,
+                    title:{
+                        text: 'CoGS per Order'
+                    },
+                    opposite: true
+                }
+                ],
+                tooltip: {
+                    shared: true,
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.05,
+                        borderWidth: 0
+                    }
+                },
+                series: [{
+                    name: 'Order',
+                    data: [],
+                    tooltip: {
+                        valueSuffix: ' Order'
+                    }
+                },{
+                    name: 'CoGS',
+                    data: [],
+                    tooltip: {
+                        valueSuffix: ' IDR'
+                    },
+                    yAxis: 1
+                },{
+                    name: 'CoGS per Order',
+                    data: [],
+                    tooltip: {
+                        valueSuffix: ' IDR'
+                    },
+                    yAxis: 2,
+                    type: 'spline',
+                    color: 'purple'
+                }]
+            },
+        }
+    },
+    components:{
+        highcharts: Chart
+    },
+    methods: {
+        defaultDate(){
+            if(this.date.start_date == '' || this.date.end_date == ''){
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var mm2 = String(today.getMonth()).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                today = yyyy + '-' + mm2 + '-' + dd;
+                var tomorrow = yyyy + '-' + mm + '-' + dd;
+                this.date.start_date = today
+                this.date.end_date = tomorrow
+            }
+        },
+        getChart(){
+            let self = this;
+            axios.post(  this.$apiAdress + '/api/report/salesReportChart?token=' + localStorage.getItem("api_token"),
+            {
+                date: self.date,
+            })
+            .then(function (response) {
+                self.salesChart.series[0].data = response.data.order;
+                self.salesChart.series[1].data = response.data.cogs;
+                self.salesChart.series[2].data = response.data.cogsorder;
+            }).catch(function (error) {
+                console.log(error);
+                self.$router.push({ path: '/login' });
+            });
+        },
+        getData(){
+            let self = this;
+            axios.post(  this.$apiAdress + '/api/report/salesReportData?token=' + localStorage.getItem("api_token"),
+            {
+                date: self.date,
+            })
+            .then(function (response) {
+                self.items = response.data.order;
+            }).catch(function (error) {
+                console.log(error);
+                self.$router.push({ path: '/login' });
+            });
+        }
+    },
+    mounted(){
+        this.defaultDate()
+        this.getData()
+        this.getChart()
+    }
+}
+</script>
