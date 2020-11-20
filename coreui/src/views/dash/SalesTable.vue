@@ -7,7 +7,7 @@
                 Sales Record
             </CCardHeader>
             <CCollapse :show="salesTableCollapse">
-                <CCardBody class="m-0">
+                <CCardBody>
                     <CTabs variant="pills" :active-tab="1">
                         <CTab title="By Transaction">
                             <CDataTable
@@ -30,6 +30,13 @@
                                 pagination
                             >
                             </CDataTable>
+                            <downloadexcel
+                                class="btn btn-success float-right"
+                                :fetch="excelData"
+                                :fields="excelFields"
+                                :name="'Product_Sales_'+date.start_date+'_to_'+date.end_date+'.xls'">
+                                <CIcon :content="$options.excelIcon"></CIcon> Download Excel
+                            </downloadexcel><br>
                         </CTab>
                     </CTabs>
                 </CCardBody>
@@ -40,17 +47,31 @@
 
 <script>
 import axios from 'axios'
+import downloadexcel from "vue-json-excel";
+import { cilSpreadsheet } from '@coreui/icons'
 
 export default {
+    excelIcon: cilSpreadsheet,
     name: 'SalesTable',
     props: {
         date:{
             type: Object
         }
     },
+    components: {
+        downloadexcel,
+    },
     data () {
         return {
             salesTableCollapse: true,
+            excelFields : {
+                'Product Name': 'product_name',
+                'Category': 'category',
+                'Qty': 'quantity',
+                'Bruto': 'sell_price',
+                'Disc': 'discount',
+                'Final Price': 'final_price',
+            },
             transFields : [
                 {key:'order_number', _classes:'text-center'},
                 {key:'price_total', _classes:'text-center'},
@@ -96,6 +117,14 @@ export default {
                 console.log(error);
                 self.$router.push({ path: '/login' });
             });
+        },
+        async excelData(){
+            let self = this;
+            const response = await axios.post(this.$apiAdress + '/api/report/excelProductSales?token=' + localStorage.getItem("api_token"),
+            {
+                date: self.date,
+            });
+            return response.data.products;
         }
     },
     mounted(){

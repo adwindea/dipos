@@ -6,7 +6,15 @@
                     <CCardHeader>
                         <CRow>
                             <CCol lg="6" xs="12">
-                                <h4>Sales Report</h4>
+                                <h4>Sales Report
+                                    <downloadexcel
+                                        class="btn btn-success float-right"
+                                        :fetch="excelData"
+                                        :fields="excelFields"
+                                        :name="'Sales_Report_'+date.start_date+'_to_'+date.end_date+'.xls'">
+                                        <CIcon :content="$options.excelIcon"></CIcon>Download Excel
+                                    </downloadexcel>
+                                </h4>
                             </CCol>
                             <CCol lg="3" xs="12">
                                 <CInput type="date" v-model="date.start_date" @change="resetData()"/>
@@ -29,7 +37,6 @@
                         items-per-page-select
                         pagination
                         >
-
                         </CDataTable>
                     </CCardBody>
                 </CCard>
@@ -41,14 +48,23 @@
 <script>
 import axios from 'axios'
 import { Chart } from 'highcharts-vue'
+import { cilSpreadsheet } from '@coreui/icons'
+import downloadexcel from "vue-json-excel"
 
 export default {
+    excelIcon: cilSpreadsheet,
     name: 'SalesReport',
     data () {
         return {
             date: {
                 start_date: '',
                 end_date: '',
+            },
+            excelFields : {
+                'Date': 'sales_date',
+                'Total Order': 'total_order',
+                'CoGS': 'COGS',
+                'Average': 'average',
             },
             fields : [
                 {key:'sales_date', _classes:'text-center'},
@@ -133,7 +149,8 @@ export default {
         }
     },
     components:{
-        highcharts: Chart
+        highcharts: Chart,
+        downloadexcel
     },
     methods: {
         defaultDate(){
@@ -188,6 +205,14 @@ export default {
                 this.getData()
                 this.getChart()
             }
+        },
+        async excelData(){
+            let self = this;
+            const response = await axios.post(this.$apiAdress + '/api/report/excelSalesReport?token=' + localStorage.getItem("api_token"),
+            {
+                date: self.date,
+            });
+            return response.data.order;
         }
     },
     mounted(){

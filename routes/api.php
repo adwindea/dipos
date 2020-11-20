@@ -125,6 +125,8 @@ Route::group(['middleware' => 'api'], function ($router) {
             Route::post('/dashboardSalesChart', 'ReportController@dashboardSalesChart')->name('report.dashboardSalesChart');
             Route::post('/salesReportChart', 'ReportController@salesReportChart')->name('report.salesReportChart');
             Route::post('/salesReportData', 'ReportController@salesReportData')->name('report.salesReportData');
+            Route::post('/excelProductSales', 'ReportController@excelProductSales')->name('report.excelProductSales');
+            Route::post('/excelSalesReport', 'ReportController@excelSalesReport')->name('report.excelSalesReport');
         });
         Route::prefix('order')->group(function () {
             Route::post('/delete',   'OrderController@delete')->name('order.delete');

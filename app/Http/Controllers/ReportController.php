@@ -224,4 +224,68 @@ class ReportController extends Controller
             'order' => $order,
         ));
     }
+
+    public function excelProductSales(Request $request){
+        $date = $request->input('date');
+        $product = OrderLog::join('orders', 'orders.id', '=', 'order_logs.order_id')
+        ->join('products', 'products.id', '=', 'order_logs.product_id')
+        ->join('categories', 'categories.id', '=', 'products.category_id')
+        ->where('order_logs.saved', true)
+        ->whereBetween('orders.created_at', [$date['start_date'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['end_date'].'+1 day'))))])
+        ->orderBy('products.name')
+        ->selectRaw('products.name as product_name, categories.name as category, sum(order_logs.quantity) as quantity, products.price as price, sum(order_logs.discount) as discount')
+        ->groupBy('products.id')
+        ->get();
+        // $quantity_tot = 0;
+        // $sell_price_tot = 0;
+        // $final_price_tot = 0;
+        // $discount_tot = 0;
+        if(!empty($product)){
+            foreach($product as $p){
+                $sell_price = $p->price*$p->quantity;
+                // $quantity_tot = $quantity_tot + $p->quantity;
+                // $sell_price_tot = $sell_price_tot + $sell_price;
+                // $final_price_tot = $final_price_tot + ($sell_price-$p->discount);
+                // $discount_tot = $discount_tot + $p->discount;
+                $p->sell_price = number_format($sell_price, 0, '.', '');
+                $p->final_price = number_format($sell_price-$p->discount, 0, '.', '');
+                $p->discount = number_format($p->discount, 0, '.', '');
+                $p->quantity = number_format($p->quantity, 0, '.', '');
+            }
+        }
+        // $total = new \stdClass();
+        // $total->product_name = 'Total';
+        // $total->sell_price = number_format($sell_price_tot, 0, '.', '');
+        // $total->final_price = number_format($final_price_tot, 0, '.', '');
+        // $total->discount = number_format($discount_tot, 0, '.', '');
+        // $total->quantity = number_format($quantity_tot, 0, '.', '');
+        // array_push($product, $total);
+        return response()->json( array(
+            'products'  => $product
+        ));
+    }
+
+    public function excelSalesReport(Request $request){
+        $date = $request->input('date');
+        $order = Order::where('status', '=', 2)
+        ->whereBetween('created_at', [$date['start_date'], date('Y-m-d', strtotime($date['end_date'].'+1 day'))])
+        ->selectRaw('count(id) as total_order, sum(cogs) as COGS, date(created_at) sales_date')
+        ->orderBy('created_at')
+        ->groupByRaw('DATE(created_at)')
+        ->get();
+        if(!empty($order)){
+            foreach ($order as $o){
+                $avg = 0;
+                if($o->total_order > 0){
+                    $avg = $o->COGS/$o->total_order;
+                }
+                $o->average = number_format($avg, 0, '.', '');
+                $o->COGS = number_format($o->COGS, 0, '.', '');
+                $o->total_order = number_format($o->total_order, 0, '.', '');
+            }
+        }
+        return response()->json( array(
+            'order' => $order,
+        ));
+    }
 }
