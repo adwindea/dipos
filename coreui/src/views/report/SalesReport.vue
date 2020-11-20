@@ -81,6 +81,13 @@ export default {
                     title: {
                         text: 'CoGS'
                     },
+                },{
+                    min: 0,
+                    title: {
+                        text: 'Product Sold'
+                    },
+                    minTickInterval: 1,
+                    opposite: true
                 }
                 ],
                 tooltip: {
@@ -114,6 +121,13 @@ export default {
                     yAxis: 1,
                     type: 'spline',
                     color: 'purple'
+                },{
+                    name: 'Product Sold',
+                    data: [],
+                    tooltip: {
+                        valueSuffix: ' Pcs'
+                    },
+                    yAxis: 2
                 }]
             },
         }
@@ -145,6 +159,7 @@ export default {
                 self.salesChart.series[0].data = response.data.order;
                 self.salesChart.series[1].data = response.data.cogs;
                 self.salesChart.series[2].data = response.data.cogsorder;
+                self.salesChart.series[3].data = response.data.productsold;
                 self.salesChart.xAxis.categories = response.data.cat;
             }).catch(function (error) {
                 console.log(error);

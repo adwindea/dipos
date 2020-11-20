@@ -10,6 +10,15 @@
                     <CButton color="danger" class="text-center" @click="saveOrder(uuid,2)">Close Order</CButton>
                 </footer>
             </CModal>
+            <CModal
+            title="Delete Order"
+            :show.sync="deleteModal"
+            >
+                <p>Are you sure to delete order {{order_number}}?</p>
+                <footer slot="footer">
+                    <CButton color="danger" class="text-center" @click="deleteOrder(uuid)">Delete Order</CButton>
+                </footer>
+            </CModal>
             <transition name="slide">
                 <CCard>
                     <CCardHeader>
@@ -73,7 +82,8 @@
                             </template>
                             <template #action="{item}">
                                 <td class="text-center">
-                                    <CButton v-if="item.status < 2" color="danger" @click="closeOrder(item.uuid,item.order_number)"><CIcon name="cilCheck"></CIcon></CButton>
+                                    <CButton v-if="item.status < 2" color="primary" @click="closeOrder(item.uuid,item.order_number)"><CIcon name="cilCheck"></CIcon></CButton>
+                                    <CButton v-if="role" color="danger" @click="delOrder(item.uuid,item.order_number)"><CIcon name="cilTrash"></CIcon></CButton>
                                     <CButton color="info" @click="printReceipt(item.uuid)"><CIcon name="cilPrint"></CIcon></CButton>
                                     <CButton color="warning" @click="showOrder(item.uuid)"><CIcon name="cilMagnifyingGlass"></CIcon></CButton>
                                 </td>
@@ -105,8 +115,10 @@ export default {
             ],
             items: [],
             uuid: '',
+            role: '',
             order_number: '',
             closeModal: false,
+            deleteModal: false,
         }
     },
     methods: {
@@ -115,6 +127,7 @@ export default {
             axios.get(  this.$apiAdress + '/api/order?token=' + localStorage.getItem("api_token"))
             .then(function (response) {
                 self.items = response.data.orders;
+                self.role = response.data.role;
                 self.you = response.data.you;
             }).catch(function (error) {
                 console.log(error);
@@ -135,6 +148,11 @@ export default {
             this.uuid = uuid
             this.closeModal = true
         },
+        delOrder(uuid,order_number){
+            this.order_number = order_number
+            this.uuid = uuid
+            this.deleteModal = true
+        },
         saveOrder(uuid,stat){
             let self = this
             axios.post(  this.$apiAdress + '/api/order/saveOrder?token=' + localStorage.getItem("api_token"),
@@ -145,6 +163,18 @@ export default {
             )
             .then(function (response) {
                 self.closeModal = false
+                self.getOrder()
+            })
+        },
+        deleteOrder(uuid){
+            let self = this
+            axios.post(  this.$apiAdress + '/api/order/delete?token=' + localStorage.getItem("api_token"),
+                {
+                    uuid: uuid
+                }
+            )
+            .then(function (response) {
+                self.deleteModal = false
                 self.getOrder()
             })
         }

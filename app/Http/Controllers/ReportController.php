@@ -169,12 +169,17 @@ class ReportController extends Controller
         $order = [];
         $cogs = [];
         $cogsorder = [];
+        $productsold = [];
         for($i = $date['start_date']; $i < date('Y-m-d', strtotime($date['end_date'].'+1 day')); $i = date('Y-m-d', strtotime($i.'+1 day'))){
             array_push($cat, $i);
             $ornum = date('ymd', strtotime($i));
             $data = Order::where('status', '=', 2)
             ->where('order_number', 'like', $ornum.'%')
-            ->selectRaw('count(id) as order_count, sum(cogs) as cogs')
+            ->selectRaw('count(id) as order_count, sum(cogs) as cogs, max(id) as maxid, min(id) as minid')
+            ->first();
+            $orderlog = OrderLog::where('saved', true)
+            ->whereBetween('order_id', [$data->minid, $data->maxid])
+            ->selectRaw('sum(quantity) as productsold')
             ->first();
             $cogsdata = floatval($data->cogs);
             $cogsorderdata = null;
@@ -182,15 +187,18 @@ class ReportController extends Controller
                 $cogsorderdata = number_format($cogsdata/$data->order_count, 2, '.', '');
                 $cogsorderdata = floatval($cogsorderdata);
             }
+            $productsolddata = floatval($orderlog->productsold);
             array_push($order, $data->order_count);
             array_push($cogs, $cogsdata);
             array_push($cogsorder, $cogsorderdata);
+            array_push($productsold, $productsolddata);
         }
         return response()->json( array(
             'cat'  => $cat,
             'order' => $order,
             'cogs' => $cogs,
             'cogsorder' => $cogsorder,
+            'productsold' => $productsold,
         ));
     }
     public function salesReportData(Request $request){

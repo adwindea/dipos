@@ -126,7 +126,9 @@ Route::group(['middleware' => 'api'], function ($router) {
             Route::post('/salesReportChart', 'ReportController@salesReportChart')->name('report.salesReportChart');
             Route::post('/salesReportData', 'ReportController@salesReportData')->name('report.salesReportData');
         });
-
+        Route::prefix('order')->group(function () {
+            Route::post('/delete',   'OrderController@delete')->name('order.delete');
+        });
 
         Route::resource('roles',        'RolesController');
         Route::get('/roles/move/move-up',      'RolesController@moveUp')->name('roles.up');

@@ -30,6 +30,11 @@ class OrderController extends Controller
         ->where('orders.status', '>', 0)
         ->orderByDesc('order_number')
         ->get();
+        $role = Auth::user()->menuroles;
+        $admin = false;
+        if(strpos($role, 'admin') !== false){
+            $admin = true;
+        }
         if(!empty($orders)){
             foreach($orders as $key => $value){
                 $orders[$key]['price_total'] = number_format($value['price_total'], 0, '', '.');
@@ -39,7 +44,10 @@ class OrderController extends Controller
                 $orders[$key]['amount'] = number_format($value['amount'], 2, ',', '.');
             }
         }
-        return response()->json( array( 'orders'  => $orders ) );
+        return response()->json( array(
+            'orders'  => $orders,
+            'role' => $admin
+            ));
     }
 
     public function create(){
@@ -428,5 +436,34 @@ class OrderController extends Controller
             'order'=>$order,
             'user'=>Auth::user()->name
         ));
+    }
+
+    public function delete(Request $request){
+        $uuid = $request->input('uuid');
+        $order = Order::where('uuid', '=', $uuid)->first();
+        $rawmatlog = RawmatLog::where('saved', true)
+        ->where('order_id', '=', $order->id)
+        ->selectRaw('sum(quantity) as quantity, rawmat_id')
+        ->groupBy('rawmat_id')
+        ->get();
+        if(!empty($rawmatlog)){
+            foreach($rawmatlog as $rawlog){
+                $rawmat = Rawmat::where('id', '=', $rawlog->rawmat_id)->first();
+                $rawmat->stock = $rawmat->stock + $rawlog->quantity;
+                $rawmat->save();
+            }
+        }
+        $rawmatlog = RawmatLog::where('saved', true)
+        ->where('order_id', '=', $order->id)
+        ->update(['saved' => false]);
+        $rawmatlog = RawmatLog::where('order_id', '=', $order->id)->delete();
+        $orderlog = OrderLog::where('saved', true)
+        ->where('order_id', '=', $order->id)
+        ->update(['saved' => false]);
+        $orderlog = OrderLog::where('order_id', '=', $order->id)->delete();
+        $order->status = 0;
+        $order->save();
+        $order->delete();
+        return response()->json( array('success'=>true) );
     }
 }
