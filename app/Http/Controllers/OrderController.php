@@ -183,6 +183,7 @@ class OrderController extends Controller
             }
         }
         $order->status = $stat;
+        $order->user_id = Auth::user()->id;
         $order->save();
 
         if($stat == 2){

@@ -65,6 +65,7 @@ export default {
                 'Total Order': 'total_order',
                 'CoGS': 'COGS',
                 'Average': 'average',
+                'Total Cup': 'total_cup'
             },
             fields : [
                 {key:'sales_date', _classes:'text-center'},

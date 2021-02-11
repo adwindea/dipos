@@ -267,11 +267,12 @@ class ReportController extends Controller
 
     public function excelSalesReport(Request $request){
         $date = $request->input('date');
-        $order = Order::where('status', '=', 2)
-        ->whereBetween('created_at', [$date['start_date'], date('Y-m-d', strtotime($date['end_date'].'+1 day'))])
-        ->selectRaw('count(id) as total_order, sum(cogs) as COGS, date(created_at) sales_date')
-        ->orderBy('created_at')
-        ->groupByRaw('DATE(created_at)')
+        $order = Order::leftJoin('order_logs', 'orders.id', '=', 'order_logs.order_id')
+        ->where('orders.status', '=', 2)
+        ->whereBetween('orders.created_at', [$date['start_date'], date('Y-m-d', strtotime($date['end_date'].'+1 day'))])
+        ->selectRaw('count(orders.id) as total_order, sum(orders.cogs) as COGS, date(orders.created_at) sales_date, sum(order_logs.quantity) as total_cup')
+        ->orderBy('orders.created_at')
+        ->groupByRaw('DATE(orders.created_at)')
         ->get();
         if(!empty($order)){
             foreach ($order as $o){
@@ -282,6 +283,7 @@ class ReportController extends Controller
                 $o->average = number_format($avg, 0, '.', '');
                 $o->COGS = number_format($o->COGS, 0, '.', '');
                 $o->total_order = number_format($o->total_order, 0, '.', '');
+                $o->total_cup = number_format($o->total_cup, 0, '.', '');
             }
         }
         return response()->json( array(
