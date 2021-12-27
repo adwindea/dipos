@@ -23,7 +23,16 @@ class CategoryController extends Controller
     }
 
     public function index(){
-        return response()->json( array( 'categories'  => Category::all() ) );
+        $categories = Category::where('tenant_id', Auth::user()->tenant_id)
+        ->get()
+        ->map(function($category, $key){
+            return [
+                'name' => $category->name,
+                'uuid' => $category->uuid,
+                'img' => $category->img,
+            ];
+        });
+        return response()->json( array( 'categories'  => $categories ) );
     }
 
     public function store(Request $request){
@@ -51,13 +60,19 @@ class CategoryController extends Controller
         $category->name = $name;
         $category->img = $filename;
         $category->user_id = Auth::user()->id;
+        $category->tenant_id = Auth::user()->tenant_id;
         $category->uuid = Str::uuid();
         $category->save();
         return response()->json( array('success' => true) );
     }
 
     public function show(Request $request){
-        $category = Category::select('*')->where('uuid', '=', $request->input('uuid'))->first();
+        $category = Category::where('uuid', '=', $request->input('uuid'))->first();
+        $category = [
+            'name' => $category->name,
+            'uuid' => $category->uuid,
+            'img' => $category->img,
+        ];
         return response()->json( array(
             'category' => $category
         ));

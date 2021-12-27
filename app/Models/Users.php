@@ -17,6 +17,10 @@ class Users extends Model
         return $this->hasMany('App\Notes');
     }
 
+    public function tenant(){
+        return $this->belongsTo(Tenant::class);
+    }
+
     protected $dates = [
         'deleted_at'
     ];

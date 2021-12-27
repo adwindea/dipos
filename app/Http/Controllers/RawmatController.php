@@ -23,7 +23,21 @@ class RawmatController extends Controller
     }
 
     public function index(){
-        return response()->json( array( 'rawmat'  => Rawmat::all() ) );
+        $rawmats = Rawmat::where('tenant_id', Auth::user()->tenant_id)
+        ->get()
+        ->map(function($rawmat, $key){
+            return [
+                'name' => $rawmat->name,
+                'stock' => $rawmat->stock,
+                'limit' => $rawmat->limit,
+                'unit' => $rawmat->unit,
+                'price' => $rawmat->price,
+                'restock_notif' => $rawmat->restock_notif,
+                'img' => $rawmat->img,
+                'uuid' => $rawmat->uuid,
+            ];
+        });
+        return response()->json( array( 'rawmat'  => $rawmats ) );
     }
 
     public function store(Request $request){
@@ -61,13 +75,24 @@ class RawmatController extends Controller
         $rawmaterial->restock_notif = $request->input('restock_notif');
         $rawmaterial->img = $filename;
         $rawmaterial->user_id = Auth::user()->id;
+        $rawmaterial->tenant_id = Auth::user()->tenant_id;
         $rawmaterial->uuid = Str::uuid();
         $rawmaterial->save();
         return response()->json( array('success' => true) );
     }
 
     public function show(Request $request){
-        $rawmat = Rawmat::select('*')->where('uuid', '=', $request->input('uuid'))->first();
+        $rawmat = Rawmat::where('uuid', '=', $request->input('uuid'))->first();
+        $rawmat = [
+            'name' => $rawmat->name,
+            'stock' => $rawmat->stock,
+            'limit' => $rawmat->limit,
+            'unit' => $rawmat->unit,
+            'price' => $rawmat->price,
+            'restock_notif' => $rawmat->restock_notif,
+            'img' => $rawmat->img,
+            'uuid' => $rawmat->uuid,
+        ];
         return response()->json( array(
             'rawmat' => $rawmat
         ));

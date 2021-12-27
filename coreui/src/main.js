@@ -7,7 +7,7 @@ import { iconsSet as icons } from './assets/icons/icons.js'
 import store from './store'
 // import VueHtmlToPaper from 'vue-html-to-paper';
 
-Vue.prototype.$apiAdress = 'http://127.0.0.1:8000'
+Vue.prototype.$apiAdress = 'http://diposmulti.test'
 Vue.config.performance = true
 Vue.use(CoreuiVue)
 // Vue.use(VueHtmlToPaper);

@@ -10,4 +10,8 @@ class Category extends Model
 {
     use SoftDeletes;
     protected $table = 'categories';
+
+    public function tenant(){
+        return $this->belongsTo(Tenant::class);
+    }
 }
