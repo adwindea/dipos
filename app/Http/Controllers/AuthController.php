@@ -45,14 +45,24 @@ class AuthController extends Controller
         return response()->json(['status' => 'success'], 200);
     }
 
+    
+    //Subdomain enabled, remove credentials function for disable
+    protected function credentials($sub)
+    {
+        return array_merge(request(['email', 'password']), ['sub' => $sub]);
+    }
+
+
+
     /**
      * Get a JWT via given credentials.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function login(Request $request, $sub)
     {
-        $credentials = request(['email', 'password']);
+        // $credentials = request(['email', 'password']); //for disabled subdomain
+        $credentials = $this->credentials($sub); //for enabled subdomain
 
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);

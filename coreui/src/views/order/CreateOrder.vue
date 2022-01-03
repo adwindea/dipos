@@ -1,5 +1,6 @@
 <style lang="scss">
     @import "../../assets/scss/product-card.scss";
+    @import "../../assets/scss/floating-button.scss";
 </style>
 
 <template>
@@ -15,116 +16,98 @@
                 </footer>
             </CModal>
 
+            <CModal
+            :title="'Order '+order.order_number"
+            size="lg"
+            :show.sync="cartModal"
+            >
+                <CTabs>
+                    <CTab title="Cart" active>
+                        <table class="table">
+                            <tr>
+                                <th>Item</th>
+                                <th class="text-center" style="width:125px">Qty</th>
+                                <th>Note</th>
+                                <th class="text-center">Total</th>
+                            </tr>
+                            <tr v-for="(item, $index) in order_items" :key="$index">
+                                <td>{{ item.name }}</td>
+                                <td>
+                                    <CInput
+                                        size="sm"
+                                        type="text"
+                                        placeholder="Qty"
+                                        addInputClasses="text-center"
+                                        v-model.number="item.quantity"
+                                        @keyup.enter="saveQuantity($index)"
+                                        @blur="saveQuantity($index)"
+                                        >
+                                        <template #prepend>
+                                            <CButton size="sm" color="danger" @click="minusQuantity($index)"><CIcon name="cilMinus" height="12"/></CButton>
+                                        </template>
+                                        <template #append>
+                                            <CButton size="sm" color="success" @click="plusQuantity($index)"><CIcon name="cilPlus" height="12"/></CButton>
+                                        </template>
+                                    </CInput>
+                                </td>
+                                <td>
+                                    <CInput
+                                        size="sm"
+                                        type="text"
+                                        placeholder="Add note here"
+                                        addInputClasses="text-center"
+                                        v-model.number="item.note"
+                                        @keyup.enter="saveQuantity($index)"
+                                        @blur="saveQuantity($index)"
+                                    />
+                                </td>
+                                <td class="text-center">{{ item.quantity*item.price }}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" >Total</th>
+                                <th class="text-center">{{ order.final_price }}</th>
+                            </tr>
+                        </table>
+                    </CTab>
+                    <CTab title="Detail">
+                        <div class="pt-3">
+                            <CInput label="Customer Name" type="text" placeholder="Customer Name" v-model="order.customer_name" @blur="saveDetail()"></CInput>
+                            <CInput label="Customer Email" type="email" placeholder="Customer Email" v-model="order.customer_email" @blur="saveDetail()"></CInput>
+                            <CTextarea label="Note" placeholder="Type something here" v-model="order.note" @blur="saveDetail()"></CTextarea>
+                            <CSelect
+                                label="Payment"
+                                :value.sync="order.payment_type"
+                                :plain="true"
+                                :options="payment_type"
+                                @change="saveDetail()"
+                            />
+                            <CInput
+                                label="Promo"
+                                type="text"
+                                placeholder="Code"
+                                :description="promotion_warning"
+                                v-model="promotion.code"
+                                >
+                                <template #append>
+                                    <CButton color="success" @click="checkPromotion()">Check</CButton>
+                                </template>
+                            </CInput>
+                        </div>
+                    </CTab>
+                </CTabs>
+                <footer slot="footer">
+                    <CButton color="danger" @click="closeModal = true; cartModal = false">Close Order</CButton>
+                    <CButton color="warning" @click="printReceipt()">Print Receipt</CButton>
+                    <CButton color="primary" @click="saveOrder(order.uuid,1)">Save Order</CButton>
+                </footer>
+            </CModal>
+
+
             <transition name="slide">
                 <CRow>
-                    <CCol col="5">
-                        <CCard>
-                            <CCardHeader>
-                                <h4>Order {{ order.order_number }}</h4>
-                            </CCardHeader>
-                            <CCardBody>
-                                <CCard class="mb-0">
-                                    <CCardHeader
-                                        @click="detailCollapse = !detailCollapse"
-                                        class="btn btn-link btn-block text-left">
-                                        Details
-                                    </CCardHeader>
-                                    <CCollapse :show="detailCollapse">
-                                        <CCardBody class="m-0">
-                                            <CInput label="Customer Name" type="text" placeholder="Customer Name" v-model="order.customer_name" @blur="saveDetail()"></CInput>
-                                            <CInput label="Customer Email" type="email" placeholder="Customer Email" v-model="order.customer_email" @blur="saveDetail()"></CInput>
-                                            <CTextarea label="Note" placeholder="Type something here" v-model="order.note" @blur="saveDetail()"></CTextarea>
-                                            <CSelect
-                                                label="Payment"
-                                                :value.sync="order.payment_type"
-                                                :plain="true"
-                                                :options="payment_type"
-                                                @change="saveDetail()"
-                                            />
-                                            <CInput
-                                                label="Promo"
-                                                type="text"
-                                                placeholder="Code"
-                                                :description="promotion_warning"
-                                                v-model="promotion.code"
-                                                >
-                                                <template #append>
-                                                    <CButton color="success" @click="checkPromotion()">Check</CButton>
-                                                </template>
-                                            </CInput>
-                                        </CCardBody>
-                                    </CCollapse>
-                                </CCard>
-                                <CCard class="mb-0">
-                                    <CCardHeader
-                                        @click="openCart()"
-                                        class="btn btn-link btn-block text-left">
-                                        Cart
-                                    </CCardHeader>
-                                    <CCollapse :show="orderCollapse">
-                                        <CCardBody class="m-0" style="height:42vh;overflow: auto;">
-                                            <table class="table">
-                                                <tr>
-                                                    <th>Item</th>
-                                                    <th class="text-center" style="width:125px">Qty</th>
-                                                    <th class="text-center">Total</th>
-                                                </tr>
-                                                <tr v-for="(item, $index) in order_items" :key="$index">
-                                                    <td>{{ item.name }}</td>
-                                                    <td>
-                                                        <CInput
-                                                            size="sm"
-                                                            type="number"
-                                                            placeholder="Qty"
-                                                            addInputClasses="text-center"
-                                                            v-model.number="item.quantity"
-                                                            @keyup="saveQuantity($index)"
-                                                            @blur="saveQuantity($index)"
-                                                            v-bind:readonly="item.saved"
-                                                            >
-                                                            <template #prepend v-if="!item.saved">
-                                                                <CButton size="sm" color="danger" @click="minusQuantity($index)"><CIcon name="cilMinus" height="14"/></CButton>
-                                                            </template>
-                                                            <template #append v-if="!item.saved">
-                                                                <CButton size="sm" color="success" @click="plusQuantity($index)"><CIcon name="cilPlus" height="14"/></CButton>
-                                                            </template>
-                                                        </CInput>
-                                                    </td>
-                                                    <td class="text-center">{{ item.quantity*item.price }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th colspan="2" >Discount</th>
-                                                    <th class="text-center">{{ order.discount }}</th>
-                                                </tr>
-                                                <tr>
-                                                    <th colspan="2" >Total</th>
-                                                    <th class="text-center">{{ order.final_price }}</th>
-                                                </tr>
-                                                <infinite-loading spinner="waveDots" :identifier="orderInfId" @infinite="getOrderItems">
-                                                    <span slot="no-more"></span>
-                                                </infinite-loading>
-                                            </table>
-                                        </CCardBody>
-                                    </CCollapse>
-                                </CCard>
-                            </CCardBody>
-                            <CCardFooter align='center'>
-                                <CButton color="danger" @click="closeModal = true">Close</CButton>
-                                <CButton color="warning" @click="printReceipt()">Print</CButton>
-                                <CButton color="primary" @click="saveOrder(order.uuid,1)">Save</CButton>
-                            </CCardFooter>
-                        </CCard>
-                    </CCol>
-                    <CCol col="7">
-                        <!-- <CRow>
-                            <CCol>
-                                <CInput placeholder="Search" v-model="itemSearch" @keyup="resetListItem()">
-                                    <template #append-content><CIcon name="cilMagnifyingGlass"/></template>
-                                </CInput>
-                            </CCol>
-                        </CRow> -->
+                    <CCol col="12">
                         <CRow>
-                            <CCol col="6">
+                            <CCol md="6">
                                 <CSelect
                                     :value.sync="categorySearch"
                                     :plain="true"
@@ -132,13 +115,13 @@
                                     @change="resetListItem()"
                                 />
                             </CCol>
-                            <CCol col="6">
+                            <CCol md="6">
                                 <CInput placeholder="Search" v-model="itemSearch" @keyup="resetListItem()">
                                     <template #append-content><CIcon name="cilMagnifyingGlass"/></template>
                                 </CInput>
                             </CCol>
                             <!-- <div> -->
-                                <CCol  md="6" lg="4" xl="3" v-for="(item, $index) in items" :key="$index">
+                                <CCol col="6" xs="6" md="4" lg="3" xl="2" class="p-1" v-for="(item, $index) in items" :key="$index">
                                     <div class="pc-wrapper">
                                         <div class="pc-container">
                                             <div class="top" v-bind:style="{height: '80%', width:'100%',
@@ -151,7 +134,7 @@
                                             <div class="bottom" :id="'click'+item.uuid">
                                                 <div class="left">
                                                     <div class="details">
-                                                        <h6>{{item.name}}</h6>
+                                                        <h6 class="scroll-text">{{item.name}}</h6>
                                                         <small>{{item.price}} IDR</small>
                                                     </div>
                                                     <div class="buy" @click="addClick(item.uuid)"><CIcon name="cilCart"></CIcon></div>
@@ -169,7 +152,21 @@
                                         <div class="inside">
                                             <div class="icon"><CIcon name="cilInfo"></CIcon></div>
                                             <div class="contents">
-
+                                                <CRow>
+                                                    <CCol>
+                                                        <h6 style="color:white;">{{item.name}}</h6>
+                                                    </CCol>
+                                                </CRow>
+                                                <CRow>
+                                                    <CCol>
+                                                        <h7 style="color:white;">{{item.price}} IDR</h7>
+                                                    </CCol>
+                                                </CRow>
+                                                <CRow class="pt-2">
+                                                    <CCol>
+                                                        <div style="white-space: pre; color: white;">{{item.description}}</div>
+                                                    </CCol>
+                                                </CRow>
                                             </div>
                                         </div>
                                     </div>
@@ -180,6 +177,7 @@
                                 <span slot="no-more"></span>
                             </infinite-loading>
                         </CRow>
+                        <CButton color="primary" @click="openCart()" class="cart-button-float"><CIcon name="cilCart" class="my-cart-button-float" height="18"/></CButton>
                     </CCol>
                 </CRow>
             </transition>
@@ -195,11 +193,6 @@ export default {
     name: 'CreateOrder',
     data () {
         return {
-            // fields:[
-            //     {key:'item'},
-            //     {key:'qty', _classes:'text-center'},
-            //     {key:'total', _classes:'text-center'},
-            // ],
             order: {
                 customer_name: '',
                 customer_email: '',
@@ -213,7 +206,7 @@ export default {
                 final_price: '',
                 payment_type: ''
             },
-            order_uuid: '',
+            cartModal: false,
             order_items: [],
             items: [],
             categories: [],
@@ -226,8 +219,6 @@ export default {
                 {label: 'QRIS', value:1},
                 {label: 'Debt', value:2}
             ],
-            detailCollapse: false,
-            orderCollapse: true,
             orderPage: 1,
             orderInfId: +new Date(),
             itemSearch: '',
@@ -304,6 +295,10 @@ export default {
                 self.promotion_warning = response.data.mess
             })
         },
+        openCart(){
+            this.cartModal = true
+            this.getOrderItems()
+        },
         getOrderItems($state) {
             let self = this
             if(self.order.uuid !== ''){
@@ -313,13 +308,14 @@ export default {
                         uuid: self.order.uuid
                     },
                 }).then(({ data }) => {
-                    if (data.data.length) {
-                        self.orderPage += 1;
-                        self.order_items.push(...data.data);
-                        $state.loaded();
-                    } else {
-                        $state.complete();
-                    }
+                    self.order_items = data.order_items
+                    // if (data.order_items.data.length) {
+                    //     self.orderPage += 1;
+                    //     self.order_items.push(...data.data);
+                    //     $state.loaded();
+                    // } else {
+                    //     $state.complete();
+                    // }
                 });
             }
         },
@@ -361,33 +357,21 @@ export default {
             this.itemInfId += 1
             this.items = []
         },
-        // setInputFilter(textbox, inputFilter) {
-        //     ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
-        //         textbox.addEventListener(event, function() {
-        //             if (inputFilter(this.value)) {
-        //                 this.oldValue = this.value;
-        //                 this.oldSelectionStart = this.selectionStart;
-        //                 this.oldSelectionEnd = this.selectionEnd;
-        //             } else if (this.hasOwnProperty("oldValue")) {
-        //                 this.value = this.oldValue;
-        //                 this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
-        //             } else {
-        //                 this.value = "";
-        //             }
-        //         });
-        //     });
+        // noteEnter(event,index){
+        //     if (event.keyCode === 13) {
+        //         this.saveQuantity(index);
+        //     }
         // },
         saveQuantity(index){
             let self = this
-            // this.setInputFilter(document.getElementsByClassName("filter-number"), function(value) {
-            //     return /^\d*\.?\d*$/.test(value); // Allow digits and '.' only, using a RegExp
-            // });
             var uuid = self.order_items[index].uuid;
             var quantity = self.order_items[index].quantity;
+            var note = self.order_items[index].note;
             axios.post(  this.$apiAdress + '/api/order/saveQuantity?token=' + localStorage.getItem("api_token"),
                 {
                     uuid: uuid,
                     quantity: quantity,
+                    note: note,
                     order_uuid: self.order.uuid
                 }
             )
@@ -397,12 +381,6 @@ export default {
                     self.resetOrderItem()
                 }
             })
-        },
-        openCart(){
-            this.orderCollapse = !this.orderCollapse
-            if(this.orderCollapse){
-                this.resetOrderItem()
-            }
         },
         plusQuantity(index){
             this.order_items[index].quantity++;
@@ -440,25 +418,6 @@ export default {
                 self.resetOrderItem()
             })
         },
-        // openPrintModal(){
-        //     let self = this
-        //     let anyDate = new Date()
-        //     Date.prototype.toShortFormat = function() {
-        //         let monthNames =["Jan","Feb","Mar","Apr",
-        //                         "May","Jun","Jul","Aug",
-        //                         "Sep", "Oct","Nov","Dec"];
-        //         let day = this.getDate();
-        //         let monthIndex = this.getMonth();
-        //         let monthName = monthNames[monthIndex];
-        //         let year = this.getFullYear();
-        //         let hour = this.getHours();
-        //         let minute = this.getMinutes();
-
-        //         return `${day}-${monthName}-${year} ${hour}:${minute}`;
-        //     }
-        //     self.nowTime = anyDate.toShortFormat()
-        //     self.printModal = true
-        // },
         printReceipt(){
             this.$router.push({path: `/print/${this.order.uuid.toString()}/receipt`})
         },

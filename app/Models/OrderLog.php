@@ -9,4 +9,8 @@ class OrderLog extends Model
 {
     use SoftDeletes;
     protected $table = 'order_logs';
+
+    public function product(){
+        return $this->belongsTo(Product::class);
+    }
 }

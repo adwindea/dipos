@@ -20,24 +20,56 @@ class ProductController extends Controller
     }
 
     public function index(){
-        $products = Product::select('products.*', 'categories.name as category')
-        ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
-        ->get();
+        $products = Product::with('category', 'ingredients', 'ingredients.rawmat')
+        ->where('tenant_id', Auth::user()->tenant_id)
+        ->get()
+        ->map(function($product, $key){
+            $capital = number_format($product->capital, 0, ',', '.');
+            if($product->use_rawmat){
+                $capital = $product->ingredients->map(function($ingredient, $key){
+                    return $ingredient->quantity*$ingredient->rawmat->price;
+                });
+                $capital = number_format($capital->sum(), 0, ',', '.');
+            }
+            return [
+                'name' => $product->name,
+                'category' => $product->category->name,
+                'description' => $product->description,
+                'price' => number_format($product->price, 0, ',', '.'),
+                'capital' => $capital,
+                'unit' => $product->unit,
+                'img' => $product->img,
+                'use_rawmat' => $product->use_rawmat,
+                'uuid' => $product->uuid,
+            ];
+        });
         return response()->json( array( 'products'  => $products ) );
     }
 
     public function create(){
+        $categories = Category::all()->map(function($category, $key){
+            return [
+                'label' => $category->name,
+                'value' => $category->uuid,
+            ];
+        });
+        $categories->prepend(['label' => 'Select category', 'value' => '']);
         return response()->json([
-            'categories' => Category::select('categories.name as label', 'categories.uuid as value')->get(),
+            'categories' => $categories,
         ]);
     }
 
     public function store(Request $request){
-        $validatedData = $request->validate([
+        $rules = [
             'name' => 'required',
+            'description' => 'required',
             'price' => 'required|numeric',
-            'category' => 'required'
-        ]);
+            'category' => 'required',
+        ];
+        if(!$request->input('use_rawmat')){
+            $rules['capital'] = 'required|numeric';
+        }
+        $validatedData = $request->validate($rules);
         $category_uuid = $request->input('category');
         $category = Category::where('uuid', '=', $category_uuid)->first();
         $img = $request->input('img');
@@ -58,30 +90,45 @@ class ProductController extends Controller
         }
         $product = new Product();
         $product->name = $request->input('name');
+        $product->description = $request->input('description');
         $product->category_id = $category->id;
         $product->price = $request->input('price');
         $product->img = $filename;
         $product->user_id = Auth::user()->id;
+        $product->tenant_id = Auth::user()->tenant_id;
         $product->uuid = Str::uuid();
         $product->save();
         return response()->json( array('success' => true) );
     }
 
     public function show(Request $request){
-        $product = Product::join('categories', 'categories.id', '=', 'products.category_id')
-        ->select('products.*', 'categories.uuid as category')
-        ->where('products.uuid', '=', $request->input('uuid'))->first();
+        $product = Product::with('category')
+        ->where('uuid', $request->input('uuid'))
+        ->first();
+        $product = [
+            'category' => $product->category->uuid,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price+0,
+            'use_rawmat' => $product->use_rawmat,
+            'capital' => $product->capital+0,
+        ];
         return response()->json( array(
             'product' => $product
         ));
     }
 
     public function update(Request $request){
-        $validatedData = $request->validate([
+        $rules = [
             'name' => 'required',
+            'description' => 'required',
             'price' => 'required|numeric',
-            'category' => 'required'
-        ]);
+            'category' => 'required',
+        ];
+        if(!$request->input('use_rawmat')){
+            $rules['capital'] = 'required|numeric';
+        }
+        $validatedData = $request->validate($rules);
         $product = Product::where('uuid', '=', $request->input('uuid'))->first();
         $img = $request->input('img');
         if(!empty($img)){
@@ -99,11 +146,17 @@ class ProductController extends Controller
             $filename = Storage::disk('s3')->url($s3name);
             $product->img = $filename;
         }
+        if(!$request->input('use_rawmat')){
+            $ingredients = Ingredient::where('product_id', $product->id)->delete();
+        }
         $category_uuid = $request->input('category');
         $category = Category::where('uuid', '=', $category_uuid)->first();
         $product->name = $request->input('name');
+        $product->description = $request->input('description');
         $product->category_id = $category->id;
         $product->price = $request->input('price');
+        $product->capital = $request->input('capital');
+        $product->use_rawmat = $request->input('use_rawmat');
         $product->user_id = Auth::user()->id;
         $product->save();
         return response()->json( array('success'=>true) );
@@ -121,26 +174,42 @@ class ProductController extends Controller
 
     public function rawmatData(Request $request){
         $searchKey = $request->input('searchKey');
-        $rawmat = Rawmat::where('name', 'like', '%'.$searchKey.'%')->orderBy('name')->paginate(10);
-        return response()->json($rawmat);
+        $rawmats = Rawmat::where('name', 'like', '%'.$searchKey.'%')->orderBy('name')->paginate(10);
+        $rawmats = tap($rawmats, function ($rawmatInstance){
+            return $rawmatInstance->getCollection()->transform(function($rawmat){
+                return [
+                    'name' => $rawmat->name,
+                    'unit' => $rawmat->unit,
+                    'uuid' => $rawmat->uuid,
+                ];
+            });
+        });
+        return response()->json($rawmats);
     }
 
     public function getIngredient(Request $request){
         $uuid = $request->input('uuid');
         $product = Product::where('uuid', '=', $uuid)->first();
-        $ingredients = Ingredient::where('ingredients.product_id', '=', $product->id)
-            ->select('rawmats.name as name', 'ingredients.quantity as quantity', 'ingredients.uuid as uuid')
-            ->leftJoin('rawmats', 'rawmats.id', '=', 'ingredients.rawmat_id')
-            ->orderBy('rawmats.name')
+        $ingredients = Ingredient::with('rawmat')
+            ->where('product_id', '=', $product->id)
             ->paginate(10);
+        $ingredients = tap($ingredients, function ($ingredientInstance){
+            return $ingredientInstance->getCollection()->transform(function($ingredient){
+                return [
+                    'name' => $ingredient->rawmat->name,
+                    'quantity' => $ingredient->quantity+0,
+                    'uuid' => $ingredient->uuid
+                ];
+            });
+        });
         return response()->json($ingredients);
     }
 
     public function insertIngredient(Request $request){
         $product_uuid = $request->input('product_uuid');
         $rawmat_uuid = $request->input('rawmat_uuid');
-        $product = Product::select('*')->where('uuid', '=', $product_uuid)->first();
-        $rawmat = Rawmat::select('*')->where('uuid', '=', $rawmat_uuid)->first();
+        $product = Product::where('uuid', '=', $product_uuid)->first();
+        $rawmat = Rawmat::where('uuid', '=', $rawmat_uuid)->first();
         $ingredient = Ingredient::where('product_id', '=', $product->id)->where('rawmat_id', '=', $rawmat->id)->first();
         if($ingredient === null){
             $ingredient = new Ingredient(['product_id'=>$product->id]);

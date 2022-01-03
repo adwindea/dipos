@@ -25,6 +25,11 @@
                                     {{item.name}}
                                 </td>
                             </template>
+                            <template #description="{item}">
+                                <td>
+                                    <div style="white-space: pre;">{{item.description}}</div>
+                                </td>
+                            </template>
                             <template #category="{item}">
                                 <td>
                                     {{item.category}}
@@ -40,6 +45,11 @@
                                     {{item.price}} IDR
                                 </td>
                             </template>
+                            <template #modal="{item}">
+                                <td>
+                                    {{item.capital}} IDR
+                                </td>
+                            </template>
                             <template #image="{item}">
                                 <td class="text-center">
                                     <a :href="item.img" target="__blank">
@@ -51,7 +61,7 @@
                                 <td class="text-center">
                                     <CButton color="danger" @click="deleteProduct( item.uuid )"><CIcon name="cilTrash"></CIcon></CButton>
                                     <CButton color="warning" @click="editProduct( item.uuid )"><CIcon name="cilPencil"></CIcon></CButton>
-                                    <CButton color="success" @click="editIngredient( item.uuid )"><CIcon :content="$options.ingredientIcon"></CIcon></CButton>
+                                    <CButton v-if="item.use_rawmat" color="success" @click="editIngredient( item.uuid )"><CIcon :content="$options.ingredientIcon"></CIcon></CButton>
                                 </td>
                             </template>
                         </CDataTable>
@@ -72,8 +82,10 @@ export default {
         return {
             fields: [
                 {key:'name'},
+                {key:'description'},
                 {key:'category'},
                 {key:'price'},
+                {key:'modal'},
                 {key:'image', _classes:'text-center'},
                 {key:'action', _classes:'text-center'}
             ],

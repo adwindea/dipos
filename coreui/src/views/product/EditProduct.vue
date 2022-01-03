@@ -4,7 +4,7 @@
             <CCard>
                 <CCardHeader>
                     <h3>
-                        Add Product
+                        Edit Product
                     </h3>
                 </CCardHeader>
                 <CCardBody>
@@ -23,6 +23,28 @@
                         <CCol>
                             <CInput label="Name" type="text" placeholder="Name" v-model="product.name"></CInput>
                             <CInput label="Price" min="0" step="1" type="number" placeholder="Price" v-model="product.price"></CInput>
+                            <CTextarea
+                                label="Description"
+                                placeholder="Type description here"
+                                rows="5"
+                                v-model="product.description"
+                            />
+                            <CInputCheckbox
+                                v-model="product.use_rawmat"
+                                label="Use raw material"
+                                name="Use raw material"
+                                @update:checked="rawmatEnabler($event)"
+                                class="pb-2"
+                            />
+                            <CInput
+                                v-if="!product.use_rawmat"
+                                label="Capital Price"
+                                min="0"
+                                step="1"
+                                type="number"
+                                placeholder="Capital Price"
+                                v-model="product.capital"
+                            />
                             <CSelect
                                 label="Category"
                                 :value.sync="product.category"
@@ -58,9 +80,12 @@ export default {
         return {
             product:{
                 name: '',
+                description: '',
                 category: '',
                 category_uuid: '',
                 price: '',
+                capital: '',
+                use_rawmat: '',
                 img: '',
             },
             categories: [],
@@ -73,6 +98,20 @@ export default {
     methods: {
         goBack() {
             this.$router.go(-1)
+        },
+        rawmatEnabler(event) {
+            if(event){
+                this.product.use_rawmat = true
+            }else{
+                this.product.use_rawmat = false
+            }
+        },
+        setRawmat(notif){
+            if(notif == 1){
+                this.product.use_rawmat = true
+            }else{
+                this.product.use_rawmat = false
+            }
         },
         generateBase64() {
             var fileReader = new FileReader();
@@ -142,8 +181,11 @@ export default {
                 {
                     uuid:   self.$route.params.uuid,
                     name: self.product.name,
+                    description: self.product.description,
                     category: self.product.category,
                     price: self.product.price,
+                    capital: self.product.capital,
+                    use_rawmat: self.product.use_rawmat,
                     img: self.product.img,
                 }
             )
@@ -181,6 +223,7 @@ export default {
             axios.get(  this.$apiAdress + '/api/product/show?token=' + localStorage.getItem("api_token") + '&uuid=' + self.$route.params.uuid )
             .then(function (response) {
                 self.product = response.data.product
+                self.setRawmat(self.product.use_rawmat)
             }).catch(function (error) {
                 console.log(error);
                 self.$router.push({ path: '/login' });

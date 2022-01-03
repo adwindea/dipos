@@ -16,7 +16,11 @@ use Illuminate\Http\Request;
 Route::group(['middleware' => 'api'], function ($router) {
     Route::get('menu', 'MenuController@index');
 
-    Route::post('login', 'AuthController@login');
+    Route::domain('{sub}.dipos.sekaradi.id')->group(function () { //for enabled domain
+        Route::post('login', 'AuthController@login');
+    });
+
+    // Route::post('login', 'AuthController@login'); //for disabled subdomain
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('register', 'AuthController@register');

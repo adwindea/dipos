@@ -23,6 +23,28 @@
                         <CCol>
                             <CInput label="Name" type="text" placeholder="Name" v-model="product.name"></CInput>
                             <CInput label="Price" min="0" step="1" type="number" placeholder="Price" v-model="product.price"></CInput>
+                            <CTextarea
+                                label="Description"
+                                placeholder="Type description here"
+                                rows="5"
+                                v-model="product.description"
+                            />
+                            <CInputCheckbox
+                                v-model="product.use_rawmat"
+                                label="Use raw material"
+                                name="Use raw material"
+                                @update:checked="rawmatEnabler($event)"
+                                class="pb-2"
+                            />
+                            <CInput
+                                v-if="!product.use_rawmat"
+                                label="Capital Price"
+                                min="0"
+                                step="1"
+                                type="number"
+                                placeholder="Capital Price"
+                                v-model="product.capital"
+                            />
                             <CSelect
                                 label="Category"
                                 :value.sync="product.category"
@@ -58,9 +80,12 @@ export default {
         return {
             product:{
                 name: '',
+                description: '',
                 category: '',
                 price: '',
                 img: '',
+                use_rawmat: '',
+                capital: false,
             },
             categories: [],
             message: '',
@@ -73,6 +98,13 @@ export default {
     methods: {
         goBack() {
             this.$router.go(-1)
+        },
+        rawmatEnabler(event) {
+            if(event){
+                this.product.use_rawmat = true
+            }else{
+                this.product.use_rawmat = false
+            }
         },
         generateBase64() {
             var fileReader = new FileReader();

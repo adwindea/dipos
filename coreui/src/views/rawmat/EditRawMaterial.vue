@@ -95,7 +95,6 @@ export default {
             }
         },
         setRestock(notif){
-            console.log(this.rawmat)
             if(notif == 1){
                 this.rawmat.restock = true
                 this.divRestock = true

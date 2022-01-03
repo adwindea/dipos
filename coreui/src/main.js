@@ -7,7 +7,11 @@ import { iconsSet as icons } from './assets/icons/icons.js'
 import store from './store'
 // import VueHtmlToPaper from 'vue-html-to-paper';
 
-Vue.prototype.$apiAdress = 'http://diposmulti.test'
+let subdomain = location.hostname.split('.').shift() + '.'; //remove when subdomain disabled
+Vue.prototype.$apiAdress = 'https://'+subdomain+'dipos.sekaradi.id' //for enabled subdomain
+
+//Vue.prototype.$apiAdress = 'https://dipos.sekaradi.id'//for disabled subdomain
+
 Vue.config.performance = true
 Vue.use(CoreuiVue)
 // Vue.use(VueHtmlToPaper);
