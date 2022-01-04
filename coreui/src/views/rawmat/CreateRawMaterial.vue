@@ -20,7 +20,7 @@
                         </CCol>
                     </CRow>
                     <CRow>
-                        <CCol col=6>
+                        <CCol col="12" md="6">
                             <CInput label="Name" type="text" placeholder="Name" v-model="rawmaterial.name"></CInput>
                             <CInput label="Price" min="0" step="1" type="number" placeholder="Price" v-model="rawmaterial.price"></CInput>
                             <CInput label="Stock" min="0" step="1" type="number" placeholder="Stock" v-model="rawmaterial.stock"></CInput>
@@ -28,7 +28,6 @@
                             <div v-if="divRestock">
                                 <CInput label="Stock Limit" min="0" step="1" type="number" placeholder="Stock Limit" v-model="rawmaterial.limit"></CInput>
                             </div>
-
                             <CInputCheckbox
                                 v-model="rawmaterial.restock"
                                 label="Restock Notification"
@@ -36,7 +35,7 @@
                                 @update:checked="restockEnabler($event)"
                             />
                         </CCol>
-                        <CCol col=6>
+                        <CCol col="12" md="6">
                             <label for="berkas">Image</label>
                             <CInputFile
                                 custom

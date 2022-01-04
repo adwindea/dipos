@@ -17,18 +17,22 @@ class PromotionController extends Controller
     }
 
     public function index(){
-        $promotions = Promotion::all();
-        if(!empty($promotions)){
-            foreach($promotions as $key => $value){
-                $promotions[$key]['amount'] = number_format($value['amount'], 2, ',', '.');
-                $promotions[$key]['quantity'] = number_format($value['quantity'], 0, ',', '.');
-                $promotions[$key]['min_buy'] = number_format($value['min_buy'], 0, ',', '.');
-                $promotions[$key]['max_discount'] = number_format($value['max_discount'], 0, ',', '.');
-                $promotions[$key]['start_date'] = date('d M Y', strtotime($value['start_date']));
-                $promotions[$key]['end_date'] = date('d M Y', strtotime($value['end_date']));
-            }
-            return response()->json( array( 'promotions'  => $promotions ) );
-        }
+        $promotions = Promotion::where('tenant_id', Auth::user()->tenant_id)->get()->map(function($promotion){
+            return [
+                'uuid' => $promotion->uuid,
+                'code' => $promotion->code,
+                'status' => $promotion->status,
+                'discount_type' => $promotion->discount_type,
+                'note' => $promotion->note,
+                'quantity' => $promotion->quantity+0,
+                'amount' => $promotion->amount+0,
+                'min_buy' => $promotion->min_buy+0,
+                'max_discount' => $promotion->max_discount+0,
+                'start_date' => date('d M Y', strtotime($promotion->start_date)),
+                'end_date' => date('d M Y', strtotime($promotion->end_date)),
+            ];
+        });
+        return response()->json( array( 'promotions'  => $promotions ) );
     }
 
     public function store(Request $request){
@@ -51,6 +55,7 @@ class PromotionController extends Controller
         $promotion->start_date = $request->input('start_date');
         $promotion->end_date = $request->input('end_date');
         $promotion->user_id = Auth::user()->id;
+        $promotion->tenant_id = Auth::user()->tenant_id;
         $promotion->uuid = Str::uuid();
         $promotion->save();
         return response()->json( array('success' => true) );
@@ -58,10 +63,19 @@ class PromotionController extends Controller
 
     public function show(Request $request){
         $promotion = Promotion::select('*')->where('uuid', '=', $request->input('uuid'))->first();
-        $promotion->amount = number_format($promotion->amount, 2, '.', '');
-        $promotion->quantity = number_format($promotion->quantity, 0, '', '');
-        $promotion->min_buy = number_format($promotion->min_buy, 0, '', '');
-        $promotion->max_discount = number_format($promotion->max_discount, 0, '', '');
+        $promotion = [
+            'uuid' => $promotion->uuid,
+            'code' => $promotion->code,
+            'status' => $promotion->status,
+            'discount_type' => $promotion->discount_type,
+            'note' => $promotion->note,
+            'quantity' => $promotion->quantity+0,
+            'amount' => $promotion->amount+0,
+            'min_buy' => $promotion->min_buy+0,
+            'max_discount' => $promotion->max_discount+0,
+            'start_date' => date('Y-m-d', strtotime($promotion->start_date)),
+            'end_date' => date('Y-m-d', strtotime($promotion->end_date)),            
+        ];
         return response()->json( array(
             'promotion' => $promotion
         ));

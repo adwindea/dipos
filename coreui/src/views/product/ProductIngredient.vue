@@ -1,6 +1,6 @@
 <template>
     <CRow>
-        <CCol col="6">
+        <CCol col="12" lg="6">
             <transition name="slide">
                 <CCard>
                     <CCardBody>
@@ -32,7 +32,7 @@
                 </CCard>
             </transition>
         </CCol>
-            <CCol col="6">
+            <CCol col="12" lg="6">
             <CCard>
                 <CCardBody style="max-height:80vh;overflow: auto;">
                     <h4>

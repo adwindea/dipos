@@ -20,7 +20,7 @@
                         </CCol>
                     </CRow>
                     <CRow>
-                        <CCol col=6>
+                        <CCol col="12" md="6">
                             <CInput label="Name" type="text" placeholder="Name" v-model="rawmat.name"></CInput>
                             <CInput label="Price" min="0" step="1" type="number" placeholder="Price" v-model="rawmat.price"></CInput>
                             <CInput label="Stock" min="0" step="1" type="number" placeholder="Stock" v-model="rawmat.stock"></CInput>
@@ -36,7 +36,7 @@
                                 @change="restockEnabler($event)"
                             />
                         </CCol>
-                        <CCol col=6>
+                        <CCol col="12" md="6">
                             <label for="berkas">Image</label>
                             <CInputFile
                                 custom

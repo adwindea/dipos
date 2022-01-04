@@ -26,6 +26,7 @@ class OrderController extends Controller
     public function index(){
         $orders = Order::with('promotion', 'user')
         ->where('status', '>', 0)
+        ->where('tenant_id', Auth::user()->id)
         ->orderByDesc('order_number')
         ->get()->map(function($order){
             return [
@@ -51,13 +52,13 @@ class OrderController extends Controller
         return response()->json( array(
             'orders'  => $orders,
             'role' => $admin
-            ));
+        ));
     }
 
     public function create(){
         $prefix = date('ymd');
         $order = Order::where('order_number', 'like', $prefix.'%')
-        // ->where('status', '>', 0)
+        ->where('tenant_id', Auth::user()->tenant_id)
         ->orderByDesc('id')
         ->first();
         if(empty($order)){
@@ -65,6 +66,7 @@ class OrderController extends Controller
             $order = new Order();
             $order->order_number = $num;
             $order->user_id = Auth::user()->id;
+            $order->tenant_id = Auth::user()->tenant_id;
             $order->uuid = Str::uuid();
             $order->save();
         }else{
@@ -73,6 +75,7 @@ class OrderController extends Controller
                 $order = new Order();
                 $order->order_number = $num;
                 $order->user_id = Auth::user()->id;
+                $order->tenant_id = Auth::user()->tenant_id;
                 $order->uuid = Str::uuid();
                 $order->save();
             }
@@ -121,9 +124,10 @@ class OrderController extends Controller
 
     public function checkPromotion(Request $request){
         $code = $request->input('code');
-        $price_total = $request->input('price_total');
+        $order_uuid = $request->input('order_uuid');
+        $order = Order::where('uuid', $order_uuid)->first();
         $now = date('Y-m-d');
-        $promo = Promotion::where('code', '=', $code)->first();
+        $promo = Promotion::where('code', '=', $code)->where('tenant_id', Auth::user()->tenant_id)->first();
         $message = '';
         $status = false;
         if(!empty($promo)){
@@ -133,7 +137,7 @@ class OrderController extends Controller
                 $message = 'Promo is expired';
             }else if($now < $promo->start_date){
                 $message = 'Promo is available from '.date('d M Y', strtotime($promo->start_date));
-            }else if($price_total < $promo->min_buy){
+            }else if($order->price_total < $promo->min_buy){
                 $message = 'Minimum order is IDR '.number_format($promo->min_buy, 0, '', '.');
             }else if($promo->quantity == 0){
                 $message = 'Promo is not available';

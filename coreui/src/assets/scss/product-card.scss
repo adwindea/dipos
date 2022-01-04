@@ -1,5 +1,6 @@
 .pc-wrapper{
-    width: 13.5vw;
+    width: 95%;
+    min-width: 182px;
     height: 300px;
     background: white;
     margin: auto;
@@ -215,11 +216,13 @@
       }
     }
   }
-  @media screen and (max-width: 1200px) {
-    .pc-wrapper {
-        width: 180px;
-    }
-}
+//   @media screen and (max-width: 560px) {
+//     .pc-wrapper {
+//         width: 90%;
+//         max-width: 180px;
+//         min-width: 0px;
+//     }
+// }
 // @media screen and (max-width: 1080px) {
 //     .pc-wrapper {
 //         max-width: 150px;

@@ -168,6 +168,7 @@ class ProductController extends Controller
         if($img_path != '/image/noimage.png'){
             Storage::disk('s3')->delete($img_path);
         }
+        $ingredient = Ingredient::where('product_id', $product->id)->delete();
         $product->delete();
         return response()->json( array('success'=>true) );
     }
@@ -216,6 +217,7 @@ class ProductController extends Controller
             $ingredient->rawmat_id = $rawmat->id;
             $ingredient->quantity = 1;
             $ingredient->user_id = Auth::user()->id;
+            $ingredient->tenant_id = Auth::user()->tenant_id;
             $ingredient->uuid = Str::uuid();
         }else{
             $ingredient->quantity = $ingredient->quantity + 1;

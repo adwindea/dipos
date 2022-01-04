@@ -1,6 +1,6 @@
 <template>
     <CRow>
-        <CCol col="12">
+        <CCol col="12" lg="6">
             <CCard>
                 <CCardHeader>
                     <h3>

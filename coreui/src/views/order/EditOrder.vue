@@ -119,7 +119,7 @@
                                 </CInput>
                             </CCol>
                             <!-- <div> -->
-                                <CCol col="6" xs="6" md="4" lg="3" xl="2" class="p-1" v-for="(item, $index) in items" :key="$index">
+                                <CCol col="6" xxxs="12" xxs="6" xs="4" md="3" lg="3" xl="2" class="p-1" v-for="(item, $index) in items" :key="$index">
                                     <div class="pc-wrapper">
                                         <div class="pc-container">
                                             <div class="top" v-bind:style="{height: '80%', width:'100%',
@@ -157,7 +157,7 @@
                                                 </CRow>
                                                 <CRow class="pt-2">
                                                     <CCol>
-                                                        <h5 style="color:white;">{{item.price}}</h5>
+                                                        <p style="color:white;">{{item.price}}</p>
                                                     </CCol>
                                                 </CRow>
                                                 <CRow class="pt-2">

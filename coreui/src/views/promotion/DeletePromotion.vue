@@ -1,6 +1,6 @@
 <template>
     <CRow>
-        <CCol col="6" lg="6">
+        <CCol col="12" lg="6">
             <CCard>
                 <CCardBody>
                     <h4>Delete {{promotion.code}}</h4>
