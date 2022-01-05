@@ -30,12 +30,12 @@
                                 :options="discount_type"
                                 @change="discountType()"
                             />
-                            <CInput label="Quantity" type="number" min="0" placeholder="Quantity" v-model="promotion.quantity"></CInput>
+                            <CInput label="Quantity" type="text" placeholder="Quantity" v-model="promotion.quantity" @keyup="separatize"></CInput>
                         </CCol>
                         <CCol col="6">
-                            <CInput v-if="percentage" label="Amount" type="number" min="0" max="100" step="0.01" placeholder="Amount (%)" v-model="promotion.amount"></CInput>
-                            <CInput label="Min Buy" type="number" min="0" placeholder="Min Buy (IDR)" v-model="promotion.min_buy"></CInput>
-                            <CInput label="Max Discount" type="number" min="0" placeholder="Max Discount (IDR)" v-model="promotion.max_discount"></CInput>
+                            <CInput v-if="percentage" label="Amount" type="text" placeholder="Amount (%)" v-model="promotion.amount" @keyup="separatize"></CInput>
+                            <CInput label="Min Buy" type="text" placeholder="Min Buy (IDR)" v-model="promotion.min_buy" @keyup="separatize"></CInput>
+                            <CInput label="Max Discount" type="text" placeholder="Max Discount (IDR)" v-model="promotion.max_discount" @keyup="separatize"></CInput>
                             <CInput label="Start" type="date" v-model="promotion.start_date"/>
                             <CInput label="End" type="date" v-model="promotion.end_date"/>
                         </CCol>

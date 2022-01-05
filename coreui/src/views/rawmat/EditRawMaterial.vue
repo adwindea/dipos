@@ -22,11 +22,11 @@
                     <CRow>
                         <CCol col="12" md="6">
                             <CInput label="Name" type="text" placeholder="Name" v-model="rawmat.name"></CInput>
-                            <CInput label="Price" min="0" step="1" type="number" placeholder="Price" v-model="rawmat.price"></CInput>
-                            <CInput label="Stock" min="0" step="1" type="number" placeholder="Stock" v-model="rawmat.stock"></CInput>
+                            <CInput label="Price" type="text" placeholder="Price" v-model="rawmat.price" @keyup="separatize()"></CInput>
+                            <CInput label="Stock" type="text" placeholder="Stock" v-model="rawmat.stock" @keyup="separatize()"></CInput>
                             <CInput label="Unit" type="text" placeholder="Unit" v-model="rawmat.unit"></CInput>
                             <div v-if="divRestock">
-                                <CInput label="Stock Limit" min="0" step="1" type="number" placeholder="Stock Limit" v-model="rawmat.limit"></CInput>
+                                <CInput label="Stock Limit" type="text" placeholder="Stock Limit" v-model="rawmat.limit" @keyup="separatize()"></CInput>
                             </div>
 
                             <CInputCheckbox

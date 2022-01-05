@@ -219,7 +219,7 @@ class OrderController extends Controller
     }
 
     public function getCategories(){
-        $categories = Category::get()->map(function($category){
+        $categories = Category::where('tenant_id', Auth::user()->tenant_id)->get()->map(function($category){
             return [
                 'label' => $category->name,
                 'value' => $category->uuid
@@ -320,7 +320,7 @@ class OrderController extends Controller
             }
         }
         $order = $this->countOrderPriceProcessor($order_uuid);
-        $order->price_total = number_format($order->price_total, 0, '', '.');
+        $order->price_total = $order->price_total+0;
         return response()->json( array('success'=>true, 'reload'=>$reload, 'order'=>$order) );
     }
 
@@ -339,6 +339,7 @@ class OrderController extends Controller
             $orderlog->order_id = $order->id;
             $orderlog->quantity = 1;
             $orderlog->user_id = Auth::user()->id;
+            $orderlog->tenant_id = Auth::user()->tenant_id;
             $orderlog->uuid = Str::uuid();
             $orderlog->save();
             $order->price_total = $order->price_total + $product->price;
@@ -360,6 +361,7 @@ class OrderController extends Controller
                     $rawmatlog->order_id = $order->id;
                     $rawmatlog->order_log_id = $orderlog->id;
                     $rawmatlog->user_id = Auth::user()->id;
+                    $rawmatlog->tenant_id = Auth::user()->tenant_id;
                     $rawmatlog->uuid = Str::uuid();
                     $rawmatlog->save();
                 }
@@ -434,9 +436,9 @@ class OrderController extends Controller
         }
         $order->cogs = $cogs;
         $order->save();
-        $order->price_total = number_format($order->price_total, 0, '', '.');
-        $order->discount = number_format($order->discount, 0, '', '.');
-        $order->final_price = number_format($order->final_price, 0, '', '.');
+        $order->price_total = $order->price_total+0;
+        $order->discount = $order->discount+0;
+        $order->final_price = $order->final_price+0;
         return $order;
     }
 
@@ -444,19 +446,18 @@ class OrderController extends Controller
         $uuid = $request->input('uuid');
         $order = Order::where('uuid', '=', $uuid)->first();
         $order->price_total = number_format($order->price_total, 0, '', '.');
-        $order->discount = number_format($order->discount, 0, '', '.');
+        $order->discount = number_format($order->discount, 2, ',', '.');
         $order->final_price = number_format($order->final_price, 0, '', '.');
-        $order_items = OrderLog::join('products', 'products.id', '=', 'order_logs.product_id')
-        ->select('order_logs.*', 'products.name as name', 'products.price as price')
-        ->where('order_id', '=', $order->id)
-        ->get();
-        if(!empty($order_items)){
-            foreach($order_items as $key => $value){
-                $order_items[$key]['quantity'] = number_format($value['quantity'], 0, '', '');
-                $order_items[$key]['price_unformat'] = number_format($value['price'], 0, '', '');
-                $order_items[$key]['price'] = number_format($value['price'], 0, '', '.');
-            }
-        }
+        $order_items = OrderLog::with('product')
+        ->where('order_id', $order->id)
+        ->get()->map(function($order_item){
+            return [
+                'quantity' => $order_item->quantity+0,
+                'name' => $order_item->product->name,
+                'price_unformat' => $order_item->product->price,
+                'price' => number_format($order_item->product->price, 0, '', '.')
+            ];
+        });
         return response()->json( array(
             'order_items'=>$order_items,
             'order'=>$order,

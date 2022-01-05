@@ -17,10 +17,10 @@
                             <td>
                                 <!-- <CInput min="0" step="1" type="number" placeholder="Quantity" v-model="item.quantity"></CInput> -->
                                 <div class="input-group">
-                                    <input :id="'q'+item.uuid" type="number" placeholder="Quantity" class="form-control input-sm" v-model="item.quantity" @click="removeReadOnly(item.uuid)" readonly>
-                                    <div class="input-group-append">
+                                    <input :id="'q'+item.uuid" type="text" placeholder="Quantity" class="form-control input-sm" v-model="item.quantity" @click="removeReadOnly(item.uuid)" @blur="changeQuantity(item.uuid)" @keyup="separatize" readonly>
+                                    <!-- <div class="input-group-append">
                                         <button type="submit" class="btn btn-primary btn-sm" @click="changeQuantity(item.uuid)"><CIcon name="cilSave"></CIcon></button>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </td>
                         </tr>

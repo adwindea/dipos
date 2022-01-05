@@ -10,8 +10,8 @@
                 <CCardBody>
                     <CRow>
                         <CCol>
-                            <CInput label="Quantity" type="number" min="0" step="1" placeholder="Quantity" v-model="restock.quantity"></CInput>
-                            <CInput label="Price Total" min="0" step="1" type="number" placeholder="Price Total" v-model="restock.price_total"></CInput>
+                            <CInput label="Quantity" type="text" placeholder="Quantity" v-model="restock.quantity" @keyup="separatize"></CInput>
+                            <CInput label="Price Total" type="text" placeholder="Price Total" v-model="restock.price_total" @keyup="separatize"></CInput>
                             <CTextarea label="Note" placeholder="Type something here" v-model="restock.note"></CTextarea>
                         </CCol>
                     </CRow>

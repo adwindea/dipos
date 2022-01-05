@@ -17,6 +17,21 @@ Vue.use(CoreuiVue)
 // Vue.use(VueHtmlToPaper);
 
 
+Vue.mixin({
+  methods: {
+    separatize: function (e) {
+      var val = e.target.value
+      val = val.replace(/[^0-9\,]/g,'');
+      if(val != "") {
+          var valArr = val.split(',');
+          valArr[0] = (parseInt(valArr[0],10)).toLocaleString('id-ID');
+          val = valArr.join(',');
+      }
+      e.target.value = val;
+    }  
+  }
+})
+
 new Vue({
   el: '#app',
   router,

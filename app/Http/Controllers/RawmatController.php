@@ -28,10 +28,10 @@ class RawmatController extends Controller
         ->map(function($rawmat, $key){
             return [
                 'name' => $rawmat->name,
-                'stock' => $rawmat->stock,
-                'limit' => $rawmat->limit,
+                'stock' => decToCur($rawmat->stock),
+                'limit' => decToCur($rawmat->limit),
                 'unit' => $rawmat->unit,
-                'price' => $rawmat->price,
+                'price' => decToCur($rawmat->price),
                 'restock_notif' => $rawmat->restock_notif,
                 'img' => $rawmat->img,
                 'uuid' => $rawmat->uuid,
@@ -43,8 +43,8 @@ class RawmatController extends Controller
     public function store(Request $request){
         $validatedData = $request->validate([
             'name' => 'required',
-            'stock' => 'required|numeric',
-            'price' => 'required|numeric',
+            'stock' => 'required',
+            'price' => 'required',
             // 'limit' => 'required|numeric',
             'unit' => 'required',
             'restock_notif' => 'required|numeric'
@@ -68,9 +68,9 @@ class RawmatController extends Controller
         }
         $rawmaterial = new Rawmat();
         $rawmaterial->name = $name;
-        $rawmaterial->stock = $request->input('stock');
-        $rawmaterial->price = $request->input('price');
-        $rawmaterial->limit = $request->input('limit');
+        $rawmaterial->stock = curToDec($request->input('stock'));
+        $rawmaterial->price = curToDec($request->input('price'));
+        $rawmaterial->limit = curToDec($request->input('limit'));
         $rawmaterial->unit = $request->input('unit');
         $rawmaterial->restock_notif = $request->input('restock_notif');
         $rawmaterial->img = $filename;
@@ -85,10 +85,10 @@ class RawmatController extends Controller
         $rawmat = Rawmat::where('uuid', '=', $request->input('uuid'))->first();
         $rawmat = [
             'name' => $rawmat->name,
-            'stock' => $rawmat->stock,
-            'limit' => $rawmat->limit,
+            'stock' => decToCur($rawmat->stock),
+            'limit' => decToCur($rawmat->limit),
             'unit' => $rawmat->unit,
-            'price' => $rawmat->price,
+            'price' => decToCur($rawmat->price),
             'restock_notif' => $rawmat->restock_notif,
             'img' => $rawmat->img,
             'uuid' => $rawmat->uuid,
@@ -101,8 +101,8 @@ class RawmatController extends Controller
     public function update(Request $request){
         $validatedData = $request->validate([
             'name' => 'required',
-            'stock' => 'required|numeric',
-            'price' => 'required|numeric',
+            'stock' => 'required',
+            'price' => 'required',
             // 'limit' => 'required|numeric',
             'unit' => 'required',
             'restock_notif' => 'required|numeric'
@@ -133,9 +133,9 @@ class RawmatController extends Controller
             $rawmat->img = $filename;
         }
         $rawmat->name = $name;
-        $rawmat->stock = $request->input('stock');
-        $rawmat->price = $request->input('price');
-        $rawmat->limit = $request->input('limit');
+        $rawmat->stock = curToDec($request->input('stock'));
+        $rawmat->price = curToDec($request->input('price'));
+        $rawmat->limit = curToDec($request->input('limit'));
         $rawmat->unit = $request->input('unit');
         $rawmat->restock_notif = $request->input('restock_notif');
         $rawmat->user_id = Auth::user()->id;
@@ -155,8 +155,8 @@ class RawmatController extends Controller
 
     public function restock(Request $request){
         $rawmat_uuid = $request->input('uuid');
-        $restock_quantity = $request->input('quantity');
-        $price_total = $request->input('price_total');
+        $restock_quantity = curToDec($request->input('quantity'));
+        $price_total = curToDec($request->input('price_total'));
         $note = $request->input('note');
 
         $rawmat = Rawmat::where('uuid', '=', $rawmat_uuid)->first();

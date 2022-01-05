@@ -22,7 +22,7 @@
                     <CRow>
                         <CCol>
                             <CInput label="Name" type="text" placeholder="Name" v-model="product.name"></CInput>
-                            <CInput label="Price" min="0" step="1" type="number" placeholder="Price" v-model="product.price"></CInput>
+                            <CInput label="Price" type="text" placeholder="Price" v-model="product.price" @keyup="separatize"></CInput>
                             <CTextarea
                                 label="Description"
                                 placeholder="Type description here"
@@ -39,11 +39,10 @@
                             <CInput
                                 v-if="!product.use_rawmat"
                                 label="Capital Price"
-                                min="0"
-                                step="1"
-                                type="number"
+                                type="text"
                                 placeholder="Capital Price"
                                 v-model="product.capital"
+                                @keyup="separatize"
                             />
                             <CSelect
                                 label="Category"
@@ -85,7 +84,7 @@ export default {
                 price: '',
                 img: '',
                 use_rawmat: '',
-                capital: false,
+                capital: '',
             },
             categories: [],
             message: '',

@@ -24,10 +24,10 @@ class PromotionController extends Controller
                 'status' => $promotion->status,
                 'discount_type' => $promotion->discount_type,
                 'note' => $promotion->note,
-                'quantity' => $promotion->quantity+0,
-                'amount' => $promotion->amount+0,
-                'min_buy' => $promotion->min_buy+0,
-                'max_discount' => $promotion->max_discount+0,
+                'quantity' => decToCur($promotion->quantity),
+                'amount' => decToCur($promotion->amount),
+                'min_buy' => decToCur($promotion->min_buy),
+                'max_discount' => decToCur($promotion->max_discount),
                 'start_date' => date('d M Y', strtotime($promotion->start_date)),
                 'end_date' => date('d M Y', strtotime($promotion->end_date)),
             ];
@@ -38,9 +38,9 @@ class PromotionController extends Controller
     public function store(Request $request){
         $validatedData = $request->validate([
             'code' => 'required',
-            'quantity' => 'required|numeric',
-            'min_buy' => 'required|numeric',
-            'max_discount' => 'required|numeric',
+            'quantity' => 'required',
+            'min_buy' => 'required',
+            'max_discount' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
         ]);
@@ -48,10 +48,10 @@ class PromotionController extends Controller
         $promotion->code = $request->input('code');
         $promotion->note = $request->input('note');
         $promotion->discount_type = $request->input('discount_type');
-        $promotion->quantity = $request->input('quantity');
-        $promotion->amount = $request->input('amount');
-        $promotion->min_buy = $request->input('min_buy');
-        $promotion->max_discount = $request->input('max_discount');
+        $promotion->quantity = curToDec($request->input('quantity'));
+        $promotion->amount = curToDec($request->input('amount'));
+        $promotion->min_buy = curToDec($request->input('min_buy'));
+        $promotion->max_discount = curToDec($request->input('max_discount'));
         $promotion->start_date = $request->input('start_date');
         $promotion->end_date = $request->input('end_date');
         $promotion->user_id = Auth::user()->id;
@@ -69,10 +69,10 @@ class PromotionController extends Controller
             'status' => $promotion->status,
             'discount_type' => $promotion->discount_type,
             'note' => $promotion->note,
-            'quantity' => $promotion->quantity+0,
-            'amount' => $promotion->amount+0,
-            'min_buy' => $promotion->min_buy+0,
-            'max_discount' => $promotion->max_discount+0,
+            'quantity' => decToCur($promotion->quantity),
+            'amount' => decToCur($promotion->amount),
+            'min_buy' => decToCur($promotion->min_buy),
+            'max_discount' => decToCur($promotion->max_discount),
             'start_date' => date('Y-m-d', strtotime($promotion->start_date)),
             'end_date' => date('Y-m-d', strtotime($promotion->end_date)),            
         ];
@@ -84,9 +84,9 @@ class PromotionController extends Controller
     public function update(Request $request){
         $validatedData = $request->validate([
             'code' => 'required',
-            'quantity' => 'required|numeric',
-            'min_buy' => 'required|numeric',
-            'max_discount' => 'required|numeric',
+            'quantity' => 'required',
+            'min_buy' => 'required',
+            'max_discount' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
         ]);
@@ -95,10 +95,10 @@ class PromotionController extends Controller
         $promotion->code = $request->input('code');
         $promotion->note = $request->input('note');
         $promotion->discount_type = $request->input('discount_type');
-        $promotion->quantity = $request->input('quantity');
-        $promotion->amount = $request->input('amount');
-        $promotion->min_buy = $request->input('min_buy');
-        $promotion->max_discount = $request->input('max_discount');
+        $promotion->quantity = curToDec($request->input('quantity'));
+        $promotion->amount = curToDec($request->input('amount'));
+        $promotion->min_buy = curToDec($request->input('min_buy'));
+        $promotion->max_discount = curToDec($request->input('max_discount'));
         $promotion->start_date = $request->input('start_date');
         $promotion->end_date = $request->input('end_date');
         $promotion->save();

@@ -24,18 +24,18 @@ class ProductController extends Controller
         ->where('tenant_id', Auth::user()->tenant_id)
         ->get()
         ->map(function($product, $key){
-            $capital = number_format($product->capital, 0, ',', '.');
+            $capital = decToCur($product->capital);
             if($product->use_rawmat){
                 $capital = $product->ingredients->map(function($ingredient, $key){
                     return $ingredient->quantity*$ingredient->rawmat->price;
                 });
-                $capital = number_format($capital->sum(), 0, ',', '.');
+                $capital = decToCur($capital->sum());
             }
             return [
                 'name' => $product->name,
                 'category' => $product->category->name,
                 'description' => $product->description,
-                'price' => number_format($product->price, 0, ',', '.'),
+                'price' => decToCur($product->price),
                 'capital' => $capital,
                 'unit' => $product->unit,
                 'img' => $product->img,
@@ -63,11 +63,11 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required',
             'description' => 'required',
-            'price' => 'required|numeric',
+            'price' => 'required',
             'category' => 'required',
         ];
         if(!$request->input('use_rawmat')){
-            $rules['capital'] = 'required|numeric';
+            $rules['capital'] = 'required';
         }
         $validatedData = $request->validate($rules);
         $category_uuid = $request->input('category');
@@ -92,7 +92,8 @@ class ProductController extends Controller
         $product->name = $request->input('name');
         $product->description = $request->input('description');
         $product->category_id = $category->id;
-        $product->price = $request->input('price');
+        $product->price = curToDec($request->input('price'));
+        $product->capital = curToDec($request->input('capital'));
         $product->img = $filename;
         $product->user_id = Auth::user()->id;
         $product->tenant_id = Auth::user()->tenant_id;
@@ -109,9 +110,9 @@ class ProductController extends Controller
             'category' => $product->category->uuid,
             'name' => $product->name,
             'description' => $product->description,
-            'price' => $product->price+0,
+            'price' => decToCur($product->price),
             'use_rawmat' => $product->use_rawmat,
-            'capital' => $product->capital+0,
+            'capital' => decToCur($product->capital),
         ];
         return response()->json( array(
             'product' => $product
@@ -122,11 +123,11 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required',
             'description' => 'required',
-            'price' => 'required|numeric',
+            'price' => 'required',
             'category' => 'required',
         ];
         if(!$request->input('use_rawmat')){
-            $rules['capital'] = 'required|numeric';
+            $rules['capital'] = 'required';
         }
         $validatedData = $request->validate($rules);
         $product = Product::where('uuid', '=', $request->input('uuid'))->first();
@@ -154,8 +155,8 @@ class ProductController extends Controller
         $product->name = $request->input('name');
         $product->description = $request->input('description');
         $product->category_id = $category->id;
-        $product->price = $request->input('price');
-        $product->capital = $request->input('capital');
+        $product->price = curToDec($request->input('price'));
+        $product->capital = curToDec($request->input('capital'));
         $product->use_rawmat = $request->input('use_rawmat');
         $product->user_id = Auth::user()->id;
         $product->save();
@@ -198,7 +199,7 @@ class ProductController extends Controller
             return $ingredientInstance->getCollection()->transform(function($ingredient){
                 return [
                     'name' => $ingredient->rawmat->name,
-                    'quantity' => $ingredient->quantity+0,
+                    'quantity' => decToCur($ingredient->quantity),
                     'uuid' => $ingredient->uuid
                 ];
             });
@@ -228,7 +229,7 @@ class ProductController extends Controller
 
     public function updateIngredient(Request $request){
         $uuid = $request->input('uuid');
-        $quantity = $request->input('quantity');
+        $quantity = curToDec($request->input('quantity'));
         $ingredient = Ingredient::where('uuid', '=', $uuid);
         if($quantity == 0){
             $ingredient->delete();
