@@ -11,7 +11,7 @@
       @click="$store.commit('toggleSidebarDesktop')"
     />
     <CHeaderBrand class="mx-auto d-lg-none" to="/">
-      <CIcon name="logo" height="48" alt="Logo"/>
+      <CIcon :src="'/storage/image/master/logo.png'" height="48" alt="Logo"/>
     </CHeaderBrand>
 
     <CMenu/>

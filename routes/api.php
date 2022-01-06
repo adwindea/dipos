@@ -135,6 +135,11 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::prefix('order')->group(function () {
             Route::post('/delete',   'OrderController@delete')->name('order.delete');
         });
+        Route::prefix('tenant')->group(function () {
+            Route::get('/getTenantSetting',   'TenantController@getTenantSetting')->name('tenant.getTenantSetting');
+            Route::post('/saveTenantSetting',   'TenantController@saveTenantSetting')->name('tenant.saveTenantSetting');
+        });
+
 
         Route::resource('roles',        'RolesController');
         Route::get('/roles/move/move-up',      'RolesController@moveUp')->name('roles.up');

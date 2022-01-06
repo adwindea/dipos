@@ -60,7 +60,7 @@
                                         @blur="saveQuantity($index)"
                                     />
                                 </td>
-                                <td class="text-center">{{ item.quantity*item.price }}</td>
+                                <td class="text-center">{{ item.quantity*item.price_unformat }}</td>
                             </tr>
                             <tr>
                                 <th colspan="2" >Total</th>
@@ -218,8 +218,6 @@ export default {
                 {label: 'QRIS', value:1},
                 {label: 'Debt', value:2}
             ],
-            orderPage: 1,
-            orderInfId: +new Date(),
             itemSearch: '',
             categorySearch: '',
             itemPage: 1,
@@ -238,7 +236,7 @@ export default {
                 self.order= response.data.order;
                 self.promotion= response.data.promo;
                 self.currentUser= response.data.user;
-                self.resetOrderItem();
+                self.getOrderItems();
                 if(self.order.status > 1){
                     self.disabledDetail = true
                 }
@@ -342,11 +340,6 @@ export default {
                 self.$router.push({ path: '/login' });
             });
         },
-        resetOrderItem(){
-            this.orderPage = 1
-            this.orderInfId += 1
-            this.order_items = []
-        },
         resetListItem(){
             this.itemPage = 1
             this.itemInfId += 1
@@ -368,7 +361,7 @@ export default {
             .then(function (response) {
                 self.order = response.data.order
                 if(response.data.reload){
-                    self.resetOrderItem()
+                    self.getOrderItems()
                 }
             })
         },
@@ -391,7 +384,7 @@ export default {
             )
             .then(function (response) {
                 self.order = response.data.order
-                self.resetOrderItem()
+                self.getOrderItems()
             })
         },
         removeClick(uuid){
@@ -405,7 +398,7 @@ export default {
             )
             .then(function (response) {
                 self.order = response.data.order
-                self.resetOrderItem()
+                self.getOrderItems()
             })
         },
         printReceipt(){
@@ -422,7 +415,7 @@ export default {
             .then(function (response) {
                 self.closeModal = false
                 self.order = response.data.order
-                self.resetOrderItem()
+                self.getOrderItems()
             })
         }
     },
@@ -430,6 +423,7 @@ export default {
         InfiniteLoading,
     },
     mounted(){
+        this.itemInfId++;
         this.getOrderDetail();
         this.getCategories();
     }

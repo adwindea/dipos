@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Promotion;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -34,12 +35,12 @@ class OrderController extends Controller
                 'order_number' => $order->order_number,
                 'status' => $order->status,
                 'customer_name' => $order->customer_name,
-                'price_total' => $order->price_total+0,
-                'discount' => $order->discount+0,
+                'price_total' => decToCur($order->price_total),
+                'discount' => decToCur($order->discount),
                 'discount_type' => $order->discount_type,
-                'max_discount' => $order->promotion ? $order->promotion->max_discount+0 : '',
-                'amount' => $order->promotion ? $order->promotion->amount+0 : '',
-                'final_price' => $order->final_price+0,
+                'max_discount' => $order->promotion ? decToCur($order->promotion->max_discount) : '',
+                'amount' => $order->promotion ? decToCur($order->promotion->amount) : '',
+                'final_price' => decToCur($order->final_price),
                 'note' => $order->note,
                 'cashier' => $order->user->name,
             ];
@@ -80,9 +81,9 @@ class OrderController extends Controller
                 $order->save();
             }
         }
-        $order->price_total = $order->price_total+0;
-        $order->discount = $order->discount+0;
-        $order->final_price = $order->final_price+0;
+        $order->price_total = decToCur($order->price_total);
+        $order->discount = decToCur($order->discount);
+        $order->final_price = decToCur($order->final_price);
         $promo = Promotion::find($order->promotion_id);
         if(empty($promo)){
             $promo = new Promotion();
@@ -98,9 +99,9 @@ class OrderController extends Controller
     public function show(Request $request){
         $uuid = $request->input('uuid');
         $order = Order::where('uuid', '=', $uuid)->first();
-        $order->price_total = $order->price_total+0;
-        $order->discount = $order->discount+0;
-        $order->final_price = $order->final_price+0;
+        $order->price_total = decToCur($order->price_total);
+        $order->discount = decToCur($order->discount);
+        $order->final_price = decToCur($order->final_price);
         $promo = Promotion::find($order->promotion_id);
         if(empty($promo)){
             $promo = new Promotion();
@@ -116,7 +117,8 @@ class OrderController extends Controller
     public function edit(Request $request){
         $uuid = $request->input('uuid');
         $order = Order::where('uuid', '=', $uuid)->first();
-        $order->price_total = $order->price_total+0;
+        $order->price_total = decToCur($order->price_total);
+        $order->final_price = decToCur($order->final_price);
         return response()->json( array(
             'order'  => $order
         ));
@@ -138,7 +140,7 @@ class OrderController extends Controller
             }else if($now < $promo->start_date){
                 $message = 'Promo is available from '.date('d M Y', strtotime($promo->start_date));
             }else if($order->price_total < $promo->min_buy){
-                $message = 'Minimum order is IDR '.number_format($promo->min_buy, 0, '', '.');
+                $message = 'Minimum order is IDR '.decToCur($promo->min_buy);
             }else if($promo->quantity == 0){
                 $message = 'Promo is not available';
             }else{
@@ -247,7 +249,7 @@ class OrderController extends Controller
                     'name' => $product->name,
                     'description' => $product->description,
                     'img' => $product->img,
-                    'price' => $product->price+0,
+                    'price' => decToCur($product->price),
                     'description' => $product->description,
                     'uuid' => $product->uuid,
                 ];
@@ -265,8 +267,9 @@ class OrderController extends Controller
             $order_item->saved = $order_item->saved ? true : false;
             return [
                 'name' => $order_item->product->name,
-                'quantity' => $order_item->quantity+0,
-                'price' => $order_item->product->price,
+                'quantity' => decToCur($order_item->quantity),
+                'price' => decToCur($order_item->product->price),
+                'price_unformat' => $order_item->product->price,
                 'note' => $order_item->note,
                 'saved' => $order_item->saved,
                 'total_price' => $order_item->quantity*$order_item->product->price,
@@ -276,7 +279,7 @@ class OrderController extends Controller
         return response()->json( 
             [
                 'order_items' => $order_items,
-                'total_price' => $order_items->sum('total_price'),
+                'total_price' => decToCur($order_items->sum('total_price')),
             ]
         );
     }
@@ -284,11 +287,11 @@ class OrderController extends Controller
     public function saveQuantity(Request $request){
         $uuid = $request->input('uuid');
         $order_uuid = $request->input('order_uuid');
-        $quantity = $request->input('quantity');
-        $note = $request->input('note');
+        $quantity = curToDec($request->input('quantity'));
+        $note = curToDec($request->input('note'));
         $orderlog = OrderLog::where('uuid', '=', $uuid)->first();
         $order = Order::where('uuid', '=', $order_uuid)->first();
-        $product = Product::find($orderlog->product_id)->first();
+        $product = Product::find($orderlog->product_id);
         $reload = false;
         if($quantity == 0){
             $order->price_total = $order->price_total - ($product->price*$orderlog->quantity);
@@ -320,11 +323,12 @@ class OrderController extends Controller
             }
         }
         $order = $this->countOrderPriceProcessor($order_uuid);
-        $order->price_total = $order->price_total+0;
+        $order->price_total = decToCur($order->price_total);
+        $order->final_price = decToCur($order->final_price);
         return response()->json( array('success'=>true, 'reload'=>$reload, 'order'=>$order) );
     }
 
-    public function addOrderItem(Request $request){
+    public function addOrderItem(Request $request){ 
         $uuid = $request->input('uuid');
         $order_uuid = $request->input('order_uuid');
         $product = Product::where('uuid', '=', $uuid)->first();
@@ -368,7 +372,7 @@ class OrderController extends Controller
             }
         }
         $order = $this->countOrderPriceProcessor($order_uuid);
-        $order->price_total = $order->price_total+0;
+        $order->price_total = decToCur($order->price_total);
         return response()->json( array('success'=>true, 'order'=>$order) );
     }
     public function removeOrderItem(Request $request){
@@ -399,7 +403,7 @@ class OrderController extends Controller
             }
         }
         $order = $this->countOrderPriceProcessor($order_uuid);
-        $order->price_total = number_format($order->price_total, 0, '', '.');
+        $order->price_total = decToCur($order->price_total);
         return response()->json( array('success'=>true, 'order'=>$order) );
     }
 
@@ -436,31 +440,40 @@ class OrderController extends Controller
         }
         $order->cogs = $cogs;
         $order->save();
-        $order->price_total = $order->price_total+0;
-        $order->discount = $order->discount+0;
-        $order->final_price = $order->final_price+0;
+        $order->price_total = decToCur($order->price_total);
+        $order->discount = decToCur($order->discount);
+        $order->final_price = decToCur($order->final_price);
         return $order;
     }
 
     public function printOrder(Request $request){
+        $tenant = Tenant::find(Auth::user()->tenant_id);
+        $tenant = [
+            'logo' => $tenant->logo,
+            'name' => $tenant->name,
+            'phone' => $tenant->phone,
+            'email' => $tenant->email,
+            'receipt_note' => $tenant->receipt_note,
+        ];
         $uuid = $request->input('uuid');
         $order = Order::where('uuid', '=', $uuid)->first();
-        $order->price_total = number_format($order->price_total, 0, '', '.');
-        $order->discount = number_format($order->discount, 2, ',', '.');
-        $order->final_price = number_format($order->final_price, 0, '', '.');
+        $order->price_total = decToCur($order->price_total);
+        $order->discount = decToCur($order->discount);
+        $order->final_price = decToCur($order->final_price);
         $order_items = OrderLog::with('product')
         ->where('order_id', $order->id)
         ->get()->map(function($order_item){
             return [
-                'quantity' => $order_item->quantity+0,
+                'quantity' => decToCur($order_item->quantity),
                 'name' => $order_item->product->name,
-                'price_unformat' => $order_item->product->price,
-                'price' => number_format($order_item->product->price, 0, '', '.')
+                'price_quantity' => decToCur($order_item->product->price*$order_item->quantity),
+                'price' => decToCur($order_item->product->price)
             ];
         });
         return response()->json( array(
             'order_items'=>$order_items,
             'order'=>$order,
+            'tenant'=>$tenant,
             'user'=>Auth::user()->name
         ));
     }

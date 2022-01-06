@@ -25,9 +25,9 @@
                     <CTab title="Cart" active>
                         <table class="table">
                             <tr>
-                                <th>Item</th>
-                                <th class="text-center" style="width:125px">Qty</th>
-                                <th>Note</th>
+                                <th style="min-width:125px;">Item</th>
+                                <th class="text-center" style="min-width:125px">Qty</th>
+                                <th style="min-width:125px;">Note</th>
                                 <th class="text-center">Total</th>
                             </tr>
                             <tr v-for="(item, $index) in order_items" :key="$index">
@@ -56,15 +56,15 @@
                                         type="text"
                                         placeholder="Add note here"
                                         addInputClasses="text-center"
-                                        v-model.number="item.note"
+                                        v-model="item.note"
                                         @keyup.enter="saveQuantity($index)"
                                         @blur="saveQuantity($index)"
                                     />
                                 </td>
-                                <td class="text-center">{{ item.quantity*item.price }}</td>
+                                <td class="text-center">{{ item.quantity*item.price_unformat }}</td>
                             </tr>
                             <tr>
-                                <th colspan="2" >Total</th>
+                                <th colspan="3" >Total</th>
                                 <th class="text-center">{{ order.final_price }}</th>
                             </tr>
                         </table>
@@ -219,8 +219,6 @@ export default {
                 {label: 'QRIS', value:1},
                 {label: 'Debt', value:2}
             ],
-            orderPage: 1,
-            orderInfId: +new Date(),
             itemSearch: '',
             categorySearch: '',
             itemPage: 1,
@@ -239,7 +237,7 @@ export default {
                 self.order= response.data.order;
                 self.promotion= response.data.promo;
                 self.currentUser= response.data.user;
-                self.resetOrderItem();
+                self.getOrderItems();
             }).catch(function (error) {
                 console.log(error);
                 self.$router.push({ path: '/login' });
@@ -299,7 +297,7 @@ export default {
             this.cartModal = true
             this.getOrderItems()
         },
-        getOrderItems($state) {
+        getOrderItems() {
             let self = this
             if(self.order.uuid !== ''){
                 axios.get(this.$apiAdress + '/api/order/orderItems?token=' + localStorage.getItem("api_token"), {
@@ -347,11 +345,6 @@ export default {
                 self.$router.push({ path: '/login' });
             });
         },
-        resetOrderItem(){
-            this.orderPage = 1
-            this.orderInfId += 1
-            this.order_items = []
-        },
         resetListItem(){
             this.itemPage = 1
             this.itemInfId += 1
@@ -378,7 +371,7 @@ export default {
             .then(function (response) {
                 self.order = response.data.order
                 if(response.data.reload){
-                    self.resetOrderItem()
+                    self.getOrderItems()
                 }
             })
         },
@@ -401,7 +394,7 @@ export default {
             )
             .then(function (response) {
                 self.order = response.data.order
-                self.resetOrderItem()
+                self.getOrderItems()
             })
         },
         removeClick(uuid){
@@ -415,7 +408,7 @@ export default {
             )
             .then(function (response) {
                 self.order = response.data.order
-                self.resetOrderItem()
+                self.getOrderItems()
             })
         },
         printReceipt(){
@@ -439,6 +432,7 @@ export default {
         InfiniteLoading,
     },
     mounted(){
+        this.resetListItem();
         this.getOrderDetail();
         this.getCategories();
     }

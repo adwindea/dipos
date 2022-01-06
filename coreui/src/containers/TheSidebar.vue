@@ -8,7 +8,7 @@
     <CSidebarBrand class="d-md-down-none" to="/">
       <CIcon
         class="d-block"
-        name="logo"
+        :src="'/storage/image/master/logo.png'"
         size="custom-size"
         :height="35"
         :viewBox="`0 0 ${minimize ? 110 : 556} 134`"

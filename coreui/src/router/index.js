@@ -141,6 +141,9 @@ const PrintOrder = () => import('@/views/order/PrintOrder')
 //Report
 const SalesReport = () => import('@/views/report/SalesReport')
 
+//Tenant
+const TenantSetting = () => import('@/views/tenant/TenantSetting')
+
 Vue.use(Router)
 
 let router = new Router({
@@ -482,6 +485,15 @@ function configRoutes () {
                     }
                 }
             ]
+        },
+        {
+          path: 'tenant',
+          meta: { label: 'Tenant Setting' },
+          name: 'Tenant Setting',
+          component: TenantSetting,
+          meta:{
+            requiresAdmin: true
+          }
         },
         {
           path: 'menu',

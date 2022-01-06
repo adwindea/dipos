@@ -6,7 +6,7 @@
     </div>
     <div class="ml-auto">
       <router-link to="/">
-        Dawn Idea
+        DIPOS v2.0
       </router-link>
       <span class="ml-1">&copy; {{new Date().getFullYear()}} All right reserved.</span>
       <!-- <span class="mr-1">Powered by</span>

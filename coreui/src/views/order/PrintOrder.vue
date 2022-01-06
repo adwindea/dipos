@@ -5,12 +5,14 @@
 <template>
 <div>
                     <span id="printMe" class="ticket">
-                        <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" style="max-width:180px;" alt="Logo">
-                        <br>
-                        <br>
-                        <table>
+                        <div class="centered" style="width:180px;">
+                            <img :src="tenant.logo" class="centered" style="max-height:50px; max-width:180px; width:auto;" alt="Logo">
+                        </div>
+                        <h4 class="centered" style="max-width:180px; margin:0;">{{ tenant.name }}</h4>
+                        <p class="centered" style="max-width:180px; font-size:8px; margin:0;">{{ tenant.phone }} | {{ tenant.email }}</p>
+                        <!-- <table>
                             <tr>
-                                <td class="title">Order ID</td>
+                                <td class="title">Order</td>
                                 <td class="detail">: {{ order.order_number }}</td>
                             </tr>
                             <tr>
@@ -26,7 +28,14 @@
                                 <td class="title">Customer</td>
                                 <td class="detail">: {{ order.customer_name }}</td>
                             </tr>
-                        </table><br>
+                        </table> -->
+                        <table style="width:180px;">
+                            <tr>
+                                <td>{{ order.order_number }}</td>
+                                <td class="righted">{{ nowTime }}</td>
+                            </tr>
+                        </table>
+                        <br>
                         <table>
                             <thead>
                                 <tr>
@@ -39,7 +48,7 @@
                                 <tr v-for="(item, $index) in order_items" :key="$index">
                                     <td class="quantity">{{item.quantity}}</td>
                                     <td class="description">{{item.name}}</td>
-                                    <td class="price">{{numberWithCommas(item.quantity*item.price_unformat)}}</td>
+                                    <td class="price">{{item.price_quantity}}</td>
                                 </tr>
                                 <tr v-if="order.discount > 0">
                                     <th class="quantity" style="border-top:1px solid black;"></th>
@@ -59,8 +68,8 @@
                             </tbody>
                         </table>
                         <br>
-                        <p class="centered" style="width:180px">Thanks for your purchase!</p>
-                        <br>
+                        <p v-if="tenant.receipt_note" class="centered" style="width:180px; white-space: pre; margin:0;">{{ tenant.receipt_note }}</p>
+                        <p class="centered" style="width:180px; padding:0;"><span style="font-size:8px;">Powered by DIPOS</span></p>
                         <!-- <button class="btn btn-secondary novis" @click="goBack()">Back</button>
                         <button class="btn btn-warning novis" @click="printReceipt()">Print</button> -->
                     </span>
@@ -98,15 +107,13 @@ export default {
                 final_price: '',
                 payment_type: ''
             },
+            tenant: {},
             order_items: [],
             currentUser: '',
             nowTime: '',
         }
     },
     methods: {
-        numberWithCommas(x) {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        },
         goBack() {
             this.$router.go(-1)
             // this.$router.push({name: 'Edit Order', params: this.order.uuid.toString()})
@@ -119,6 +126,7 @@ export default {
             })
             .then(function (response) {
                 self.order= response.data.order;
+                self.tenant= response.data.tenant;
                 self.order_items= response.data.order_items;
                 self.currentUser= response.data.user;
             }).catch(function (error) {
