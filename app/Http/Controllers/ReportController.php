@@ -24,7 +24,8 @@ class ReportController extends Controller
 
     public function dashboardWidget(Request $request){
         $date = $request->input('date');
-        $orders = Order::where('status', '=', 2)
+        $orders = Order::with('order_logs')
+        ->where('status', '=', 2)
         ->where('tenant_id', Auth::user()->tenant_id)
         ->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))])
         ->orderBy('id')
@@ -34,10 +35,11 @@ class ReportController extends Controller
                 'cogs' => $order->cogs,
                 'id' => $order->id,
                 'capital_price' => $order->capital_price,
+                'products' => $order->order_logs->sum('quantity'),
             ];
         });
         if(!$orders){
-            $orders->put(['cogs'=>0, 'capital_price'=>0, 'id'=>0]);
+            $orders->put(['cogs'=>0, 'capital_price'=>0, 'id'=>0, 'products'=>0]);
         }
 
         $order = collect([
@@ -46,18 +48,19 @@ class ReportController extends Controller
             'maxid' => $orders->max('id'),
             'minid' => $orders->min('id'),
             'capital_price' => decToCur($orders->sum('capital_price')),
+            'products' => decToCur($orders->sum('products')),
         ]);
 
-        $orderlog = OrderLog::where('saved', '=', 1)
-        ->where('tenant_id', Auth::user()->tenant_id)
-        ->whereBetween('order_id', [$order['minid'], $order['maxid']])
-        ->selectRaw('sum(quantity) as products')
-        ->first();
-        $orderlog->products = decToCur($orderlog->products);
+        // $orderlog = OrderLog::where('saved', '=', 1)
+        // ->where('tenant_id', Auth::user()->tenant_id)
+        // ->whereBetween('order_id', [$order['minid'], $order['maxid']])
+        // ->selectRaw('sum(quantity) as products')
+        // ->first();
+        // $orderlog->products = decToCur($orderlog->products);
 
         return response()->json( array(
             'order'  => $order,
-            'product' => $orderlog,
+            // 'product' => $orderlog,
         ));
     }
 
@@ -84,7 +87,7 @@ class ReportController extends Controller
 
     public function dashboardProductTable(Request $request){
         $date = $request->input('date');
-        $product = Product::with(['category', 
+        $products = Product::with(['category', 
         'order_logs' => function($query){
             return $query->where('saved', true);
         }, 
@@ -92,28 +95,38 @@ class ReportController extends Controller
             return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
         }])
         ->orderBy('name')
-        ->get();
-        dd($product);
-        $product = OrderLog::join('orders', 'orders.id', '=', 'order_logs.order_id')
-        ->join('products', 'products.id', '=', 'order_logs.product_id')
-        ->join('categories', 'categories.id', '=', 'products.category_id')
-        ->where('order_logs.saved', true)
-        ->whereBetween('orders.created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))])
-        ->orderBy('products.name')
-        ->selectRaw('products.name as product_name, categories.name as category, sum(order_logs.quantity) as quantity, products.price as price, sum(order_logs.discount) as discount')
-        ->groupBy('products.id')
-        ->get();
-        if(!empty($product)){
-            foreach($product as $p){
-                $sell_price = $p->price*$p->quantity;
-                $p->sell_price = number_format($sell_price, 0, '', '.');
-                $p->final_price = number_format($sell_price-$p->discount, 0, '', '.');
-                $p->discount = number_format($p->discount, 0, '', '.');
-                $p->quantity = number_format($p->quantity, 0, '', '.');
-            }
-        }
+        ->get()->map(function($product){
+            $sell_price = $product->price*$product->order_logs->sum('quantity');
+            $final_price = $sell_price-$product->order_logs->sum('discount');
+            return [
+                'product_name' => $product->name,
+                'category' => $product->category->name,
+                'quantity' => decToCur($product->order_logs->sum('quantity')),
+                'sell_price' => decToCur($sell_price),
+                'final_price' => decToCur($final_price),
+                'discount' => decToCur($product->order_logs->sum('discount')),
+            ];
+        });
+        // $product = OrderLog::join('orders', 'orders.id', '=', 'order_logs.order_id')
+        // ->join('products', 'products.id', '=', 'order_logs.product_id')
+        // ->join('categories', 'categories.id', '=', 'products.category_id')
+        // ->where('order_logs.saved', true)
+        // ->whereBetween('orders.created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))])
+        // ->orderBy('products.name')
+        // ->selectRaw('products.name as product_name, categories.name as category, sum(order_logs.quantity) as quantity, products.price as price, sum(order_logs.discount) as discount')
+        // ->groupBy('products.id')
+        // ->get();
+        // if(!empty($product)){
+        //     foreach($product as $p){
+        //         $sell_price = $p->price*$p->quantity;
+        //         $p->sell_price = number_format($sell_price, 0, '', '.');
+        //         $p->final_price = number_format($sell_price-$p->discount, 0, '', '.');
+        //         $p->discount = number_format($p->discount, 0, '', '.');
+        //         $p->quantity = number_format($p->quantity, 0, '', '.');
+        //     }
+        // }
         return response()->json( array(
-            'products'  => $product
+            'products'  => $products
         ));
     }
 

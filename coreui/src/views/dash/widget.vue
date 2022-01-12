@@ -74,7 +74,7 @@ export default {
                 self.order= response.data.order.order_count;
                 self.sales= response.data.order.cogs;
                 self.modal= response.data.order.capital_price;
-                self.product= response.data.product.products;
+                self.product= response.data.order.products;
             });
         }
     },
