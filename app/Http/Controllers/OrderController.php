@@ -323,8 +323,6 @@ class OrderController extends Controller
             }
         }
         $order = $this->countOrderPriceProcessor($order_uuid);
-        $order->price_total = decToCur($order->price_total);
-        $order->final_price = decToCur($order->final_price);
         return response()->json( array('success'=>true, 'reload'=>$reload, 'order'=>$order) );
     }
 
@@ -439,6 +437,19 @@ class OrderController extends Controller
             $cogs = $order->final_price*(100-1.5)/100;
         }
         $order->cogs = $cogs;
+
+        $rawmat_price = RawmatLog::with('rawmat')
+        ->where('order_id', $order->id)
+        ->get()->map(function ($rawmat){
+            return $rawmat->quantity*$rawmat->rawmat->price;
+        })->sum();
+        $order_log = OrderLog::with('product')
+        ->where('order_id', $order->id)
+        ->get()->map(function($order){
+            return $order->quantity*$order->product->capital;
+        })->sum();
+        $order->capital_price = $rawmat_price+$order_log;
+
         $order->save();
         $order->price_total = decToCur($order->price_total);
         $order->discount = decToCur($order->discount);

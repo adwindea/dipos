@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\Rawmat;
 use App\Models\OrderLog;
@@ -11,6 +12,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Promotion;
+
 
 class ReportController extends Controller
 {
@@ -23,30 +25,47 @@ class ReportController extends Controller
     public function dashboardWidget(Request $request){
         $date = $request->input('date');
         $order = Order::where('status', '=', 2)
+        ->where('tenant_id', Auth::user()->tenant_id)
         ->whereBetween('created_at', [$date['start_date'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['end_date'].'+1 day'))))])
         ->orderBy('id')
-        ->selectRaw('count(id) order_count, sum(cogs) as cogs, min(id) as minid, max(id) as maxid')
+        // ->get();
+        // ->map(function($order){
+        //     return [
+        //         'cogs' => $order->cogs,
+        //         'count' => 1,
+        //         'id' => $order->id,
+        //         'capital_price' => $order->capital_price,
+        //     ];
+        // });
+        ->selectRaw('count(id) order_count, sum(cogs) as cogs, min(id) as minid, max(id) as maxid, sum(capital_price) as capital_price')
         // ->groupByRaw('substring(order_number, 1, 6)')
         ->first();
-        $order->cogs = number_format($order->cogs, 0, '', '.');
 
+        // $order = [
+        //     'cogs' => $orders->cogs ? decToCur($orders->sum('cogs')) : 0 ,
+        //     'order_count' => $orders ? decToCur($orders->count()) : 0 ,
+        //     'maxid' => $orders->id ? $orders->max('id') : 0 ,
+        //     'minid' => $orders->id ? $orders->min('id') : 0 ,
+        //     'capital_price' => $orders->capital_price ? decToCur($orders->sum('capital_price')) : 0
+        // ];
         $orderlog = OrderLog::where('saved', '=', 1)
+        ->where('tenant_id', Auth::user()->tenant_id)
         ->whereBetween('order_id', [$order->minid, $order->maxid])
-        ->selectRaw('sum(quantity) as cups')
+        ->selectRaw('sum(quantity) as products')
         ->first();
-        $orderlog->cups = number_format($orderlog->cups, 0, '', '');
+        $orderlog->products = decToCur($orderlog->products);
 
-        $rawmatlog = RawmatLog::join('rawmats', 'rawmats.id', '=', 'rawmat_logs.rawmat_id')
-        ->where('saved', '=', 1)
-        ->whereBetween('order_id', [$order->minid, $order->maxid])
-        ->selectRaw('sum(rawmats.price*rawmat_logs.quantity) as spend')
-        ->first();
-        $rawmatlog->spend = number_format($rawmatlog->spend, 0, '', '.');
+        // $rawmatlog = RawmatLog::with('rawmat')
+        // ->where('saved', 1)
+        // ->where('tenant_id', Auth::user()->tenant_id)
+        // ->whereBetween('order_id', [$order->minid, $order->maxid])
+        // ->selectRaw('sum(rawmats.price*rawmat_logs.quantity) as spend')
+        // ->first();
+        // $rawmatlog->spend = decToCur($rawmatlog->spend);
 
         return response()->json( array(
             'order'  => $order,
             'product' => $orderlog,
-            'rawmat' => $rawmatlog
         ));
     }
 

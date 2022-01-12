@@ -9,4 +9,8 @@ class RawmatLog extends Model
 {
     use SoftDeletes;
     protected $table = 'rawmat_logs';
+
+    public function rawmat(){
+        return $this->belongsTo(Rawmat::class);
+    }
 }

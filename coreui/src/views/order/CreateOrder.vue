@@ -61,7 +61,7 @@
                                         @blur="saveQuantity($index)"
                                     />
                                 </td>
-                                <td class="text-center">{{ item.quantity*item.price_unformat }}</td>
+                                <td class="text-center">{{ (item.quantity*item.price_unformat).toLocaleString('id-ID', {maximumFractionDigits: 2}) }}</td>
                             </tr>
                             <tr>
                                 <th colspan="3" >Total</th>

@@ -94,6 +94,7 @@ class ProductController extends Controller
         $product->category_id = $category->id;
         $product->price = curToDec($request->input('price'));
         $product->capital = curToDec($request->input('capital'));
+        $product->use_rawmat = $request->input('use_rawmat');
         $product->img = $filename;
         $product->user_id = Auth::user()->id;
         $product->tenant_id = Auth::user()->tenant_id;

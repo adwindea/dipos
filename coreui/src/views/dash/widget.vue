@@ -13,7 +13,7 @@
             </CCol>
             <CCol col="12" sm="6" lg="3">
                 <CWidgetIcon
-                :header="product+' Cup(s)'"
+                :header="product+' Product(s)'"
                 text="Products sold"
                 color="warning"
                 :icon-padding="false"
@@ -73,8 +73,8 @@ export default {
             .then(function (response) {
                 self.order= response.data.order.order_count;
                 self.sales= response.data.order.cogs;
-                self.modal= response.data.rawmat.spend;
-                self.product= response.data.product.cups;
+                self.modal= response.data.order.capital_price;
+                self.product= response.data.product.products;
             }).catch(function (error) {
                 console.log(error);
                 self.$router.push({ path: '/login' });
