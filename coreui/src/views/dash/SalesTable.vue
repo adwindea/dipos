@@ -78,6 +78,7 @@ export default {
                 {key:'discount', _classes:'text-center'},
                 {key:'charge', _classes:'text-center'},
                 {key:'COGS', _classes:'text-center'},
+                {key:'capital_price', _classes:'text-center'},
             ],
             productFields : [
                 {key:'product_name'},
@@ -113,10 +114,12 @@ export default {
             })
             .then(function (response) {
                 self.products= response.data.products;
-            }).catch(function (error) {
-                console.log(error);
-                self.$router.push({ path: '/login' });
-            });
+            })
+            // .catch(function (error) {
+            //     console.log(error);
+            //     self.$router.push({ path: '/login' });
+            // })
+            ;
         },
         async excelData(){
             let self = this;

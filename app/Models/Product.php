@@ -17,6 +17,10 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function order_logs(){
+        return $this->hasMany(OrderLog::class);
+    }
+
     public function ingredients(){
         return $this->hasMany(Ingredient::class);
     }

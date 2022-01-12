@@ -35,7 +35,9 @@
         "vue-html-to-paper": "^1.3.1",
         "vue-infinite-loading": "^2.4.5",
         "vue-json-excel": "^0.3.0",
-        "vue-material-design-icons": "^4.10.0"
+        "vue-material-design-icons": "^4.10.0",
+        "vue-moment": "^4.1.0",
+        "vue2-daterange-picker": "^0.6.8"
     },
     "engines": {
         "node": "12.x",

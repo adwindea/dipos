@@ -1,11 +1,32 @@
 <template>
     <div>
-        <CRow alignHorizontal="end">
+        <!-- <CRow alignHorizontal="end">
             <CCol lg="3" md="4" xs="12">
                 <CInput type="date" v-model="date.start_date" @change="reloadComponent()"/>
             </CCol>
             <CCol lg="3" md="4" xs="12">
                 <CInput type="date" v-model="date.end_date" @change="reloadComponent()"/>
+            </CCol>
+        </CRow> -->
+        <CRow alignHorizontal="end">
+            <CCol lg="4" md="6" xs="12">
+                <date-range-picker
+                    style="width:100%"
+                    ref="picker"
+                    opens="auto"
+                    singleDatePicker="range"
+                    :timePicker="false"
+                    :timePicker24Hour="false"
+                    :showWeekNumbers="false"
+                    :showDropdowns="true"
+                    :autoApply="true"
+                    v-model="date"
+                    @update="reloadComponent"
+                >
+                    <template v-slot:input="picker" style="min-width: 350px;">
+                        {{ picker.startDate | date }} - {{ picker.endDate | date }}
+                    </template>
+                </date-range-picker>
             </CCol>
         </CRow>
         <Widget :key="widget_key" v-bind:date="date"/>
@@ -27,6 +48,11 @@
 import Widget from './dash/widget'
 import SalesTable from './dash/SalesTable'
 import TopSales from './dash/TopSales'
+import DateRangePicker from 'vue2-daterange-picker'
+//you need to import the CSS manually
+import 'vue2-daterange-picker/dist/vue2-daterange-picker.css'
+import moment from 'moment'
+
 
 export default {
     name: 'Dashboard',
@@ -34,44 +60,42 @@ export default {
         Widget,
         SalesTable,
         TopSales,
+        DateRangePicker,
     },
     data () {
         return {
             date: {
-                start_date: '',
-                end_date: '',
+                startDate: '',
+                endDate: '',
             },
             widget_key: +new Date(),
             salesTable_key: +new Date(),
             topSales_key: +new Date(),
         }
     },
+    filters: {
+        date(val) {
+            return val ? moment(val).format("DD MMMM YYYY") : "";
+        }
+    },
     methods: {
         defaultDate(){
-            if(this.date.start_date == '' || this.date.end_date == ''){
-                var today = new Date();
-                var dd = String(today.getDate()).padStart(2, '0');
-                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-                var yyyy = today.getFullYear();
-                today = yyyy + '-' + mm + '-' + dd;
-                this.date.start_date = today
-                this.date.end_date = today
+            if(this.date.startDate == '' || this.date.endDate == ''){
+                this.date.startDate = moment().subtract(1, 'month').format();
+                this.date.endDate = moment().format();
             }
         },
         reloadComponent(){
-            var start_date = Date.parse(this.date.start_date)
-            var end_date = Date.parse(this.date.end_date)
-            if(end_date < start_date){
-                alert('End date must be greater than start date!');
-            }else{
-                this.widget_key += 1
-                this.salesTable_key += 1
-                this.topSales_key += 1
-            }
+            this.widget_key += 1
+            this.salesTable_key += 1
+            this.topSales_key += 1
         }
     },
-    mounted(){
+    created(){
         this.defaultDate()
+    },
+    mounted(){
+        this.reloadComponent()
     }
 }
 </script>

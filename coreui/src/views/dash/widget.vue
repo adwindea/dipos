@@ -75,9 +75,6 @@ export default {
                 self.sales= response.data.order.cogs;
                 self.modal= response.data.order.capital_price;
                 self.product= response.data.product.products;
-            }).catch(function (error) {
-                console.log(error);
-                self.$router.push({ path: '/login' });
             });
         }
     },
