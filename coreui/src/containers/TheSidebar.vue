@@ -8,7 +8,7 @@
     <CSidebarBrand class="d-md-down-none" to="/">
       <CIcon
         class="d-block"
-        :src="'/storage/image/master/diposicon-light.png'"
+        :src="'/diposicon-light.png'"
         size="custom-size"
         :height="35"
         :viewBox="`0 0 ${minimize ? 110 : 556} 134`"
