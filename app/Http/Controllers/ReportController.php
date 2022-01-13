@@ -88,11 +88,11 @@ class ReportController extends Controller
     public function dashboardProductTable(Request $request){
         $date = $request->input('date');
         $products = Product::with(['category', 
-        'order_logs' => function($query){
-            return $query->where('saved', true);
-        }, 
-        'order_logs.order' => function($query) use($date){
-            return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
+        'order_logs' => function($query) use($date){
+            return $query->where('saved', true)
+            ->whereHas('order', function($query) use($date){
+                return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
+            });
         }])
         ->orderBy('name')
         ->get()->map(function($product){
@@ -107,24 +107,6 @@ class ReportController extends Controller
                 'discount' => decToCur($product->order_logs->sum('discount')),
             ];
         });
-        // $product = OrderLog::join('orders', 'orders.id', '=', 'order_logs.order_id')
-        // ->join('products', 'products.id', '=', 'order_logs.product_id')
-        // ->join('categories', 'categories.id', '=', 'products.category_id')
-        // ->where('order_logs.saved', true)
-        // ->whereBetween('orders.created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))])
-        // ->orderBy('products.name')
-        // ->selectRaw('products.name as product_name, categories.name as category, sum(order_logs.quantity) as quantity, products.price as price, sum(order_logs.discount) as discount')
-        // ->groupBy('products.id')
-        // ->get();
-        // if(!empty($product)){
-        //     foreach($product as $p){
-        //         $sell_price = $p->price*$p->quantity;
-        //         $p->sell_price = number_format($sell_price, 0, '', '.');
-        //         $p->final_price = number_format($sell_price-$p->discount, 0, '', '.');
-        //         $p->discount = number_format($p->discount, 0, '', '.');
-        //         $p->quantity = number_format($p->quantity, 0, '', '.');
-        //     }
-        // }
         return response()->json( array(
             'products'  => $products
         ));
@@ -133,62 +115,78 @@ class ReportController extends Controller
     public function dashboardSalesChart(Request $request){
         $date = $request->input('date');
 
-        $product = OrderLog::join('orders', 'orders.id', '=', 'order_logs.order_id')
-            ->join('products', 'products.id', '=', 'order_logs.product_id')
-            // ->join('categories', 'categories.id', '=', 'products.category_id')
-            ->where('order_logs.saved', true)
-            ->whereBetween('orders.created_at', [$date['startDate'], date('Y-m-d', strtotime($date['endDate'].'+1 day'))]);
-
-        $product_sum = $product->sum('quantity');
-
-        $product = $product->orderBy('products.name')
-            ->groupBy('products.id')
-            ->selectRaw('products.name as product_name, sum(order_logs.quantity) as quantity')
-            ->get();
-
         $pie = [];
         $bar = [];
         $productlabel = [];
-        if(!empty($product)){
-            foreach($product as $p){
-                $percent = $p->quantity/$product_sum*100;
-                $pieobj = new \stdClass();
-                $pieobj->name = $p->product_name;
-                $pieobj->y = $percent;
-                $quantity = floatval($p->quantity);
-                array_push($pie, $pieobj);
-                array_push($productlabel, $p->product_name);
-                array_push($bar, $quantity);
+
+        $productSold = OrderLog::whereHas('order', function($query) use($date){
+            return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
+        })
+        ->get()
+        ->sum('quantity');
+
+        $products =  Product::with(['order_logs' => function($query) use($date){
+            return $query->where('saved', true)
+            ->whereHas('order', function($query) use($date){
+                return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
+            });
+        }])
+        ->orderBy('name')
+        ->get()->map(function($product) use($productSold){
+            $percent = $product->order_logs->sum('quantity')/$productSold*100;
+            $pieobj = new \stdClass();
+            $pieobj->name = $product->name;
+            $pieobj->y = $percent;
+            $quantity = floatval($product->order_logs->sum('quantity'));
+            return [
+                'pieobj' => $pieobj,
+                'quantity' => $quantity,
+                'productlabel' => $product->name,
+            ];
+        });
+        if($products){
+            foreach($products as $product){
+                array_push($pie, $product['pieobj']);
+                array_push($productlabel, $product['productlabel']);
+                array_push($bar, $product['quantity']);    
             }
         }
 
-        $category = OrderLog::join('orders', 'orders.id', '=', 'order_logs.order_id')
-            ->join('products', 'products.id', '=', 'order_logs.product_id')
-            ->join('categories', 'categories.id', '=', 'products.category_id')
-            ->where('order_logs.saved', true)
-            ->whereBetween('orders.created_at', [$date['startDate'], date('Y-m-d', strtotime($date['endDate'].'+1 day'))])
-            ->orderBy('categories.name')
-            ->groupBy('categories.id')
-            ->selectRaw('categories.name as category_name, sum(order_logs.quantity) as quantity')
-            ->get();
         $catpie = [];
         $catbar = [];
         $catlabel = [];
-        if(!empty($category)){
-            foreach($category as $c){
-                $percent = $c->quantity/$product_sum*100;
-                $catpieobj = new \stdClass();
-                $catpieobj->name = $c->category_name;
-                $catpieobj->y = $percent;
-                $quantity = floatval($c->quantity);
-                array_push($catpie, $catpieobj);
-                array_push($catlabel, $c->category_name);
-                array_push($catbar, $quantity);
+        
+        $categories = Category::with(['products.order_logs' => function($query) use($date){
+            return $query->where('saved', true)
+            ->whereHas('order', function($query) use($date){
+                return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
+            });
+        }])
+        ->orderBy('name')
+        ->get()->map(function($category) use($productSold){
+            $quantity = $category->products->sum(function($product){
+                return $product->order_logs->sum('quantity');
+            });
+            $percent = $quantity/$productSold*100;
+            $pieobj = new \stdClass();
+            $pieobj->name = $category->name;
+            $pieobj->y = $percent;
+            $quantity = floatval($quantity);
+            return [
+                'pieobj' => $pieobj,
+                'quantity' => $quantity,
+                'catlabel' => $category->name,
+            ];
+        });
+        if($categories){
+            foreach($categories as $category){
+                array_push($catpie, $category['pieobj']);
+                array_push($catlabel, $category['catlabel']);
+                array_push($catbar, $category['quantity']);    
             }
         }
 
         return response()->json( array(
-            // 'label'  => $label,
             'pie'  => $pie,
             'bar'  => $bar,
             'productlabel' => $productlabel,
@@ -262,41 +260,27 @@ class ReportController extends Controller
 
     public function excelProductSales(Request $request){
         $date = $request->input('date');
-        $product = OrderLog::join('orders', 'orders.id', '=', 'order_logs.order_id')
-        ->join('products', 'products.id', '=', 'order_logs.product_id')
-        ->join('categories', 'categories.id', '=', 'products.category_id')
-        ->where('order_logs.saved', true)
-        ->whereBetween('orders.created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))])
-        ->orderBy('products.name')
-        ->selectRaw('products.name as product_name, categories.name as category, sum(order_logs.quantity) as quantity, products.price as price, sum(order_logs.discount) as discount')
-        ->groupBy('products.id')
-        ->get();
-        // $quantity_tot = 0;
-        // $sell_price_tot = 0;
-        // $final_price_tot = 0;
-        // $discount_tot = 0;
-        if(!empty($product)){
-            foreach($product as $p){
-                $sell_price = $p->price*$p->quantity;
-                // $quantity_tot = $quantity_tot + $p->quantity;
-                // $sell_price_tot = $sell_price_tot + $sell_price;
-                // $final_price_tot = $final_price_tot + ($sell_price-$p->discount);
-                // $discount_tot = $discount_tot + $p->discount;
-                $p->sell_price = number_format($sell_price, 0, '.', '');
-                $p->final_price = number_format($sell_price-$p->discount, 0, '.', '');
-                $p->discount = number_format($p->discount, 0, '.', '');
-                $p->quantity = number_format($p->quantity, 0, '.', '');
-            }
-        }
-        // $total = new \stdClass();
-        // $total->product_name = 'Total';
-        // $total->sell_price = number_format($sell_price_tot, 0, '.', '');
-        // $total->final_price = number_format($final_price_tot, 0, '.', '');
-        // $total->discount = number_format($discount_tot, 0, '.', '');
-        // $total->quantity = number_format($quantity_tot, 0, '.', '');
-        // array_push($product, $total);
+
+        $products =  Product::with(['category', 'order_logs' => function($query) use($date){
+            return $query->where('saved', true)
+            ->whereHas('order', function($query) use($date){
+                return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
+            });
+        }])
+        ->orderBy('name')
+        ->get()->map(function($product){
+            return [
+                'product_name' => $product->name,
+                'category' => $product->category->name,
+                'quantity' => $product->order_logs->sum('quantity'),
+                'price' => $product->price,
+                'discount' => $product->order_logs->sum('discount'),
+                'sell_price' => $product->price*$product->order_logs->sum('quantity'),
+                'final_price' => ($product->price*$product->order_logs->sum('quantity'))-$product->order_logs->sum('discount'),
+            ];  
+        });
         return response()->json( array(
-            'products'  => $product
+            'products'  => $products
         ));
     }
 

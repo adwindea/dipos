@@ -34,7 +34,7 @@
                                 class="btn btn-success float-right"
                                 :fetch="excelData"
                                 :fields="excelFields"
-                                :name="'Product_Sales_'+date.start_date+'_to_'+date.end_date+'.xls'">
+                                :name="'Product_Sales_'+startDate+'_to_'+endDate+'.xls'">
                                 <CIcon :content="$options.excelIcon"></CIcon> Download Excel
                             </downloadexcel><br>
                         </CTab>
@@ -47,8 +47,10 @@
 
 <script>
 import axios from 'axios'
-import downloadexcel from "vue-json-excel";
+import downloadexcel from "vue-json-excel"
 import { cilSpreadsheet } from '@coreui/icons'
+import moment from 'moment'
+
 
 export default {
     excelIcon: cilSpreadsheet,
@@ -60,6 +62,14 @@ export default {
     },
     components: {
         downloadexcel,
+    },
+    computed: {
+        startDate : function(){
+            return moment(this.date.startDate).format('DD-MM-YYYY')
+        },
+        endDate : function(){
+            return moment(this.date.endDate).format('DD-MM-YYYY')
+        }
     },
     data () {
         return {

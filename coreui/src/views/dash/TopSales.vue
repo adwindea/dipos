@@ -212,10 +212,12 @@ export default {
                 self.catPie.series.data = response.data.catpie;
                 self.catBar.series[0].data = response.data.catbar;
                 self.catBar.xAxis.categories = response.data.catlabel;
-            }).catch(function (error) {
-                console.log(error);
-                self.$router.push({ path: '/login' });
-            });
+            })
+            // .catch(function (error) {
+            //     console.log(error);
+            //     self.$router.push({ path: '/login' });
+            // })
+            ;
         }
     },
     mounted(){
