@@ -239,9 +239,14 @@ class OrderController extends Controller
         $products = '';
         if($categorykey != ''){
             $category = Category::where('uuid', '=', $categorykey)->first();
-            $products = Product::where('name', 'like', '%'.$searchkey.'%')->where('category_id', '=', $category->id)->paginate(12);
+            $products = Product::where('tenant_id', Auth::user()->tenant_id)
+            ->where('name', 'like', '%'.$searchkey.'%')
+            ->where('category_id', '=', $category->id)
+            ->paginate(12);
         }else{
-            $products = Product::where('name', 'like', '%'.$searchkey.'%')->paginate(12);
+            $products = Product::where('tenant_id', Auth::user()->tenant_id)
+            ->where('name', 'like', '%'.$searchkey.'%')
+            ->paginate(12);
         }
         $products = tap($products, function ($productInstance){
             return $productInstance->getCollection()->transform(function($product){

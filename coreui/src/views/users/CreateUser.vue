@@ -30,6 +30,7 @@ export default {
             email: '',
             password: '',
             password_confirmation: '',
+            tenant: '',
         }
     },
     methods: {
@@ -42,20 +43,33 @@ export default {
                 name: self.name,
                 email: self.email,
                 password: self.password,
-                password_confirmation: self.password_confirmation
+                password_confirmation: self.password_confirmation,
+                tenant: self.tenant,
             }).then(function (response) {
                 self.name = '';
                 self.email = '';
                 self.password = '';
                 self.password_confirmation = '';
+                self.tenant = '';
                 self.$router.push({ path: '/users' });
             })
             .catch(function (error) {
                 console.log(error);
             });
         },
+        getTenant (){
+          let self = this;
+          axios.get(  this.$apiAdress + '/api/getTenant?token=' + localStorage.getItem("api_token"))
+          .then(function (response) {
+            self.tenant = response.data.tenant;
+          }).catch(function (error) {
+            console.log(error);
+            self.$router.push({ path: '/login' });
+          });
+        }
     },
     mounted(){
+      this.getTenant()
     }
 }
 </script>

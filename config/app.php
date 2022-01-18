@@ -56,6 +56,8 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
+    'default_domain_name' => env('DEFAULT_DOMAIN_NAME', 'dipos.sekaradi.id'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

@@ -7,8 +7,10 @@ import { iconsSet as icons } from './assets/icons/icons.js'
 import store from './store'
 // import VueHtmlToPaper from 'vue-html-to-paper';
 
-let subdomain = location.hostname.split('.').shift() + '.'; //remove when subdomain disabled
-Vue.prototype.$apiAdress = 'https://'+subdomain+'dipos.sekaradi.id' //for enabled subdomain
+// let subdomain = location.hostname.split('.').shift() + '.'; //remove when subdomain disabled
+// Vue.prototype.$apiAdress = 'https://'+subdomain+'dipos.sekaradi.id' //for enabled subdomain
+
+Vue.prototype.$apiAdress = location.origin;
 
 //Vue.prototype.$apiAdress = 'https://dipos.sekaradi.id'//for disabled subdomain
 

@@ -16,11 +16,11 @@ use Illuminate\Http\Request;
 Route::group(['middleware' => 'api'], function ($router) {
     Route::get('menu', 'MenuController@index');
 
-    Route::domain('{sub}.dipos.sekaradi.id')->group(function () { //for enabled domain
-        Route::post('login', 'AuthController@login');
-    });
+    // Route::domain('{sub}.'.config('app.default_domain_name'))->group(function () { //for enabled domain
+    //     Route::post('login', 'AuthController@login');
+    // });
 
-    // Route::post('login', 'AuthController@login'); //for disabled subdomain
+    Route::post('login', 'AuthController@login'); //for disabled subdomain
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('register', 'AuthController@register');
@@ -42,6 +42,7 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::resource('bread',  'BreadController');   //create BREAD (resource)
 
         Route::resource('users', 'UsersController');
+        Route::get('getTenant', 'UsersController@getTenant');
 
         Route::prefix('menu/menu')->group(function () {
             Route::get('/',         'MenuEditController@index')->name('menu.menu.index');

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class UsersController extends Controller
 {
@@ -31,6 +32,7 @@ class UsersController extends Controller
         $you = auth()->user()->id;
         $users = DB::table('users')
         ->select('users.id', 'users.name', 'users.email', 'users.menuroles as roles', 'users.status', 'users.email_verified_at as registered')
+        ->where('tenant_id', Auth::user()->tenant_id)
         ->whereNull('deleted_at')
         ->get();
         return response()->json( compact('users', 'you') );
@@ -121,6 +123,9 @@ class UsersController extends Controller
             $user->save();
         }
         return response()->json( array('success'=>true) );
+    }
 
+    public function getTenant(){
+        return response()->json( array('tenant' => Crypt::encrypt(auth()->user()->tenant_id)) );
     }
 }
