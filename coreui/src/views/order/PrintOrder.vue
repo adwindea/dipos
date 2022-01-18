@@ -72,7 +72,7 @@
                         </table>
                         <br>
                         <p v-if="tenant.receipt_note" class="centered" style="width:180px; white-space: pre; margin:0;">{{ tenant.receipt_note }}</p>
-                        <p class="centered" style="width:180px; padding:0;"><span style="font-size:8px;">Powered by <img :src="'/storage/image/master/logo.png'" style="max-width:12px;"> <b>DIPOS</b></span></p>
+                        <p class="centered" style="width:180px; padding:0;"><span style="font-size:8px;">Powered by <img :src="'/diposicon-dark.png'" style="max-width:12px;"> <b>DIPOS</b></span></p>
                         <!-- <button class="btn btn-secondary novis" @click="goBack()">Back</button>
                         <button class="btn btn-warning novis" @click="printReceipt()">Print</button> -->
                     </span>

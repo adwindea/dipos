@@ -286,6 +286,17 @@ class ReportController extends Controller
 
     public function excelSalesReport(Request $request){
         $date = $request->input('date');
+        // $order = Order::with('order_logs')
+        // ->where('status', '=', 2)
+        // ->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime($date['endDate'].'+1 day'))])
+        // ->orderBy('id')
+        // ->get()->map(function($order){
+        //     return [
+        //         'COGS' => $order->cogs,
+        //         'sales_date' => $order->created_at,
+        //         'total_cup' => $order->order_logs->sum('quantity'),
+        //     ];
+        // });
         $order = Order::leftJoin('order_logs', 'orders.id', '=', 'order_logs.order_id')
         ->where('orders.status', '=', 2)
         ->whereBetween('orders.created_at', [$date['startDate'], date('Y-m-d', strtotime($date['endDate'].'+1 day'))])

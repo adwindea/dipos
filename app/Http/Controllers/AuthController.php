@@ -40,6 +40,8 @@ class AuthController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+        $user->tenant_id = Auth::user()->tenant_id;
+        $user->sub = Auth::user()->sub;
         $user->status = 'Active';
         $user->save();
         return response()->json(['status' => 'success'], 200);

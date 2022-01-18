@@ -5,22 +5,38 @@
                 <CCard>
                     <CCardHeader>
                         <CRow>
-                            <CCol lg="6" xs="12">
+                            <CCol lg="5" md="4" xs="12">
                                 <h4>Sales Report
-                                    <downloadexcel
-                                        class="btn btn-success float-right"
-                                        :fetch="excelData"
-                                        :fields="excelFields"
-                                        :name="'Sales_Report_'+date.start_date+'_to_'+date.end_date+'.xls'">
-                                        <CIcon :content="$options.excelIcon"></CIcon>Download Excel
-                                    </downloadexcel>
+                                    
                                 </h4>
                             </CCol>
-                            <CCol lg="3" xs="12">
-                                <CInput type="date" v-model="date.start_date" @change="resetData()"/>
+                            <CCol lg="5" md="6" xs="12">
+                                <date-range-picker
+                                    style="width:100%"
+                                    ref="picker"
+                                    opens="auto"
+                                    singleDatePicker="range"
+                                    :timePicker="false"
+                                    :timePicker24Hour="false"
+                                    :showWeekNumbers="false"
+                                    :showDropdowns="true"
+                                    :autoApply="true"
+                                    v-model="date"
+                                    @update="resetData"
+                                >
+                                    <template v-slot:input="picker" style="min-width: 350px;">
+                                        {{ picker.startDate | date }} - {{ picker.endDate | date }}
+                                    </template>
+                                </date-range-picker>
                             </CCol>
-                            <CCol lg="3" xs="12">
-                                <CInput type="date" v-model="date.end_date" @change="resetData()"/>
+                            <CCol lg="2" md="2" xs="12">
+                                <downloadexcel
+                                    class="btn btn-success btn-sm"
+                                    :fetch="excelData"
+                                    :fields="excelFields"
+                                    :name="'Sales_Report_'+date.start_date+'_to_'+date.end_date+'.xls'">
+                                    <CIcon :content="$options.excelIcon"></CIcon> Download Excel
+                                </downloadexcel>
                             </CCol>
                         </CRow>
                     </CCardHeader>
@@ -49,7 +65,9 @@
 import axios from 'axios'
 import { Chart } from 'highcharts-vue'
 import { cilSpreadsheet } from '@coreui/icons'
+import DateRangePicker from 'vue2-daterange-picker'
 import downloadexcel from "vue-json-excel"
+import moment from 'moment'
 
 export default {
     excelIcon: cilSpreadsheet,
@@ -57,8 +75,8 @@ export default {
     data () {
         return {
             date: {
-                start_date: '',
-                end_date: '',
+                startDate: '',
+                endDate: '',
             },
             excelFields : {
                 'Date': 'sales_date',
@@ -149,22 +167,21 @@ export default {
             },
         }
     },
+    filters: {
+        date(val) {
+            return val ? moment(val).format("DD MMMM YYYY") : "";
+        }
+    },
     components:{
         highcharts: Chart,
-        downloadexcel
+        downloadexcel,
+        DateRangePicker,
     },
     methods: {
         defaultDate(){
-            if(this.date.start_date == '' || this.date.end_date == ''){
-                var today = new Date();
-                var dd = String(today.getDate()).padStart(2, '0');
-                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-                var mm2 = String(today.getMonth()).padStart(2, '0'); //January is 0!
-                var yyyy = today.getFullYear();
-                today = yyyy + '-' + mm2 + '-' + dd;
-                var tomorrow = yyyy + '-' + mm + '-' + dd;
-                this.date.start_date = today
-                this.date.end_date = tomorrow
+            if(this.date.startDate == '' || this.date.endDate == ''){
+                this.date.startDate = moment().subtract(1, 'month').format();
+                this.date.endDate = moment().format();
             }
         },
         getChart(){
@@ -198,14 +215,8 @@ export default {
             });
         },
         resetData(){
-            var start_date = Date.parse(this.date.start_date)
-            var end_date = Date.parse(this.date.end_date)
-            if(end_date < start_date){
-                alert('End date must be greater than start date!');
-            }else{
                 this.getData()
                 this.getChart()
-            }
         },
         async excelData(){
             let self = this;

@@ -43,7 +43,7 @@
                                 @change="generateBase64()"
                             />
                             <input type="hidden" id="img">
-                            <img id="thumbnail" :src="tenant.logo">
+                            <img id="thumbnail" style="max-width:300px; max-height:300px;" :src="tenant.logo">
                         </CCol>
                     </CRow>
 
