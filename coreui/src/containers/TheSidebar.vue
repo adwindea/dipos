@@ -8,9 +8,9 @@
     <CSidebarBrand class="d-md-down-none" to="/">
       <CIcon
         class="d-block"
-        :src="'/diposicon-light.png'"
+        :src="logo"
         size="custom-size"
-        :height="35"
+        :height="48"
         :viewBox="`0 0 ${minimize ? 110 : 556} 134`"
       />
         <!-- <img src="https://dipos.s3.ap-southeast-1.amazonaws.com/image/logo-invoice.jpg" style="height:35px"> -->
@@ -41,6 +41,13 @@ export default {
     },
     minimize () {
       return this.$store.state.sidebarMinimize
+    },
+    logo () {
+      if(this.$store.state.sidebarMinimize){
+        return '/diposicon-light.png'
+      }else{
+        return '/dipos-horizontal-light.png'
+      }
     }
   },
   methods: {

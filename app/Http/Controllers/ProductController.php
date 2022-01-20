@@ -79,14 +79,11 @@ class ProductController extends Controller
 			$img = str_replace(' ', '+', $img);
             $resource = base64_decode($img);
             $prefix = Str::random(8);
-            $s3name = 'image/product/'.$prefix.time().'.png';
-            Storage::disk('s3')->put($s3name, $resource);
-            $filename = Storage::disk('s3')->url($s3name);
-            // $filename = 'storage/image/rawmat/'.$prefix.time().'.png';
-            // $path = storage_path().'/app/public/image/rawmat/'.$prefix.time().'.png';
-            // file_put_contents($path, $resource);
+            $s3name = 'public/image/product/'.$prefix.time().'.png';
+            Storage::disk('local')->put($s3name, $resource);
+            $filename = Storage::disk('local')->url($s3name);
         }else{
-            $filename = Storage::disk('s3')->url('image/noimage.png');
+            $filename = Storage::disk('local')->url('public/image/noimage.png');
         }
         $product = new Product();
         $product->name = $request->input('name');
@@ -134,18 +131,18 @@ class ProductController extends Controller
         $product = Product::where('uuid', '=', $request->input('uuid'))->first();
         $img = $request->input('img');
         if(!empty($img)){
-            $img_path = parse_url($product->img, PHP_URL_PATH);
-            if($img_path != '/image/noimage.png'){
-                Storage::disk('s3')->delete($img_path);
+            $img_path = storage_path().'/app/public'.(str_replace('storage/', '', $product->img));
+            if(file_exists($img_path) && $img_path != storage_path().'/app/public/image/noimage.png'){
+                unlink($img_path);
             }
             $img = str_replace('data:image/png;base64,', '', $img);
 			$img = str_replace('[removed]', '', $img);
 			$img = str_replace(' ', '+', $img);
             $resource = base64_decode($img);
             $prefix = Str::random(8);
-            $s3name = 'image/product/'.$prefix.time().'.png';
-            Storage::disk('s3')->put($s3name, $resource);
-            $filename = Storage::disk('s3')->url($s3name);
+            $s3name = 'public/image/product/'.$prefix.time().'.png';
+            Storage::disk('local')->put($s3name, $resource);
+            $filename = Storage::disk('local')->url($s3name);
             $product->img = $filename;
         }
         if(!$request->input('use_rawmat')){
@@ -166,9 +163,9 @@ class ProductController extends Controller
 
     public function delete(Request $request){
         $product = Product::where('uuid', '=', $request->input('uuid'))->first();
-        $img_path = parse_url($product->img, PHP_URL_PATH);
-        if($img_path != '/image/noimage.png'){
-            Storage::disk('s3')->delete($img_path);
+        $img_path = storage_path().'/app/public'.(str_replace('storage/', '', $product->img));
+        if(file_exists($img_path) && $img_path != storage_path().'/app/public/image/noimage.png'){
+            unlink($img_path);
         }
         $ingredient = Ingredient::where('product_id', $product->id)->delete();
         $product->delete();
