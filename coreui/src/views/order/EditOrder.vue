@@ -32,7 +32,7 @@
                             <tr v-for="(item, $index) in order_items" :key="$index">
                                 <td>{{ item.name }}</td>
                                 <td>
-                                    <CInput
+                                    <CInput v-if="order.status < 2"
                                         size="sm"
                                         type="text"
                                         placeholder="Qty"
@@ -48,9 +48,15 @@
                                             <CButton size="sm" color="success" @click="plusQuantity($index)"><CIcon name="cilPlus" height="12"/></CButton>
                                         </template>
                                     </CInput>
+                                    <CInput v-if="order.status == 2"
+                                        size="sm"
+                                        type="text"
+                                        v-model.number="item.quantity"
+                                        disabled="true"
+                                    >
                                 </td>
                                 <td>
-                                    <CInput
+                                    <CInput v-if="order.status < 2"
                                         size="sm"
                                         type="text"
                                         placeholder="Add note here"
@@ -59,6 +65,12 @@
                                         @keyup.enter="saveQuantity($index)"
                                         @blur="saveQuantity($index)"
                                     />
+                                    <CInput v-if="order.status == 2"
+                                        size="sm"
+                                        type="text"
+                                        v-model="item.note"
+                                        disabled="disabled"
+                                    >
                                 </td>
                                 <td class="text-center">{{ (item.quantity*item.price_unformat).toLocaleString('id-ID', {maximumFractionDigits: 2}) }}</td>
                             </tr>
@@ -95,9 +107,9 @@
                     </CTab>
                 </CTabs>
                 <footer slot="footer">
-                    <CButton color="danger" @click="closeModal = true; cartModal = false">Close Order</CButton>
+                    <CButton v-if="order.status < 2" color="danger" @click="closeModal = true; cartModal = false">Close Order</CButton>
                     <CButton color="warning" @click="printReceipt()">Print Receipt</CButton>
-                    <CButton color="primary" @click="saveOrder(order.uuid,1)">Save Order</CButton>
+                    <CButton v-if="order.status < 2" color="primary" @click="saveOrder(order.uuid,1)">Save Order</CButton>
                 </footer>
             </CModal>
 

@@ -67,7 +67,7 @@ class ReportController extends Controller
     public function dashboardTransactionTable(Request $request){
         $date = $request->input('date');
         $order = Order::where('status', '=', 2)
-        ->where('tenant_id', Auth::user()->id)
+        ->where('tenant_id', Auth::user()->tenant_id)
         ->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))])
         ->orderByDesc('id')
         ->get()->map(function($o){
@@ -95,7 +95,8 @@ class ReportController extends Controller
                 return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
             });
         }])
-        ->where('tenant_id', Auth::user()->id)
+        ->has('order_logs')
+        ->where('tenant_id', Auth::user()->tenant_id)
         ->orderBy('name')
         ->get()->map(function($product){
             $sell_price = $product->price*$product->order_logs->sum('quantity');
@@ -122,19 +123,20 @@ class ReportController extends Controller
         $productlabel = [];
 
         $productSold = OrderLog::whereHas('order', function($query) use($date){
-            return $query->where('tenant_id', Auth::user()->id)
+            return $query->where('tenant_id', Auth::user()->tenant_id)
             ->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
         })
         ->get()
         ->sum('quantity');
 
-        $products =  Product::where('tenant_id', Auth::user()->id)
+        $products =  Product::where('tenant_id', Auth::user()->tenant_id)
         ->with(['order_logs' => function($query) use($date){
             return $query->where('saved', true)
             ->whereHas('order', function($query) use($date){
                 return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
             });
         }])
+        ->has('order_logs')
         ->orderBy('name')
         ->get()->map(function($product) use($productSold){
             $percent = $product->order_logs->sum('quantity')/$productSold*100;
@@ -160,13 +162,14 @@ class ReportController extends Controller
         $catbar = [];
         $catlabel = [];
         
-        $categories = Category::where('tenant_id', Auth::user()->id)
+        $categories = Category::where('tenant_id', Auth::user()->tenant_id)
             ->with(['products.order_logs' => function($query) use($date){
             return $query->where('saved', true)
             ->whereHas('order', function($query) use($date){
                 return $query->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime(date('Y-m-d', strtotime($date['endDate'].'+1 day'))))]);
             });
         }])
+        ->has('products.order_logs')
         ->orderBy('name')
         ->get()->map(function($category) use($productSold){
             $quantity = $category->products->sum(function($product){
@@ -211,12 +214,12 @@ class ReportController extends Controller
         for($i = $date['startDate']; $i < date('Y-m-d', strtotime($date['endDate'].'+1 day')); $i = date('Y-m-d', strtotime($i.'+1 day'))){
             array_push($cat, $i);
             $ornum = date('ymd', strtotime($i));
-            $data = Order::where('tenant_id', Auth::user()->id)
+            $data = Order::where('tenant_id', Auth::user()->tenant_id)
             ->where('status', '=', 2)
             ->where('order_number', 'like', $ornum.'%')
             ->selectRaw('count(id) as order_count, sum(cogs) as cogs, max(id) as maxid, min(id) as minid')
             ->first();
-            $orderlog = OrderLog::where('tenant_id', Auth::user()->id)
+            $orderlog = OrderLog::where('tenant_id', Auth::user()->tenant_id)
             ->where('saved', true)
             ->whereBetween('order_id', [$data->minid, $data->maxid])
             ->selectRaw('sum(quantity) as productsold')
@@ -243,7 +246,7 @@ class ReportController extends Controller
     }
     public function salesReportData(Request $request){
         $date = $request->input('date');
-        $order = Order::where('tenant_id', Auth::user()->id)
+        $order = Order::where('tenant_id', Auth::user()->tenant_id)
         ->where('status', '=', 2)
         ->whereBetween('created_at', [$date['startDate'], date('Y-m-d', strtotime($date['endDate'].'+1 day'))])
         ->selectRaw('count(id) as total_order, sum(cogs) as COGS, date(created_at) sales_date')
@@ -269,7 +272,7 @@ class ReportController extends Controller
     public function excelProductSales(Request $request){
         $date = $request->input('date');
 
-        $products =  Product::where('tenant_id', Auth::user()->id)
+        $products =  Product::where('tenant_id', Auth::user()->tenant_id)
             ->with(['category', 'order_logs' => function($query) use($date){
             return $query->where('saved', true)
             ->whereHas('order', function($query) use($date){
@@ -307,7 +310,7 @@ class ReportController extends Controller
         //     ];
         // });
         $order = Order::leftJoin('order_logs', 'orders.id', '=', 'order_logs.order_id')
-        ->where('tenant_id', Auth::user()->id)
+        ->where('tenant_id', Auth::user()->tenant_id)
         ->where('orders.status', '=', 2)
         ->whereBetween('orders.created_at', [$date['startDate'], date('Y-m-d', strtotime($date['endDate'].'+1 day'))])
         ->selectRaw('count(orders.id) as total_order, sum(orders.cogs) as COGS, date(orders.created_at) sales_date, sum(order_logs.quantity) as total_cup')

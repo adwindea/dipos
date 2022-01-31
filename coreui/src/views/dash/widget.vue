@@ -24,7 +24,7 @@
             <CCol col="12" sm="6" lg="3">
                 <CWidgetIcon
                 :header="sales+' IDR'"
-                text="Cost of Good Sold"
+                text="Nett Sales"
                 color="info"
                 :icon-padding="false"
                 >
@@ -34,7 +34,7 @@
             <CCol col="12" sm="6" lg="3">
                 <CWidgetIcon
                 :header="modal+' IDR'"
-                text="Raw Material Cost"
+                text="Cost of Good Sold"
                 color="danger"
                 :icon-padding="false"
                 >

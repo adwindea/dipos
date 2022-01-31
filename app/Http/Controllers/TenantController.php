@@ -11,7 +11,7 @@ use App\Models\Tenant;
 class TenantController extends Controller
 {
     public function getTenantSetting(){
-        $tenant = Tenant::find(Auth::user()->tenant_id)->first();
+        $tenant = Tenant::find(Auth::user()->tenant_id);
         $tenant = [
             'name' => $tenant->name,
             'address' => $tenant->address,
@@ -33,7 +33,7 @@ class TenantController extends Controller
             'email' => 'required|email',
         ]);
         
-        $tenant = Tenant::find(Auth::user()->tenant_id)->first();
+        $tenant = Tenant::find(Auth::user()->tenant_id);
 
         $img = $request->input('logo');
         if(!empty($img)){
@@ -45,6 +45,7 @@ class TenantController extends Controller
             $s3name = 'public/image/tenant/logo'.$tenant->sub.'.png';
             Storage::disk('local')->put($s3name, $resource);
             $logo = Storage::disk('local')->url($s3name);    
+            $tenant->logo = $logo;
         }
 
         $tenant->name = $request->input('name');
@@ -52,7 +53,6 @@ class TenantController extends Controller
         $tenant->phone = $request->input('phone');
         $tenant->email = $request->input('email');
         $tenant->receipt_note = $request->input('receipt_note');
-        $tenant->logo = $logo;
         $tenant->save();
 
         return response()->json(

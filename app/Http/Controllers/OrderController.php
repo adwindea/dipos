@@ -27,7 +27,7 @@ class OrderController extends Controller
     public function index(){
         $orders = Order::with('promotion', 'user')
         ->where('status', '>', 0)
-        ->where('tenant_id', Auth::user()->id)
+        ->where('tenant_id', Auth::user()->tenant_id)
         ->orderByDesc('order_number')
         ->get()->map(function($order){
             return [
