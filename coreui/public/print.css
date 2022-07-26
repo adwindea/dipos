@@ -1,0 +1,70 @@
+.ticket {
+    width: 300px;
+    max-width: 300px;
+    font-size: 12px;
+    font-family: 'Times New Roman';
+}
+.ticket td, .ticket th, .ticket tr, .ticket table {
+    border-collapse: collapse;
+}
+.ticket td.description, .ticket th.description {
+    width: 158px;
+    max-width: 158px;
+}
+.ticket td.quantity, .ticket th.quantity {
+    width: 42px;
+    max-width: 42px;
+    word-break: break-all;
+}
+.ticket td.righted, .ticket th.righted {
+    width: 158px;
+    max-width: 158px;
+    text-align: right;
+    align-content: right;
+    word-break: break-all;
+}
+.ticket td.price, .ticket th.price {
+    width: 100px;
+    max-width: 100px;
+    text-align: right;
+    align-content: right;
+    word-break: break-all;
+}
+.ticket td.price-right, .ticket th.price-right {
+    width: 100px;
+    max-width: 100px;
+    text-align: right;
+    align-content: right;
+    word-break: break-all;
+}
+.ticket td.title, .ticket th.title {
+    width: 100px;
+    max-width: 100px;
+    word-break: break-all;
+    padding: 0;
+    margin: 0;
+}
+.ticket td.detail, .ticket th.detail {
+    width: 200px;
+    max-width: 200px;
+    word-break: break-all;
+    padding: 0;
+    margin: 0;
+}
+.ticket .centered {
+    text-align: center;
+    align-content: center;
+}
+.ticket img {
+    max-width: inherit;
+    width: inherit;
+}
+@page {
+   size: 58mm 120mm;
+   margin: 10px;
+}
+@media print {
+    .novis {
+        visibility: hidden;
+   }
+}

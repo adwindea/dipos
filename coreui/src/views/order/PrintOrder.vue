@@ -5,11 +5,11 @@
 <template>
 <div>
                     <span id="printMe" class="ticket">
-                        <div class="centered" style="width:180px;">
-                            <img :src="tenant.logo" class="centered" style="max-height:50px; max-width:180px; width:auto;" alt="Logo">
+                        <div style="width:300px;text-align: center;align-content: center;">
+                            <img :src="tenant.logo" style="max-height:50px; max-width:300px; width:auto;text-align: center;align-content: center;" alt="Logo">
                         </div>
-                        <h4 class="centered" style="max-width:180px; margin:0;">{{ tenant.name }}</h4>
-                        <p class="centered" style="max-width:180px; font-size:8px; margin:0;">{{ tenant.phone }} | {{ tenant.email }}</p>
+                        <h4 style="max-width:300px; margin:0;text-align: center;align-content: center;">{{ tenant.name }}</h4>
+                        <p style="max-width:300px; font-size:8px; margin:0; text-align: center;align-content: center;">{{ tenant.phone }} | {{ tenant.email }}</p>
                         <!-- <table>
                             <tr>
                                 <td class="title">Order</td>
@@ -29,50 +29,51 @@
                                 <td class="detail">: {{ order.customer_name }}</td>
                             </tr>
                         </table> -->
-                        <table style="width:180px;">
+                        <table style="width:300px;">
                             <tr>
                                 <td>{{ order.order_number }}</td>
-                                <td class="righted">{{ nowTime }}</td>
+                                <td class="righted" style="text-align: right;align-content: right;">{{ nowTime }}</td>
                             </tr>
                             <tr>
                                 <td>Cashier : {{ currentUser }}</td>
+                                <td style="text-align: right;align-content: right;">Cust : {{ order.customer_name }}</td>
                             </tr>
                         </table>
                         <br>
-                        <table>
+                        <table style="width:300px;">
                             <thead>
                                 <tr>
                                     <th class="quantity" style="border-bottom:1px solid black;">Q.</th>
                                     <th class="description" style="border-bottom:1px solid black;">Item</th>
-                                    <th class="price" style="border-bottom:1px solid black;">Total</th>
+                                    <th class="price" style="border-bottom:1px solid black;text-align: right;align-content: right;">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(item, $index) in order_items" :key="$index">
                                     <td class="quantity">{{item.quantity}}</td>
                                     <td class="description">{{item.name}}</td>
-                                    <td class="price">{{item.price_quantity}}</td>
+                                    <td class="price" style="text-align: right;align-content: right;">{{item.price_quantity}}</td>
                                 </tr>
                                 <tr v-if="order.discount > 0">
                                     <th class="quantity" style="border-top:1px solid black;"></th>
-                                    <th class="righted" style="border-top:1px solid black;">Sub</th>
-                                    <th class="price-right" style="border-top:1px solid black;">{{order.price_total}}</th>
+                                    <th class="righted" style="border-top:1px solid black;text-align: right;align-content: right;">Sub</th>
+                                    <th class="price-right" style="border-top:1px solid black;text-align: right;align-content: right;">{{order.price_total}}</th>
                                 </tr>
                                 <tr v-if="order.discount > 0">
                                     <th class="quantity"></th>
-                                    <th class="righted">Discount</th>
-                                    <th class="price-right">{{order.discount}}</th>
+                                    <th class="righted" style="text-align: right;align-content: right;">Discount</th>
+                                    <th class="price-right" style="text-align: right;align-content: right;">{{order.discount}}</th>
                                 </tr>
                                 <tr>
                                     <th class="quantity" style="border-top:1px solid black;"></th>
-                                    <th class="righted" style="border-top:1px solid black;">Total</th>
-                                    <th class="price-right" style="border-top:1px solid black;">{{order.final_price}}</th>
+                                    <th class="righted" style="border-top:1px solid black;text-align: right;align-content: right;">Total</th>
+                                    <th class="price-right" style="border-top:1px solid black;text-align: right;align-content: right;">{{order.final_price}}</th>
                                 </tr>
                             </tbody>
                         </table>
                         <br>
-                        <p v-if="tenant.receipt_note" class="centered" style="width:180px; white-space: pre; margin:0;">{{ tenant.receipt_note }}</p>
-                        <p class="centered" style="width:180px; padding:0;"><span style="font-size:8px;">Powered by <img :src="'/diposicon-dark.png'" style="max-width:12px;"> <b>DIPOS</b></span></p>
+                        <p v-if="tenant.receipt_note" style="width:300px; white-space: pre; margin:0;text-align: center;align-content: center;">{{ tenant.receipt_note }}</p>
+                        <p style="width:300px; padding:0;text-align: center;align-content: center;"><span style="font-size:8px;text-align: center;align-content: center;">Powered by <img :src="'/diposicon-dark.png'" style="max-width:12px;"> <b>DIPOS</b></span></p>
                         <!-- <button class="btn btn-secondary novis" @click="goBack()">Back</button>
                         <button class="btn btn-warning novis" @click="printReceipt()">Print</button> -->
                     </span>
@@ -156,8 +157,22 @@ export default {
             self.nowTime = anyDate.toShortFormat()
         },
         printReceipt(){
-            window.print()
-            // this.$htmlToPaper('printMe', options)
+            const options = {
+                name: '_blank',
+                specs: [
+                    'fullscreen=yes',
+                    'titlebar=yes',
+                    'scrollbars=yes'
+                ],
+                styles: [
+                    'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
+                    'https://'+location.hostname+'/print.css',
+                ],
+                timeout: 1000, // default timeout before the print window appears
+                autoClose: true, // if false, the window will not close after printing
+                windowTitle: window.document.title, // override the window title
+            } 
+            this.$htmlToPaper('printMe', options)
         },
     },
     mounted(){

@@ -56,7 +56,7 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
-    'default_domain_name' => env('DEFAULT_DOMAIN_NAME', 'dipos.sekaradi.id'),
+    'default_domain_name' => env('DEFAULT_DOMAIN_NAME', 'adwindea.my.id'),
 
     /*
     |--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'Asia/Makassar',
+    'timezone' => 'Asia/Jakarta',
 
     /*
     |--------------------------------------------------------------------------
